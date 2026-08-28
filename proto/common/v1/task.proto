@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package meshops.common.v1;
+
+option go_package = "github.com/Lio6x1/meshops/gen/common/v1;commonv1";
+
+import "google/protobuf/timestamp.proto";
+
+// ============================================================================
+// 共享任务数据结构（被任务服务、分发器、执行方和 Kafka 消息复用）
+// ============================================================================
+
+enum TaskStatus {
+  TASK_STATUS_UNSPECIFIED = 0;
+  CREATED = 1;
+  DISPATCH_PENDING = 2;
+  DISPATCHED = 3;
+  ACKED = 4;
+  EXECUTING = 5;
+  SUCCEEDED = 6;
+  FAILED = 7;
+  CANCELLED = 8;
+  TIMED_OUT = 9;
+  REJECTED = 10;
+}
+
+message TaskPayload {
+  string payload_json = 1;
+}
+
+message Task {
+  string task_id = 1;
+  string tenant_id = 2;
+  string idempotency_key = 3;
+  string task_type = 4;
+  string target_entity_id = 5;
+  TaskPayload payload = 6;
+  int32 priority = 7;
+  TaskStatus status = 8;
+  int32 status_version = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+  google.protobuf.Timestamp deadline = 12;
+  string created_by = 13;
+  string cancelled_reason = 14;
+  string failure_reason = 15;
+}
+
+message TaskStatusChange {
+  TaskStatus from_status = 1;
+  TaskStatus to_status = 2;
+  google.protobuf.Timestamp changed_at = 3;
+  string changed_by = 4;
+  string reason = 5;
+}
+
+enum TaskEventType {
+  TASK_EVENT_TYPE_UNSPECIFIED = 0;
+  TASK_CREATED = 1;
+  TASK_DISPATCHED = 2;
+  TASK_ACKED = 3;
+  TASK_EXECUTING = 4;
+  TASK_SUCCEEDED = 5;
+  TASK_FAILED = 6;
+  TASK_CANCELLED = 7;
+  TASK_TIMED_OUT = 8;
+}
+
+message TaskEvent {
+  string event_id = 1;
+  string task_id = 2;
+  string tenant_id = 3;
+  TaskEventType event_type = 4;
+  TaskStatus current_status = 5;
+  int32 status_version = 6;
+  google.protobuf.Timestamp occurred_at = 7;
+  string data_json = 8;
+}
+
+// placeholder - required by goctl pb/grpc consistency check
+service _TaskTypes {}

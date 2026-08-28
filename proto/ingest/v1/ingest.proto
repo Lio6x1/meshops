@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package meshops.ingest.v1;
+
+option go_package = "github.com/Lio6x1/meshops/gen/ingest/v1;ingestv1";
+
+import "google/protobuf/timestamp.proto";
+import "common/v1/entity.proto";
+
+// ============================================================================
+// 接入服务 - 集成方流式上报实体状态
+// 方案A：import 共享的 common 类型；流式语义在 logic 中用 grpc-go 显式控制。
+// ============================================================================
+
+service IngestService {
+  rpc ReportEntityStates(stream ReportEntityStatesRequest)
+      returns (stream ReportEntityStatesResponse);
+}
+
+message ReportEntityStatesRequest {
+  repeated meshops.common.v1.EntityStateEvent events = 1;
+}
+
+message ReportEntityStatesResponse {
+  int64 confirmed_sequence = 1;
+  google.protobuf.Timestamp confirmed_at = 2;
+  repeated EventError errors = 3;
+}
+
+message EventError {
+  string event_id = 1;
+  meshops.common.v1.ErrorCode error_code = 2;
+  string error_message = 3;
+}

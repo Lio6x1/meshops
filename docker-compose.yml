@@ -1,0 +1,258 @@
+# ============================================================================
+# 多源实体实时协同与可靠任务调度平台 - Docker Compose配置
+# 项目：MeshOps
+# 用途：本地开发和功能验证
+# 说明：Compose V2 不再需要 version 字段
+# ============================================================================
+
+services:
+  # ==========================================================================
+  # Kafka (KRaft 模式 - 无需ZooKeeper)
+  # ==========================================================================
+  kafka:
+    image: apache/kafka:3.7.0
+    container_name: meshops-kafka
+    hostname: kafka
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      # KRaft 模式配置
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+
+      # 双监听器：宿主机客户端使用 localhost:9092，容器内客户端使用 kafka:29092
+      KAFKA_LISTENERS: EXTERNAL://0.0.0.0:9092,INTERNAL://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: EXTERNAL://localhost:9092,INTERNAL://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: EXTERNAL:PLAINTEXT,INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+
+      # 日志配置
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+      # 性能调优（开发环境）
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+
+      # 保留策略（开发环境短保留）
+      KAFKA_LOG_RETENTION_HOURS: 24
+      KAFKA_LOG_RETENTION_BYTES: 1073741824  # 1GB
+      KAFKA_LOG_SEGMENT_BYTES: 268435456     # 256MB
+    volumes:
+      - kafka-data:/tmp/kraft-combined-logs
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-broker-api-versions.sh --bootstrap-server localhost:9092 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - meshops-network
+
+  # ==========================================================================
+  # Redis (缓存 + Pub/Sub)
+  # ==========================================================================
+  redis:
+    image: redis:7.2-alpine
+    container_name: meshops-redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+    command: >
+      redis-server
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --appendonly yes
+      --appendfsync everysec
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - meshops-network
+
+  # ==========================================================================
+  # MySQL (任务、审计、元数据)
+  # ==========================================================================
+  mysql:
+    image: mysql:8.0
+    container_name: meshops-mysql
+    hostname: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: meshops_dev_root
+      MYSQL_DATABASE: meshops
+      MYSQL_USER: meshops_user
+      MYSQL_PASSWORD: meshops_dev_pass
+      TZ: Asia/Shanghai
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --default-time-zone='+08:00'
+      --max_connections=200
+      --innodb_buffer_pool_size=256M
+      --innodb_log_file_size=128M
+      --slow_query_log=1
+      --slow_query_log_file=/var/log/mysql/slow.log
+      --long_query_time=2
+      --event_scheduler=ON
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./migrations:/docker-entrypoint-initdb.d:ro
+      - mysql-logs:/var/log/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pmeshops_dev_root"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - meshops-network
+
+  # ==========================================================================
+  # etcd (服务注册发现 - P3阶段启用)
+  # ==========================================================================
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.12
+    container_name: meshops-etcd
+    hostname: etcd
+    ports:
+      - "2379:2379"
+      - "2380:2380"
+    environment:
+      ETCD_NAME: etcd0
+      ETCD_DATA_DIR: /etcd-data
+      ETCD_LISTEN_CLIENT_URLS: http://0.0.0.0:2379
+      ETCD_ADVERTISE_CLIENT_URLS: http://etcd:2379
+      ETCD_LISTEN_PEER_URLS: http://0.0.0.0:2380
+      ETCD_INITIAL_ADVERTISE_PEER_URLS: http://etcd:2380
+      ETCD_INITIAL_CLUSTER: etcd0=http://etcd:2380
+      ETCD_INITIAL_CLUSTER_STATE: new
+      ETCD_INITIAL_CLUSTER_TOKEN: meshops-etcd-cluster
+    volumes:
+      - etcd-data:/etcd-data
+    healthcheck:
+      test: ["CMD", "etcdctl", "endpoint", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - meshops-network
+    profiles:
+      - p3  # P3阶段才启用：docker compose --profile p3 up
+
+  # ==========================================================================
+  # Prometheus (监控指标)
+  # ==========================================================================
+  prometheus:
+    image: prom/prometheus:v2.50.1
+    container_name: meshops-prometheus
+    hostname: prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=7d'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./deployments/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    networks:
+      - meshops-network
+    depends_on:
+      - kafka
+      - redis
+      - mysql
+
+  # ==========================================================================
+  # Grafana (可视化面板 - 可选)
+  # ==========================================================================
+  grafana:
+    image: grafana/grafana:10.3.3
+    container_name: meshops-grafana
+    hostname: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: meshops_grafana
+      GF_INSTALL_PLUGINS: grafana-clock-panel
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./deployments/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./deployments/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - meshops-network
+    depends_on:
+      - prometheus
+    profiles:
+      - monitoring  # 可选：docker compose --profile monitoring up
+
+# ============================================================================
+# 数据卷
+# ============================================================================
+volumes:
+  kafka-data:
+    driver: local
+  redis-data:
+    driver: local
+  mysql-data:
+    driver: local
+  mysql-logs:
+    driver: local
+  etcd-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+# ============================================================================
+# 网络
+# ============================================================================
+networks:
+  meshops-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# ============================================================================
+# 使用说明
+# ============================================================================
+#
+# 基础启动（P0-P2）：
+#   docker compose up -d
+#
+# P3阶段（包含etcd）：
+#   docker compose --profile p3 up -d
+#
+# 包含监控（Prometheus + Grafana）：
+#   docker compose --profile monitoring up -d
+#
+# 完整启动：
+#   docker compose --profile p3 --profile monitoring up -d
+#
+# 查看日志：
+#   docker compose logs -f kafka
+#   docker compose logs -f mysql
+#
+# 停止并清理：
+#   docker compose down
+#
+# 停止并删除数据卷（慎用）：
+#   docker compose down -v
+#
+# 健康检查：
+#   docker compose ps
+#
+# ============================================================================

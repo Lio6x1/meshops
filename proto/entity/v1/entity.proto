@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package meshops.entity.v1;
+
+option go_package = "github.com/Lio6x1/meshops/gen/entity/v1;entityv1";
+
+import "google/protobuf/timestamp.proto";
+import "common/v1/entity.proto";
+
+// ============================================================================
+// 实体服务 - 快照查询 & 实时订阅
+// Subscribe 是服务端流；有界队列/慢消费者/版本去重在 logic 中用 grpc-go 控制。
+// ============================================================================
+
+service EntityService {
+  // 订阅实体更新（服务端流）
+  rpc Subscribe(SubscribeRequest) returns (stream EntityUpdate);
+  // 获取单个快照（一元）
+  rpc GetSnapshot(GetSnapshotRequest) returns (GetSnapshotResponse);
+  // 批量获取快照（一元）
+  rpc BatchGetSnapshots(BatchGetSnapshotsRequest) returns (BatchGetSnapshotsResponse);
+}
+
+message SubscribeRequest {
+  repeated string entity_ids   = 1;  // 指定实体（可选，空=按类型/区域）
+  repeated string entity_types = 2;
+  string          region       = 3;
+  repeated string source_ids   = 4;
+  int64           snapshot_version = 5;  // 重连水位
+}
+
+message EntityUpdate {
+  string entity_id = 1;
+  int64  version   = 2;
+  meshops.common.v1.EntitySnapshot snapshot   = 3;
+  google.protobuf.Timestamp         updated_at = 4;
+}
+
+message GetSnapshotRequest  { string entity_id = 1; }
+message GetSnapshotResponse {
+  string entity_id = 1;
+  int64  version   = 2;
+  meshops.common.v1.EntitySnapshot snapshot   = 3;
+  google.protobuf.Timestamp         updated_at = 4;
+  bool   found     = 5;
+}
+
+message BatchGetSnapshotsRequest  { repeated string entity_ids = 1; }
+message BatchGetSnapshotsResponse { repeated GetSnapshotResponse snapshots = 1; }

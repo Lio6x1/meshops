@@ -1,0 +1,105 @@
+# Prometheus 配置文件
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'meshops-dev'
+    environment: 'development'
+
+# 告警规则文件（后续添加）
+rule_files:
+  # - "rules/*.yml"
+
+# 抓取配置
+scrape_configs:
+  # Prometheus 自身指标
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Kafka Exporter（如果部署）
+  - job_name: 'kafka'
+    static_configs:
+      - targets: ['kafka-exporter:9308']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'kafka'
+
+  # Redis Exporter（如果部署）
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'redis'
+
+  # MySQL Exporter（如果部署）
+  - job_name: 'mysql'
+    static_configs:
+      - targets: ['mysql-exporter:9104']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'mysql'
+
+  # MeshOps 服务（动态添加）
+  # 接入服务
+  - job_name: 'meshops-ingest'
+    static_configs:
+      - targets: ['ingest-service:8080']
+    metrics_path: '/metrics'
+
+  # 实体服务
+  - job_name: 'meshops-entity'
+    static_configs:
+      - targets: ['entity-service:8081']
+    metrics_path: '/metrics'
+
+  # 任务服务
+  - job_name: 'meshops-task'
+    static_configs:
+      - targets: ['task-service:8082']
+    metrics_path: '/metrics'
+
+  # 任务分发器
+  - job_name: 'meshops-task-dispatcher'
+    static_configs:
+      - targets: ['task-dispatcher:8083']
+    metrics_path: '/metrics'
+
+# ============================================================================
+# 核心指标说明（供开发参考）
+# ============================================================================
+#
+# 接入服务指标：
+#   - meshops_ingest_connections_total          当前gRPC连接数
+#   - meshops_ingest_events_received_total      接收事件总数
+#   - meshops_ingest_events_accepted_total      Kafka确认事件总数
+#   - meshops_ingest_events_rejected_total      拒绝事件总数
+#   - meshops_ingest_kafka_produce_duration_ms  Kafka生产延迟分布
+#
+# 实体服务指标：
+#   - meshops_entity_projector_lag              投影器Consumer Lag
+#   - meshops_entity_projection_duration_ms     投影处理延迟
+#   - meshops_entity_version_conflicts_total    版本冲突次数
+#   - meshops_entity_subscribers_active         活跃订阅者数量
+#   - meshops_entity_subscriber_queue_depth     订阅者队列深度
+#   - meshops_entity_subscriber_drops_total     慢消费者断开次数
+#
+# 任务服务指标：
+#   - meshops_task_created_total                创建任务总数
+#   - meshops_task_status_transitions_total     状态迁移总数
+#   - meshops_task_status_conflicts_total       状态冲突次数
+#   - meshops_outbox_pending_count              Outbox待发布数量
+#   - meshops_outbox_age_seconds                Outbox最老记录年龄
+#
+# 任务分发器指标：
+#   - meshops_dispatcher_lag                    任务分发器Consumer Lag
+#   - meshops_dispatcher_dispatched_total       下发任务总数
+#   - meshops_dispatcher_retries_total          重试次数
+#   - meshops_dispatcher_dlq_total              死信队列数量
+#
+# ============================================================================

@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package meshops.common.v1;
+
+option go_package = "github.com/Lio6x1/meshops/gen/common/v1;commonv1";
+
+import "google/protobuf/timestamp.proto";
+
+// ============================================================================
+// 共享实体数据结构（被接入、实体服务和 Kafka 消息复用）
+// 方案A：共享类型用原生 protoc 统一生成到 gen/common/v1，全项目单一真相源。
+// ============================================================================
+
+message EntityStateEvent {
+  string event_id = 1;
+  string tenant_id = 2;
+  string entity_id = 3;
+  int64 entity_version = 4;
+  string source_id = 5;
+  google.protobuf.Timestamp occurred_at = 6;
+  google.protobuf.Timestamp received_at = 7;
+  int32 schema_version = 8;
+  EntitySnapshot snapshot = 9;
+}
+
+message EntitySnapshot {
+  string entity_type = 1;
+  string status = 2;
+  Location location = 3;
+  Velocity velocity = 4;
+  Capability capability = 5;
+  map<string, string> metadata = 6;
+}
+
+message Location {
+  double latitude = 1;
+  double longitude = 2;
+  double altitude = 3;
+  double accuracy = 4;
+  string coordinate_system = 5;
+}
+
+message Velocity {
+  double speed = 1;
+  double heading = 2;
+  double vertical_speed = 3;
+}
+
+message Capability {
+  repeated string supported_tasks = 1;
+  double max_range = 2;
+  double battery_level = 3;
+}
+
+enum ErrorCode {
+  ERROR_CODE_UNSPECIFIED = 0;
+  UNAUTHENTICATED = 1001;
+  PERMISSION_DENIED = 1002;
+  INVALID_TENANT = 1003;
+  RATE_LIMITED = 2001;
+  RESOURCE_EXHAUSTED = 2002;
+  QUEUE_FULL = 2003;
+  ENTITY_NOT_FOUND = 3001;
+  INVALID_VERSION = 3002;
+  INVALID_SCHEMA_VERSION = 3003;
+  INVALID_EVENT_FORMAT = 3004;
+  KAFKA_UNAVAILABLE = 4001;
+  REDIS_UNAVAILABLE = 4002;
+  MYSQL_UNAVAILABLE = 4003;
+}
+
+// placeholder - required by goctl pb/grpc consistency check
+service _EntityTypes {}

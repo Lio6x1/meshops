@@ -1,0 +1,97 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "title": "MeshOps - 任务调度链路",
+  "uid": "meshops-task-pipeline",
+  "tags": ["meshops", "task", "outbox"],
+  "timezone": "browser",
+  "refresh": "10s",
+  "time": { "from": "now-15m", "to": "now" },
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "id": 1,
+      "title": "任务创建速率",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "rate(meshops_task_created_total[1m])",
+          "legendFormat": "创建/s",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Outbox 积压与最老记录年龄",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "meshops_outbox_pending_count",
+          "legendFormat": "待发布数量",
+          "refId": "A"
+        },
+        {
+          "expr": "meshops_outbox_age_seconds",
+          "legendFormat": "最老记录年龄(s)",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 60 },
+              { "color": "red", "value": 300 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "任务下发延迟 & 状态冲突",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "rate(meshops_task_status_transitions_total[1m])",
+          "legendFormat": "状态迁移/s",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(meshops_task_status_conflicts_total[1m])",
+          "legendFormat": "状态冲突/s",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "重试与死信",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "meshops_dispatcher_lag",
+          "legendFormat": "分发器 Lag",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(meshops_dispatcher_retries_total[1m])",
+          "legendFormat": "重试/s",
+          "refId": "B"
+        },
+        {
+          "expr": "rate(meshops_dispatcher_dlq_total[1m])",
+          "legendFormat": "死信/s",
+          "refId": "C"
+        }
+      ]
+    }
+  ]
+}

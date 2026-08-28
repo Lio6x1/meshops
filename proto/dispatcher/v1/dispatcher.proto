@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package meshops.dispatcher.v1;
+
+option go_package = "github.com/Lio6x1/meshops/gen/dispatcher/v1;dispatcherv1";
+
+import "google/protobuf/timestamp.proto";
+import "common/v1/task.proto";
+
+// ============================================================================
+// 任务分发器管理接口（对外暴露任务下发状态查询与手动干预）
+// 核心消费逻辑（消费 Kafka task-events.v1）在 internal/ 实现，不通过 gRPC 触发。
+// ============================================================================
+
+service DispatcherService {
+  // 查询下发记录（一元）
+  rpc GetDispatch    (GetDispatchRequest)     returns (GetDispatchResponse);
+  // 手动重试死信任务（一元）
+  rpc RetryDLQ       (RetryDLQRequest)        returns (RetryDLQResponse);
+  // 查询分发器运行状态（一元，供监控/运维）
+  rpc GetStatus      (GetStatusRequest)       returns (GetStatusResponse);
+}
+
+message GetDispatchRequest  { string task_id = 1; }
+message GetDispatchResponse {
+  string task_id     = 1;
+  string dispatch_id = 2;   // task_id + attempt
+  int32  attempt     = 3;
+  meshops.common.v1.TaskStatus status       = 4;
+  string executor_id = 5;
+  google.protobuf.Timestamp dispatched_at = 6;
+  google.protobuf.Timestamp acked_at      = 7;
+  google.protobuf.Timestamp completed_at  = 8;
+}
+
+message RetryDLQRequest  {
+  string task_id = 1;
+  string reason  = 2;
+}
+message RetryDLQResponse { bool accepted = 1; string message = 2; }
+
+message GetStatusRequest  {}
+message GetStatusResponse {
+  int64  consumer_lag    = 1;  // Kafka Consumer Lag
+  int32  active_tasks    = 2;  // 正在处理中的任务数
+  int64  dlq_count       = 3;  // 死信队列积压
+  google.protobuf.Timestamp as_of = 4;
+}
