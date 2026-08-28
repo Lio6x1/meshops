@@ -3,7 +3,7 @@
 # scripts/proto-gen.sh - 方案A proto 代码生成脚本
 #
 # 策略：
-#   共享类型（common/v1）用 protoc 生成到 gen/；
+#   共享类型（common/v1）用 protoc 生成到 gen/（不生成 gRPC 服务）；
 #   各中心端服务用 goctl 生成 zRPC 骨架，生成后修复 goctl 1.10.x 的两类别名 bug：
 #     1. service 的 gen 包别名：v1_xxxv1 → xxxv1
 #     2. 引用了共享类型的 logic/client 文件：import common/v1 而代码用 xxxv1 别名
@@ -50,7 +50,6 @@ fix_service_aliases() {
 
 # ============================================================================
 # 生成共享类型（protoc，不用 goctl）
-# common proto 末尾有占位空 service，使 goctl pb/grpc 一致性检查通过
 # ============================================================================
 gen_common() {
   log "生成共享类型 gen/common/v1/ ..."
@@ -58,7 +57,6 @@ gen_common() {
   cd "$PROTO_DIR"
   protoc --proto_path=. \
     --go_out="$GEN_DIR"      --go_opt=paths=source_relative \
-    --go-grpc_out="$GEN_DIR" --go-grpc_opt=paths=source_relative \
     common/v1/entity.proto common/v1/task.proto
   log "✓ gen/common/v1/ 已生成"
 }

@@ -17,7 +17,7 @@ deps: ## 下载 Go 依赖
 
 .PHONY: tools
 tools: ## 安装开发工具
-	go install honnef.co/go/tools/cmd/staticcheck@latest
+	go install honnef.co/go/tools/cmd/staticcheck@v0.7.0
 	go install github.com/zeromicro/go-zero/tools/goctl@latest
 
 # ============================================================================
@@ -80,8 +80,8 @@ vet: ## 运行 go vet
 	go vet ./...
 
 .PHONY: lint
-lint: ## 运行 staticcheck
-	staticcheck ./...
+lint: ## 运行 staticcheck（排除 Protobuf 生成代码）
+	staticcheck $$(go list ./... | grep -v '/gen/')
 
 .PHONY: check
 check: vet lint test-race ## 运行所有检查（提交前）

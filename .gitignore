@@ -63,6 +63,7 @@ secrets/
 # ============================================================================
 .idea/
 .vscode/
+/.cache/
 .claude/settings.local.json
 .worktrees/
 *.swp

@@ -12,16 +12,16 @@ import "google/protobuf/timestamp.proto";
 
 enum TaskStatus {
   TASK_STATUS_UNSPECIFIED = 0;
-  CREATED = 1;
-  DISPATCH_PENDING = 2;
-  DISPATCHED = 3;
-  ACKED = 4;
-  EXECUTING = 5;
-  SUCCEEDED = 6;
-  FAILED = 7;
-  CANCELLED = 8;
-  TIMED_OUT = 9;
-  REJECTED = 10;
+  TASK_STATUS_CREATED = 1;
+  TASK_STATUS_DISPATCH_PENDING = 2;
+  TASK_STATUS_DISPATCHED = 3;
+  TASK_STATUS_ACKED = 4;
+  TASK_STATUS_EXECUTING = 5;
+  TASK_STATUS_SUCCEEDED = 6;
+  TASK_STATUS_FAILED = 7;
+  TASK_STATUS_CANCELLED = 8;
+  TASK_STATUS_TIMED_OUT = 9;
+  TASK_STATUS_REJECTED = 10;
 }
 
 message TaskPayload {
@@ -56,14 +56,14 @@ message TaskStatusChange {
 
 enum TaskEventType {
   TASK_EVENT_TYPE_UNSPECIFIED = 0;
-  TASK_CREATED = 1;
-  TASK_DISPATCHED = 2;
-  TASK_ACKED = 3;
-  TASK_EXECUTING = 4;
-  TASK_SUCCEEDED = 5;
-  TASK_FAILED = 6;
-  TASK_CANCELLED = 7;
-  TASK_TIMED_OUT = 8;
+  TASK_EVENT_TYPE_CREATED = 1;
+  TASK_EVENT_TYPE_DISPATCHED = 2;
+  TASK_EVENT_TYPE_ACKED = 3;
+  TASK_EVENT_TYPE_EXECUTING = 4;
+  TASK_EVENT_TYPE_SUCCEEDED = 5;
+  TASK_EVENT_TYPE_FAILED = 6;
+  TASK_EVENT_TYPE_CANCELLED = 7;
+  TASK_EVENT_TYPE_TIMED_OUT = 8;
 }
 
 message TaskEvent {
@@ -76,6 +76,3 @@ message TaskEvent {
   google.protobuf.Timestamp occurred_at = 7;
   string data_json = 8;
 }
-
-// placeholder - required by goctl pb/grpc consistency check
-service _TaskTypes {}

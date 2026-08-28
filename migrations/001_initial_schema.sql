@@ -77,7 +77,7 @@ CREATE TABLE entity_history_samples (
   entity_id VARCHAR(128) NOT NULL COMMENT '实体ID',
 
   occurred_at TIMESTAMP(6) NOT NULL COMMENT '事件发生时刻',
-  sampled_at TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '抽样写入时刻',
+  sampled_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '抽样写入时刻',
 
   event_id VARCHAR(128) COMMENT '原始事件ID',
   source_id VARCHAR(64) COMMENT '数据来源',
@@ -94,8 +94,8 @@ CREATE TABLE entity_history_samples (
   INDEX idx_entity_time (tenant_id, entity_id, occurred_at),
   INDEX idx_sampled_at (sampled_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='实体历史抽样'
-PARTITION BY RANGE (TO_DAYS(sampled_at)) (
-  PARTITION p_initial VALUES LESS THAN (TO_DAYS('2026-09-01')),
+PARTITION BY RANGE COLUMNS (sampled_at) (
+  PARTITION p_initial VALUES LESS THAN ('2026-09-01 00:00:00'),
   PARTITION p_future VALUES LESS THAN MAXVALUE
 );
 
@@ -210,7 +210,7 @@ CREATE TABLE consumer_dedup (
   UNIQUE KEY uk_consumer_key (consumer_group, idempotency_key),
   INDEX idx_processed_at (processed_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='消费者幂等去重'
-PARTITION BY HASH (CRC32(consumer_group)) PARTITIONS 8;
+PARTITION BY KEY (consumer_group) PARTITIONS 8;
 
 -- 定期清理策略：保留7天内的去重记录
 -- DELETE FROM consumer_dedup WHERE processed_at < NOW() - INTERVAL 7 DAY;
