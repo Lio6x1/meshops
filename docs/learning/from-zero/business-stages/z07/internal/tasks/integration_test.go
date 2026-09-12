@@ -459,6 +459,30 @@ func TestA18OutboxOrderFailureAndExpiredLease(t *testing.T) {
 		t.Fatal("per-task event ordering or old pending retention failed")
 	}
 }
+// Release all callers after reading the same task so network latency cannot
+// accidentally turn the concurrent retry check into ten sequential requests.
+type gatedTaskReadClient struct {
+	taskv1.TaskServiceClient
+	waiting atomic.Int32
+	ready   chan struct{}
+}
+
+func (c *gatedTaskReadClient) GetTask(ctx context.Context, r *taskv1.GetTaskRequest, options ...grpc.CallOption) (*taskv1.GetTaskResponse, error) {
+	response, err := c.TaskServiceClient.GetTask(ctx, r, options...)
+	if err != nil {
+		return nil, err
+	}
+	if c.waiting.Add(-1) == 0 {
+		close(c.ready)
+	}
+	select {
+	case <-c.ready:
+		return response, nil
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
+}
+
 func TestA23DurableDLQAndConcurrentManualRetry(t *testing.T) {
 	f := fixtureFor(t)
 	task := create(t, f, "dlq")
@@ -492,6 +516,10 @@ func TestA23DurableDLQAndConcurrentManualRetry(t *testing.T) {
 	}
 	var accepted atomic.Int32
 	var wg sync.WaitGroup
+	originalTaskClient := f.dispatcher.task
+	gate := &gatedTaskReadClient{TaskServiceClient: originalTaskClient, ready: make(chan struct{})}
+	gate.waiting.Store(10)
+	f.dispatcher.task = gate
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
 		go func() {
@@ -507,6 +535,7 @@ func TestA23DurableDLQAndConcurrentManualRetry(t *testing.T) {
 		}()
 	}
 	wg.Wait()
+	f.dispatcher.task = originalTaskClient
 	if accepted.Load() != 1 {
 		t.Fatal("manual retry accepted more than once", accepted.Load())
 	}

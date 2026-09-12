@@ -1160,7 +1160,7 @@
         },
         {
           "path": "internal/tasks/dispatcher.go",
-          "sha256": "b9de8e1008fa7fef5cc95ef863daa7050267d97c2a3bc1538363a5a9d38d74f7"
+          "sha256": "0f18f85dbcbcac4e3c78e89d591cd903f39ca1414efe14d68918c93f8ce3e273"
         },
         {
           "path": "internal/tasks/domain_test.go",
@@ -1184,7 +1184,7 @@
         },
         {
           "path": "internal/tasks/integration_test.go",
-          "sha256": "dc69bd6c157a05bcf9deb92a79e0eaf2a9bbec85b293b9f12c4f3f1fecc025a4"
+          "sha256": "0ad3da8b4a25bd03a721271b3580552f87d9e722b96d2af940ee8adff15b4723"
         },
         {
           "path": "internal/tasks/interfaces.go",
@@ -1807,7 +1807,7 @@
         },
         {
           "path": "internal/tasks/dispatcher.go",
-          "sha256": "b9de8e1008fa7fef5cc95ef863daa7050267d97c2a3bc1538363a5a9d38d74f7"
+          "sha256": "0f18f85dbcbcac4e3c78e89d591cd903f39ca1414efe14d68918c93f8ce3e273"
         },
         {
           "path": "internal/tasks/domain_test.go",
@@ -1831,7 +1831,7 @@
         },
         {
           "path": "internal/tasks/integration_test.go",
-          "sha256": "dc69bd6c157a05bcf9deb92a79e0eaf2a9bbec85b293b9f12c4f3f1fecc025a4"
+          "sha256": "0ad3da8b4a25bd03a721271b3580552f87d9e722b96d2af940ee8adff15b4723"
         },
         {
           "path": "internal/tasks/interfaces.go",
@@ -2376,7 +2376,7 @@
         },
         {
           "path": "internal/tasks/dispatcher.go",
-          "sha256": "b9de8e1008fa7fef5cc95ef863daa7050267d97c2a3bc1538363a5a9d38d74f7"
+          "sha256": "0f18f85dbcbcac4e3c78e89d591cd903f39ca1414efe14d68918c93f8ce3e273"
         },
         {
           "path": "internal/tasks/domain_test.go",
@@ -2400,7 +2400,7 @@
         },
         {
           "path": "internal/tasks/integration_test.go",
-          "sha256": "dc69bd6c157a05bcf9deb92a79e0eaf2a9bbec85b293b9f12c4f3f1fecc025a4"
+          "sha256": "0ad3da8b4a25bd03a721271b3580552f87d9e722b96d2af940ee8adff15b4723"
         },
         {
           "path": "internal/tasks/interfaces.go",
@@ -3226,7 +3226,7 @@
         },
         {
           "path": "internal/tasks/dispatcher.go",
-          "sha256": "b9de8e1008fa7fef5cc95ef863daa7050267d97c2a3bc1538363a5a9d38d74f7"
+          "sha256": "0f18f85dbcbcac4e3c78e89d591cd903f39ca1414efe14d68918c93f8ce3e273"
         },
         {
           "path": "internal/tasks/domain_test.go",
@@ -3250,7 +3250,7 @@
         },
         {
           "path": "internal/tasks/integration_test.go",
-          "sha256": "dc69bd6c157a05bcf9deb92a79e0eaf2a9bbec85b293b9f12c4f3f1fecc025a4"
+          "sha256": "0ad3da8b4a25bd03a721271b3580552f87d9e722b96d2af940ee8adff15b4723"
         },
         {
           "path": "internal/tasks/interfaces.go",

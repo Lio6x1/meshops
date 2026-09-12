@@ -351,7 +351,10 @@ func (d *Dispatcher) RetryDLQ(ctx context.Context, r *dispatcherv1.RetryDLQReque
 	if Terminal(t.Status) || t.Deadline == nil || !t.Deadline.AsTime().After(time.Now()) {
 		return &dispatcherv1.RetryDLQResponse{Message: "task is terminal or deadline elapsed"}, nil
 	}
-	tx, e := d.db.BeginTx(ctx, nil)
+	// Keep the attempt row lock without RR range/gap locks: concurrent scans of
+	// the latest attempt must not block the winner from appending its successor.
+	// Unique dispatch/attempt keys still allow only one persisted retry round.
+	tx, e := d.db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 	if e != nil {
 		return nil, unavailable(e)
 	}
