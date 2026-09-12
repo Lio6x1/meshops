@@ -1,8 +1,8 @@
 # 全栈运行证据归档
 
-本目录记录前端、HTTP 接入和 Compose 演示部署的新一批证据。**已归档 16 份完成来源，包括明确保留的本地 Linux 集成失败。** 结果与适用边界见 [本机验收报告](report.md)，脱敏明细见 [results.json](results.json)。旧后端审查与本次全栈运行是不同批次，不能沿用旧 PASS 代替新代码的验收；本次最终云端 CI 另待实际结果。
+本目录记录前端、HTTP 接入和 Compose 演示部署的新一批证据。**已归档 16 份完成来源，包括明确保留的本地 Linux 集成失败。** 结果与适用边界见 [本机验收报告](report.md)，脱敏明细见 [results.json](results.json)。旧后端审查与本次全栈运行是不同批次，不能沿用旧 PASS 代替新代码的验收；功能提交 `28fad46` 的云端前端与后端检查均通过，见[发布回执](release.md)。
 
-## 待归档来源
+## 来源白名单
 
 | 来源 ID | `.cache/fullstack/` 中明确允许的文件 | 发布的字段与范围 |
 | --- | --- | --- |
@@ -48,7 +48,7 @@ python docs/verification/2026-09-12-fullstack/archive.py --write --completed htt
 - 只读取代码中列出的文件名，不扫描整个 `.cache/fullstack`，也不读取任何 codes、token 或 `.env` 文件。
 - 原始允许来源保存到 `.local/archives/fullstack-20260912/<SHA256>/<文件名>`，复制后再核对 SHA-256。相同文件名的新运行使用不同哈希目录，不覆盖旧原文。**整个 `.local` 归档只供本机排错，不能提交公开仓库。**
 - 集成门禁脚本只通过 AST 读取字面量 `REQUIRED` 集合，不执行该 Python 文件；同时私有归档门禁原文与哈希。它证明归档时采用了哪份门禁，不伪造测试启动时的版本来源。
-- 原始记录未证明精确被测 Git SHA 时，`exactTestedCommit` 保持 null。`archiveRepositoryHead` 只是生成归档时的 HEAD，不能当作测试时版本。最后代码提交、CI 运行与镜像来源由主任务补充独立关联证据。
+- 原始记录未证明精确被测 Git SHA 时，`exactTestedCommit` 保持 null。`archiveRepositoryHead` 只是生成归档时的 HEAD，不能当作测试时版本。最后代码提交与 CI 的独立关联见[发布回执](release.md)，不覆盖早期运行的版本边界。
 - 更新公开结果前，上一份 `results.json` 会保存在私有哈希目录，避免丢失历史失败。生成时如缺少文件、JSON 不完整或结果自相矛盾，应明确失败。
 
 ## 重启、重建与浏览器补充格式

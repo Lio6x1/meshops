@@ -31,7 +31,7 @@ Windows 顶层统计排除子测试和包级 `[no test files]`，259 是包含�
 
 失败涉及 Compose 发布口径断言、非回环网络断言、Kafka 保留截断、Redis OOM 保护和重建时真实保留截断子场景。执行方排查发现容器缺 Docker CLI、故障 Redis 的固定回环端口保护不符合该容器运行地址、测试工具默认 Compose 模式，以及网络断言在相关修正前已经编译。原因解释不等于这些用例在该次运行通过；其失败列表仍可逐项检查。
 
-Linux 普通 race、Windows 真实依赖集成与云端 Linux 真实依赖 race 是三个不同范围。**本报告暂未包含本次最终提交的云端 CI 证明**，必须在实际完成后补充精确提交 SHA、运行地址与作业结果，不能套用旧后端审查中的 CI。
+Linux 普通 race、Windows 真实依赖集成与云端 Linux 真实依赖 race 是三个不同范围。本次功能提交 `28fad46` 的云端 Linux 真实依赖 race 已完成并通过，精确 SHA、运行地址和作业结果见文末及[发布回执](release.md)；未套用旧后端审查中的 CI。
 
 ## 浏览器与权限结果的边界
 
@@ -45,4 +45,8 @@ Linux 普通 race、Windows 真实依赖集成与云端 Linux 真实依赖 race 
 
 全部原始白名单文件按原始字节 SHA-256 保存到 `.local/archives/fullstack-20260912/<SHA256>/<文件名>`，复制后再次核对。公开记录只保留逐测试四字段、检查名称/布尔值、统计、退出码及来源哈希，不发布 Output、完整请求响应、cookie、访问码或凭证。历史草稿在公开结果更新前另保留私有副本。
 
-这些本机原始来源没有携带足以证明精确被测源码提交的 Git SHA，因而 `exactTestedCommit` 为 null；`archiveRepositoryHead` 只是归档时 HEAD，工作目录当时仍有全栈变更。它不能自动成为每次测试的精确版本。后续最终提交与 CI 应建立独立明确关联。
+这些本机原始来源没有携带足以证明精确被测源码提交的 Git SHA，因而 `exactTestedCommit` 为 null；`archiveRepositoryHead` 只是归档时 HEAD，工作目录当时仍有全栈变更。它不能自动成为每次测试的精确版本。最终提交与 CI 的独立关联见[发布回执](release.md)，不能据此反推早期未提交工作树的精确版本。
+
+## 云端最终验证与发布
+
+功能提交 `28fad4652e4168888cc2af8de3e9a17b4e15bef0` 的两个 GitHub Actions job 均已完成且成功，包括普通 Linux race 与真实依赖完整 integration race。见[发布回执](release.md)和[API 状态存档](cloud-ci.json)。上述本地 Linux 容器环境失败仍是历史真实结果，不被云端成功覆盖；最终 Linux 验收依据明确指向该云端提交。

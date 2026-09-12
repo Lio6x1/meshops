@@ -1,0 +1,70 @@
+{
+  "method": "Official go clean -cache after validating each cache directory and absence of active Go/staticcheck processes. Logical file bytes; current go-build-reference retained.",
+  "oldGoCaches": [
+    {
+      "Cache": "go-build",
+      "BeforeBytes": 3445327946.0,
+      "AfterBytes": 228.0,
+      "RemovedBytes": 3445327718.0
+    },
+    {
+      "Cache": "go-build-handouts",
+      "BeforeBytes": 154885801.0,
+      "AfterBytes": 228.0,
+      "RemovedBytes": 154885573.0
+    },
+    {
+      "Cache": "go-build-linux-race",
+      "BeforeBytes": 3325710280.0,
+      "AfterBytes": 228.0,
+      "RemovedBytes": 3325710052.0
+    },
+    {
+      "Cache": "go-build-z01",
+      "BeforeBytes": 142052304.0,
+      "AfterBytes": 228.0,
+      "RemovedBytes": 142052076.0
+    },
+    {
+      "Cache": "go-build-z02",
+      "BeforeBytes": 1045354281.0,
+      "AfterBytes": 228.0,
+      "RemovedBytes": 1045354053.0
+    },
+    {
+      "Cache": "go-build-z03",
+      "BeforeBytes": 1046363838.0,
+      "AfterBytes": 228.0,
+      "RemovedBytes": 1046363610.0
+    },
+    {
+      "Cache": "go-build-z04",
+      "BeforeBytes": 1053915579.0,
+      "AfterBytes": 228.0,
+      "RemovedBytes": 1053915351.0
+    },
+    {
+      "Cache": "go-build-z05",
+      "BeforeBytes": 1078731783.0,
+      "AfterBytes": 228.0,
+      "RemovedBytes": 1078731555.0
+    },
+    {
+      "Cache": "go-build-z06",
+      "BeforeBytes": 1084676472.0,
+      "AfterBytes": 228.0,
+      "RemovedBytes": 1084676244.0
+    }
+  ],
+  "oldGoRemovedBytes": 12377016232.0,
+  "earlierReviewedDirectoriesRemovedBytes": 4119914506,
+  "totalLogicalRemovedBytes": 16496930738.0,
+  "preserved": [
+    "source and learning materials",
+    "current Go build cache",
+    "historical and full-stack private evidence archives",
+    "meshops-demo application volumes",
+    "original meshops-course volumes"
+  ],
+  "disposableAcceptanceProjectRemoved": "meshops-fullstack-acceptance-20260912"
+}

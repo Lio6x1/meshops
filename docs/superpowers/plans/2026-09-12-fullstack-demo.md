@@ -56,8 +56,8 @@ Files: docs/learning/from-zero/lessons/z11.md onward; stage/file/substep publish
 - [x] Review changed backend/HTTP security and browser behavior independently; run appropriate integration/race/proto/copy checks.
 - [x] Set project topics and optimize pending scans with regression evidence.
 - [ ] License selection remains pending the owner's MIT / Apache-2.0 / no-license decision; no license grant has been invented.
-- [ ] Integrate committed reference, confirm Git/CI and deliver complete user-facing startup entry.
+- [x] Integrate committed reference, confirm Git/CI and deliver complete user-facing startup entry.
 
 ## Verification notes
 
-Actual runtime evidence: [fullstack acceptance](../../verification/2026-09-12-fullstack/report.md). Docker first-up needed a frontend bridge and host probes before the browser could connect. Historical failed Linux container integration is retained separately from successful Windows real-dependency acceptance and ordinary Linux race. Final cloud CI remains pending publication.
+Actual runtime evidence: [fullstack acceptance](../../verification/2026-09-12-fullstack/report.md). Docker first-up needed a frontend bridge and host probes before the browser could connect. Historical failed Linux container integration is retained separately from successful Windows real-dependency acceptance and ordinary Linux race. Code commit 28fad46 passed both cloud CI jobs, including real-dependency Linux race; see the fullstack release receipt.

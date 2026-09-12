@@ -1,0 +1,47 @@
+{
+  "sha": "28fad4652e4168888cc2af8de3e9a17b4e15bef0",
+  "url": "https://github.com/Lio6x1/meshops/actions/runs/34695085212",
+  "runId": 34695085212,
+  "jobs": [
+    {
+      "name": "browser",
+      "status": "completed",
+      "conclusion": "success",
+      "active": [],
+      "failed": [],
+      "passed": [
+        "Set up job",
+        "Run actions/checkout@v6",
+        "Run actions/setup-node@v6",
+        "Install locked browser dependencies",
+        "Browser domain tests and production build",
+        "Post Run actions/setup-node@v6",
+        "Post Run actions/checkout@v6",
+        "Complete job"
+      ]
+    },
+    {
+      "name": "reference",
+      "status": "completed",
+      "conclusion": "success",
+      "active": [],
+      "failed": [],
+      "passed": [
+        "Set up job",
+        "Run actions/checkout@v6",
+        "Verify published course file hashes",
+        "Run actions/setup-go@v7",
+        "Verify module, build and vet",
+        "Staticcheck handwritten packages",
+        "Linux race checks",
+        "Start isolated integration dependencies",
+        "Full integration acceptance",
+        "Upload acceptance output",
+        "Stop dedicated dependencies",
+        "Post Run actions/setup-go@v7",
+        "Post Run actions/checkout@v6",
+        "Complete job"
+      ]
+    }
+  ]
+}

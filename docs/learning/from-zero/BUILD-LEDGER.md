@@ -9,7 +9,7 @@
 - 最终 Z11 / Z12 / Z13 分别为 242 / 270 / 299 个运行文件；13 阶段共 1676 条文件指纹记录，含阶段间重复。当前共 350 个完整代码块、28 个细分步骤。
 - Z01—Z13 完整 Markdown 复制及构建通过；新增 5 个前后端小步骤通过指定测试与前端构建。最终仅错误文本和缓存排除的变化，已在两个复制目录补齐并核对全部 299 个源文件及运行相应测试。详见[复制验收](verification/2026-09-12-fullstack-copy.md)。
 - 本轮 Windows 真实依赖验收 168 个顶层测试 PASS、3 个子进程入口 SKIP、0 FAIL，19 项必跑门禁通过；三轮 HTTP 各 10 项、Docker 重启/重建保留、真实页面和权限检查已完成。普通 Linux race 与一次环境不匹配的 Linux 集成失败分别记录，不能合并称作全量 Linux 集成成功。详见[全栈报告](../../verification/2026-09-12-fullstack/report.md)。
-- 本轮提交的远端状态以 [GitHub Actions](https://github.com/Lio6x1/meshops/actions) 对应提交为准，下面旧 CI 链接只证明此前版本。
+- 功能提交 `28fad46` 的前端 job 与后端 job 均通过，包含普通和真实依赖 Linux race；[发布回执](../../verification/2026-09-12-fullstack/release.md)保存对应提交与 CI 链接。下面旧 CI 链接只证明此前版本。
 
 ## 代码与材料边界
 
