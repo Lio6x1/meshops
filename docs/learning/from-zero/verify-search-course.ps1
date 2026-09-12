@@ -1,5 +1,6 @@
 # Fresh learner Z09 -> Z10 runtime acceptance. Dedicated Compose project/volumes;
 # temporarily frees and restores only reference dependency ports, never deletes volumes.
+param([switch]$FullIntegration)
 $ErrorActionPreference = 'Stop'
 $material = $PSScriptRoot
 $repo = [IO.Path]::GetFullPath((Join-Path $material '../../..'))
@@ -71,6 +72,13 @@ try {
         & ./scripts/start.ps1 -Search -Simulators *> (Join-Path $evidence 'z10-restart.txt')
         & ./scripts/demo-search.ps1 *> (Join-Path $evidence 'z10-after-rebuild.txt')
         $steps.Add('Missing index and incomplete bootstrap rebuilt; business checksums preserved; new CDC converges')
+        if ($FullIntegration) {
+            # Exercise the published learner-facing entry point, including ES
+            # configuration and the mandatory-test gate, in this isolated stack.
+            & ./scripts/stop.ps1
+            & ./scripts/test.ps1 -Integration *> (Join-Path $evidence 'z10-full-integration.txt')
+            $steps.Add('Published test.ps1 -Integration passed the required-test gate')
+        }
         Check-FileHashes
         $steps.Add('Published learner source hashes unchanged')
     } finally {
@@ -95,7 +103,8 @@ finally {
             if ($LASTEXITCODE) { $cleanup.Add('Reference dependency restore failed') }
         } catch { $cleanup.Add($_.Exception.Message) }
     }
-    @{passed=(-not $failure -and -not $cleanup.Count -and $steps.Count -eq 4);learner=$learner;project=$copyProject;steps=@($steps.ToArray());failure=$failure;cleanupErrors=@($cleanup.ToArray())} | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $evidence 'result.json') -Encoding utf8
+    $requiredSteps = if ($FullIntegration) { 5 } else { 4 }
+    @{passed=(-not $failure -and -not $cleanup.Count -and $steps.Count -eq $requiredSteps);learner=$learner;project=$copyProject;steps=@($steps.ToArray());failure=$failure;cleanupErrors=@($cleanup.ToArray())} | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $evidence 'result.json') -Encoding utf8
     Pop-Location
     Write-Host "Evidence: $evidence"
     if ($cleanup.Count) { throw ('Cleanup incomplete: '+($cleanup -join '; ')) }

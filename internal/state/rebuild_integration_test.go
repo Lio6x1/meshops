@@ -28,6 +28,7 @@ func TestKafkaShadowMissingManifestDoesNotSwitch(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 	defer cancel()
 	prefix := "state_it_" + newID() + "_"
+	testActiveKey := (&Entity{cfg: platform.Settings{TopicPrefix: prefix}}).activeKey()
 	publisher := bus.New(brokers)
 	defer publisher.Close()
 	if err := publisher.EnsureTopics(ctx, prefix); err != nil {
@@ -52,12 +53,12 @@ func TestKafkaShadowMissingManifestDoesNotSwitch(t *testing.T) {
 	cache := redis.NewClient(&redis.Options{Addr: redisAddr, DB: 14})
 	defer cache.Close()
 	initial := newID()
-	created, err := cache.SetNX(ctx, activeKey, initial, 0).Result()
+	created, err := cache.SetNX(ctx, testActiveKey, initial, 0).Result()
 	if err != nil {
 		t.Fatal(err)
 	}
 	if !created {
-		initial, err = cache.Get(ctx, activeKey).Result()
+		initial, err = cache.Get(ctx, testActiveKey).Result()
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -66,17 +67,17 @@ func TestKafkaShadowMissingManifestDoesNotSwitch(t *testing.T) {
 	defer func() {
 		cleanup, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
-		if _, err := switchView.Run(cleanup, cache, []string{activeKey}, completeGeneration, initial).Result(); err != nil {
+		if _, err := switchView.Run(cleanup, cache, []string{testActiveKey}, completeGeneration, initial).Result(); err != nil {
 			t.Error(err)
 		}
 		if created {
 			script := redis.NewScript(`if redis.call('GET',KEYS[1])==ARGV[1] then return redis.call('DEL',KEYS[1]) end; return 0`)
-			if _, err := script.Run(cleanup, cache, []string{activeKey}, initial).Result(); err != nil {
+			if _, err := script.Run(cleanup, cache, []string{testActiveKey}, initial).Result(); err != nil {
 				t.Error(err)
 			}
 		}
 		for _, g := range []string{failedGeneration, completeGeneration} {
-			if err := cache.Del(cleanup, viewKey(g, "t", "p"), viewKey(g, "t", "cold"), "meshops:view:build:"+g, "meshops:view:bounds:"+g).Err(); err != nil {
+			if err := cache.Del(cleanup, viewKey(g, "t", "p"), viewKey(g, "t", "cold"), "meshops:view:build:"+g, "meshops:view:bounds:"+g, "meshops:view:topic:"+g).Err(); err != nil {
 				t.Error(err)
 			}
 		}
@@ -118,7 +119,7 @@ func TestKafkaShadowMissingManifestDoesNotSwitch(t *testing.T) {
 	if err = entity.Rebuild(ctx, failedGeneration, manifest); err == nil || !strings.Contains(err.Error(), "incomplete rebuild") {
 		t.Fatal("cold-entity absence must fail explicitly", err)
 	}
-	if active, err := cache.Get(ctx, activeKey).Result(); err != nil || active != initial {
+	if active, err := cache.Get(ctx, testActiveKey).Result(); err != nil || active != initial {
 		t.Fatal("failed rebuild switched active", active, err)
 	}
 	cold := proto.Clone(event).(*commonv1.EntityStateEvent)
@@ -134,7 +135,7 @@ func TestKafkaShadowMissingManifestDoesNotSwitch(t *testing.T) {
 	if err = entity.Rebuild(ctx, completeGeneration, manifest); err != nil {
 		t.Fatal(err)
 	}
-	if active, err := cache.Get(ctx, activeKey).Result(); err != nil || active != completeGeneration {
+	if active, err := cache.Get(ctx, testActiveKey).Result(); err != nil || active != completeGeneration {
 		t.Fatal("verified rebuild not activated", active, err)
 	}
 	if _, err = entity.projectInto(ctx, completeGeneration, event, false); err != nil {
@@ -170,11 +171,11 @@ func TestKafkaShadowMissingManifestDoesNotSwitch(t *testing.T) {
 			}
 		}
 		lost := newID()
-		defer cache.Del(context.Background(), "meshops:view:build:"+lost, "meshops:view:bounds:"+lost)
+		defer cache.Del(context.Background(), "meshops:view:build:"+lost, "meshops:view:bounds:"+lost, "meshops:view:topic:"+lost)
 		if x = entity.Rebuild(ctx, lost, manifest); x == nil || !strings.Contains(x.Error(), "incomplete rebuild") {
 			t.Fatal("truncated log presented as complete recovery", x)
 		}
-		if active, x := cache.Get(ctx, activeKey).Result(); x != nil || active != completeGeneration {
+		if active, x := cache.Get(ctx, testActiveKey).Result(); x != nil || active != completeGeneration {
 			t.Fatal("failed truncated rebuild replaced active view", active, x)
 		}
 	})

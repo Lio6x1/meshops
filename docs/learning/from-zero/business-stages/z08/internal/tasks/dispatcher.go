@@ -239,6 +239,8 @@ func (d *Dispatcher) HandleEvent(ctx context.Context, raw []byte) error {
 	return tx.Commit()
 }
 func mirrorTask(ctx context.Context, tx *sql.Tx, t *commonv1.Task) error {
+	// Task 状态是业务事实，status 是每次投递的事实，两者不能互相替代。
+	// 只接收更高版本，且保留历史 timeout/DLQ/abandoned，避免旧消息复活尝试。
 	_, e := tx.ExecContext(ctx, `UPDATE task_dispatches SET
  status=CASE WHEN status IN ('timeout','dlq','abandoned') THEN status
  WHEN ? IN (6,7,8,9,10) THEN CASE WHEN command_kind='execute' AND ?=6 THEN 'succeeded' WHEN command_kind='execute' AND ? IN (7,10) THEN 'failed' WHEN command_kind='cancel' AND ?=8 THEN 'cancelled' ELSE 'abandoned' END
@@ -368,6 +370,12 @@ func (d *Dispatcher) RetryDLQ(ctx context.Context, r *dispatcherv1.RetryDLQReque
 	}
 	if a.kind == "execute" && t.CancelRequested {
 		return &dispatcherv1.RetryDLQResponse{Message: "execute is superseded by cancellation"}, nil
+	}
+	// DLQ is historical delivery evidence and survives a late ACK. Neither a
+	// fresh Task lookup nor a newer locked mirror may authorize another execute
+	// round after acknowledged progress. Cancellation still needs its own retry.
+	if a.kind == "execute" && (t.Status == commonv1.TaskStatus_TASK_STATUS_ACKED || t.Status == commonv1.TaskStatus_TASK_STATUS_EXECUTING || a.lastStatus == commonv1.TaskStatus_TASK_STATUS_ACKED || a.lastStatus == commonv1.TaskStatus_TASK_STATUS_EXECUTING) {
+		return &dispatcherv1.RetryDLQResponse{Message: "execution already acknowledged; no transport retry needed"}, nil
 	}
 	if e = insertAttempt(ctx, tx, t, a.kind, a.number+1, a.round+1, time.Now().UTC()); e != nil {
 		if duplicate(e) {

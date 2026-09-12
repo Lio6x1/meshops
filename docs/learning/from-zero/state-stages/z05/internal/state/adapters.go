@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-const MaxVersion int64 = 9007199254740991
+const MaxVersion int64 = platform.MaxEntityVersion
 
 var idPattern = regexp.MustCompile(`^[a-z0-9_-]+$`)
 

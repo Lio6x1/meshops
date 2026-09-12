@@ -299,33 +299,46 @@ func (e *Entity) pruneHistoryPage(ctx context.Context, cutoff time.Time) (int, e
 		return 0, err
 	}
 	defer tx.Rollback()
-	rows, err := tx.QueryContext(ctx, `SELECT id FROM entity_history_samples WHERE sampled_at<? OR occurred_at<? ORDER BY id LIMIT 500 FOR UPDATE`, cutoff, cutoff)
-	if err != nil {
-		return 0, err
-	}
-	var ids []any
-	for rows.Next() {
-		var id int64
-		if err = rows.Scan(&id); err != nil {
-			rows.Close()
+	total := 0
+	// Separate age ranges preserve OR semantics while each ORDER BY follows its
+	// existing age index. LIMIT now bounds each range scan, not a union/sort of
+	// every expired row. Delete the first range before reading the second so an
+	// event old by both clocks cannot consume the page budget twice.
+	for _, query := range []string{
+		`SELECT id FROM entity_history_samples WHERE sampled_at<? ORDER BY sampled_at,id LIMIT ? FOR UPDATE`,
+		`SELECT id FROM entity_history_samples WHERE occurred_at<? ORDER BY occurred_at,id LIMIT ? FOR UPDATE`,
+	} {
+		rows, err := tx.QueryContext(ctx, query, cutoff, 500-total)
+		if err != nil {
 			return 0, err
 		}
-		ids = append(ids, id)
+		var ids []any
+		for rows.Next() {
+			var id int64
+			if err = rows.Scan(&id); err != nil {
+				rows.Close()
+				return 0, err
+			}
+			ids = append(ids, id)
+		}
+		err = rows.Err()
+		rows.Close()
+		if err != nil {
+			return 0, err
+		}
+		if len(ids) > 0 {
+			marks := strings.TrimSuffix(strings.Repeat("?,", len(ids)), ",")
+			if _, err = tx.ExecContext(ctx, fmt.Sprintf("DELETE FROM history_sample_keys WHERE sample_id IN (%s)", marks), ids...); err != nil {
+				return 0, err
+			}
+			if _, err = tx.ExecContext(ctx, fmt.Sprintf("DELETE FROM entity_history_samples WHERE id IN (%s)", marks), ids...); err != nil {
+				return 0, err
+			}
+			total += len(ids)
+		}
+		if total == 500 {
+			break
+		}
 	}
-	err = rows.Err()
-	rows.Close()
-	if err != nil {
-		return 0, err
-	}
-	if len(ids) == 0 {
-		return 0, nil
-	}
-	marks := strings.TrimSuffix(strings.Repeat("?,", len(ids)), ",")
-	if _, err = tx.ExecContext(ctx, fmt.Sprintf("DELETE FROM history_sample_keys WHERE sample_id IN (%s)", marks), ids...); err != nil {
-		return 0, err
-	}
-	if _, err = tx.ExecContext(ctx, fmt.Sprintf("DELETE FROM entity_history_samples WHERE id IN (%s)", marks), ids...); err != nil {
-		return 0, err
-	}
-	return len(ids), tx.Commit()
+	return total, tx.Commit()
 }

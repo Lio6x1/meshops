@@ -19,6 +19,12 @@ var inboxBucket = []byte("inbox")
 var reportsBucket = []byte("reports")
 var resultsBucket = []byte("results")
 
+// inbox/results/reports 是持久化事实；以下两个桶仅是派生索引。完成记录不能
+// 因为不再待处理就删除：旧 execute 重放仍依赖墓碑阻止第二次模拟结果提交。
+var inboxPendingBucket = []byte("inbox_pending")
+var inboxActiveBucket = []byte("inbox_active")
+var errInvalidCommand = errors.New("invalid executor command")
+
 type Inbox struct{ db *bolt.DB }
 type InboxEntry struct {
 	Command       []byte `json:"command"`
@@ -84,6 +90,16 @@ func OpenInbox(path string) (*Inbox, error) {
 			if validCommand(c) != nil || c.Task.ExecutionKey != string(k) {
 				return errors.New("invalid inbox execution key")
 			}
+			// 新入口的校验不能保护旧文件。升级派生索引之前必须复核可执行
+			// 载荷与调度状态；否则重启会反复执行坏载荷，或隐藏未确认报告。
+			if c.Kind == executorv1.TaskCommandKind_TASK_COMMAND_KIND_EXECUTE {
+				if _, err := inspectDuration(c.Task); err != nil {
+					return errors.New("invalid retained execute payload; original file preserved")
+				}
+			}
+			if v.Done && v.PendingID != "" {
+				return errors.New("completed inbox entry still has a pending report; original file preserved")
+			}
 			if v.PendingID != "" && tx.Bucket(reportsBucket).Get([]byte(v.PendingID)) == nil {
 				return errors.New("missing durable report")
 			}
@@ -141,6 +157,31 @@ func OpenInbox(path string) (*Inbox, error) {
 		db.Close()
 		return nil, err
 	}
+	// 先验证全部原始事实，再在单一事务中重建索引。旧版文件无需修改事实即可
+	// 升级；重建失败回滚，不能留下半份索引。启动允许 O(历史数)，热路径不允许。
+	err = db.Update(func(tx *bolt.Tx) error {
+		for _, name := range [][]byte{inboxPendingBucket, inboxActiveBucket} {
+			if tx.Bucket(name) != nil {
+				if e := tx.DeleteBucket(name); e != nil {
+					return e
+				}
+			}
+			if _, e := tx.CreateBucket(name); e != nil {
+				return e
+			}
+		}
+		return tx.Bucket(inboxBucket).ForEach(func(k, raw []byte) error {
+			var v InboxEntry
+			if e := json.Unmarshal(raw, &v); e != nil {
+				return e
+			}
+			return indexEntry(tx, string(k), &v)
+		})
+	})
+	if err != nil {
+		db.Close()
+		return nil, err
+	}
 	return i, nil
 }
 func (i *Inbox) Close() error { return i.db.Close() }
@@ -170,21 +211,51 @@ func putEntry(tx *bolt.Tx, key string, v *InboxEntry) error {
 	if e != nil {
 		return e
 	}
-	return tx.Bucket(inboxBucket).Put([]byte(key), b)
+	if e = tx.Bucket(inboxBucket).Put([]byte(key), b); e != nil {
+		return e
+	}
+	return indexEntry(tx, key, v)
+}
+
+// 所有状态变更统一经过 putEntry；事实、待处理集合和容量占用在同一事务提交，
+// 因此取消/结果/报告确认并发以及事务回滚都不会让索引提前释放或漏掉任务。
+func indexEntry(tx *bolt.Tx, key string, v *InboxEntry) error {
+	for _, item := range []struct {
+		name    []byte
+		present bool
+	}{
+		{inboxPendingBucket, !v.Done},
+		{inboxActiveBucket, !v.Done && !v.Cancel && !v.Rejected && v.Outcome == 0},
+	} {
+		b := tx.Bucket(item.name)
+		if b == nil {
+			return errors.New("inbox derived index missing")
+		}
+		var err error
+		if item.present {
+			err = b.Put([]byte(key), []byte{1})
+		} else {
+			err = b.Delete([]byte(key))
+		}
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 func validCommand(c *executorv1.ListenTasksResponse) error {
-	if c == nil || c.Task == nil || c.Task.TaskId == "" || c.Task.ExecutionKey != c.Task.TaskId || c.CommandId == "" || c.DispatchId == "" || c.Attempt < 1 {
-		return errors.New("invalid command identity")
+	if c == nil || c.Task == nil || c.Task.TaskId == "" || c.Task.TenantId == "" || c.Task.ExecutorId == "" || c.Task.TargetEntityId == "" || c.Task.ExecutionKey != c.Task.TaskId || c.CommandId == "" || c.DispatchId == "" || c.Attempt < 1 {
+		return fmt.Errorf("%w: identity", errInvalidCommand)
 	}
 	if c.Kind != executorv1.TaskCommandKind_TASK_COMMAND_KIND_CANCEL && c.Kind != executorv1.TaskCommandKind_TASK_COMMAND_KIND_EXECUTE {
-		return errors.New("invalid command kind")
+		return fmt.Errorf("%w: kind", errInvalidCommand)
 	}
 	suffix := "-execute"
 	if c.Kind == executorv1.TaskCommandKind_TASK_COMMAND_KIND_CANCEL {
 		suffix = "-cancel"
 	}
 	if c.CommandId != c.Task.TaskId+suffix || c.DispatchId != fmt.Sprintf("%s-%d", c.CommandId, c.Attempt) {
-		return errors.New("command/dispatch identity is not deterministic")
+		return fmt.Errorf("%w: command/dispatch identity is not deterministic", errInvalidCommand)
 	}
 	return nil
 }
@@ -200,6 +271,12 @@ func (i *Inbox) AcceptWithLimit(c *executorv1.ListenTasksResponse, capacity int,
 	}
 	if e := validCommand(c); e != nil {
 		return false, e
+	}
+	// 不把无法执行的载荷持久化成每次重启都会再次失败的任务。取消不需要运行载荷。
+	if c.Kind == executorv1.TaskCommandKind_TASK_COMMAND_KIND_EXECUTE {
+		if _, e := inspectDuration(c.Task); e != nil {
+			return false, fmt.Errorf("%w: %v", errInvalidCommand, e)
+		}
 	}
 	encoded, e := proto.Marshal(c)
 	if e != nil {
@@ -219,7 +296,7 @@ func (i *Inbox) AcceptWithLimit(c *executorv1.ListenTasksResponse, capacity int,
 				return e
 			}
 			if previous.Task.TargetEntityId != c.Task.TargetEntityId || previous.Task.ExecutorId != c.Task.ExecutorId || previous.Task.TenantId != c.Task.TenantId {
-				return errors.New("command binding changed")
+				return fmt.Errorf("%w: binding changed", errInvalidCommand)
 			}
 			if c.Kind == executorv1.TaskCommandKind_TASK_COMMAND_KIND_EXECUTE {
 				return nil
@@ -234,17 +311,13 @@ func (i *Inbox) AcceptWithLimit(c *executorv1.ListenTasksResponse, capacity int,
 			v.Phase = "accepted"
 			if c.Kind == executorv1.TaskCommandKind_TASK_COMMAND_KIND_EXECUTE {
 				active := 0
-				if e := b.ForEach(func(_, raw []byte) error {
-					var x InboxEntry
-					if e := json.Unmarshal(raw, &x); e != nil {
-						return e
+				// 只需判断容量是否用满，最多读 capacity(<=4) 个索引键。
+				cursor := tx.Bucket(inboxActiveBucket).Cursor()
+				for k, _ := cursor.First(); k != nil; k, _ = cursor.Next() {
+					active++
+					if active >= capacity {
+						break
 					}
-					if !x.Done && !x.Cancel && !x.Rejected && x.Outcome == 0 {
-						active++
-					}
-					return nil
-				}); e != nil {
-					return e
 				}
 				v.Rejected = reject || active >= capacity
 				if v.Rejected {
@@ -274,20 +347,16 @@ func (i *Inbox) Entry(key string) (*InboxEntry, error) {
 func (i *Inbox) PendingKeys() ([]string, error) {
 	var keys []string
 	err := i.db.View(func(tx *bolt.Tx) error {
-		return tx.Bucket(inboxBucket).ForEach(func(k, b []byte) error {
-			var v InboxEntry
-			if e := json.Unmarshal(b, &v); e != nil {
-				return e
-			}
-			if !v.Done {
-				keys = append(keys, string(k))
-			}
+		return tx.Bucket(inboxPendingBucket).ForEach(func(k, _ []byte) error {
+			keys = append(keys, string(k))
 			return nil
 		})
 	})
 	return keys, err
 }
 func (i *Inbox) CommitResult(key, result string) (bool, error) {
+	// 本项目的“效果”只是在本地 bbolt 写入确定性模拟结果。此事务不包含真实设备
+	// 动作，因此 effect_count=1 不能解释为任意外部硬件操作的 exactly-once 保证。
 	committed := false
 	err := i.db.Update(func(tx *bolt.Tx) error {
 		v, e := getEntry(tx, key)

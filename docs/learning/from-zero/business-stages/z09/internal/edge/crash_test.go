@@ -40,6 +40,9 @@ func (s crashAckStream) Recv() (*ingestv1.ReportEntityStatesResponse, error) {
 
 func TestDurableCrashChild(t *testing.T) {
 	mode, dir := os.Getenv("MESHOPS_CRASH_MODE"), os.Getenv("MESHOPS_CRASH_DIR")
+	if mode == "" {
+		t.Skip("subprocess helper: exercised by parent force-kill tests")
+	}
 	switch mode {
 	case "gateway_ack_before_persist":
 		q, err := OpenQueue(filepath.Join(dir, "queue.db"))
@@ -80,6 +83,8 @@ func TestDurableCrashChild(t *testing.T) {
 			t.Fatal(err)
 		}
 		testsupport.Barrier(t)
+	default:
+		t.Fatalf("unknown subprocess crash mode %q", mode)
 	}
 }
 

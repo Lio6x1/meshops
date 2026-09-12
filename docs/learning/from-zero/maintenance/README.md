@@ -31,6 +31,7 @@
 | [publish-substeps.ps1](../publish-substeps.ps1) | 生成分步清单、说明和过渡文件；会写文件 |
 | [test-checkpoints.ps1](../test-checkpoints.ps1) | 检查受管理复制的边界和保护 |
 | [verify-git-checkpoints.py](../verify-git-checkpoints.py) | Python 3 标准库检查当前 Git 下载目录的阶段文件指纹；提交前加 `--staged` 检查暂存内容，防止换行转换使教材失效 |
+| [verify-local-links.py](../verify-local-links.py) | Python 3 标准库检查仓库本地 Markdown 文件链接与锚点；正确跳过长围栏代码，忽略 `.cache/.git/.worktrees` 下的文档；`--output` 可保存完整 JSON 问题清单，不修改目标文件 |
 | [verify-file-guides.ps1](../verify-file-guides.ps1) | 从 Markdown 代码及原文件链接恢复工程；`-Build` 增加构建 |
 | [verify-search-course.ps1](../verify-search-course.ps1) | 独立数据卷中运行 Z09→Z10、检查旧任务导入、新任务同步和维护重建，结束后恢复原依赖 |
 | [verify-substeps.ps1](../verify-substeps.ps1) | 顺序运行小步骤构建与指定测试；部分测试需要真实依赖 |
@@ -46,6 +47,8 @@
 
 验证只覆盖报告所述范围。只改导航页时检查链接及源码未变，不为此重复整套压测和停机演练。历史报告保留原始上下文，不把后续成绩倒填到旧报告。
 
+链接检查在根目录执行 `python docs/learning/from-zero/verify-local-links.py --output .cache/review/local-links.json`。历史报告中的本机 `.cache` 证据若未随仓库发布，应保留其原日期与原统计，明确标注不可随新检出访问；不要用今天的检查数替换历史成绩。当前课程文件范围以 [checkpoint-index.json](../checkpoint-index.json) 与 [substep-index.json](../substep-index.json) 为准。
+
 Git 文本统一使用 LF。阶段清单校验原始字节，因此提交前执行 `python docs/learning/from-zero/verify-git-checkpoints.py --staged`；GitHub CI 在新检出目录执行同一检查。不要通过禁用指纹检查解决换行问题。2026-09-12 发布前统一过早期快照的换行并更新指纹，未改变其业务实现或教学顺序。
 
 ## 下一阶段
@@ -53,3 +56,7 @@ Git 文本统一使用 LF。阶段清单校验原始字节，因此提交前执�
 结构整理、根目录迁移、搜索链路、维护重建、Z10 复制与独立学习环境验证已完成，本次整体复核见 [复核记录](../verification/2026-09-12-integrated-review.md)。搜索是新增范围，其证据单独记录，不把原有 A01—A28 验收自动算作搜索已验收。
 
 维护根源码后按顺序运行 `publish-search-checkpoint.ps1`、`publish-file-guides.ps1`、`publish-substeps.ps1`。原九阶段由固定快照提供；不要把根源码倒灌到 Z09。`verify-substeps.ps1 -SearchOnly` 从固定 Z09 起验证新增三步，默认模式按全部阶段运行；`verify-checkpoint-chain.ps1` 当前仍是原 Z01—Z09 的真实环境验证，不能据此宣称 Z10 已运行通过。
+
+本轮正确性修复已按适用能力同步回早期阶段：例如 Z05 引入严格投影，Z08 引入历史数据库后同时更新构造器及其测试，Z09 才引入经过验证的重建恢复起点。这里的“不要倒灌”指不要把最终搜索能力整体提前复制到旧阶段，不是禁止修复阶段答案中的共同缺陷。
+
+`verify-search-course.ps1 -FullIntegration` 在专用学习目录和 Compose 项目中完成 Z09 演示、Z10 升级/同步/索引重建，并执行学员实际使用的 `scripts/test.ps1 -Integration`（包含 ES 与指定测试门禁）。它会临时停止占用相同端口的参考依赖，结束时恢复先前运行的服务；不会删除卷。应当先停止参考应用，并避免与其他依赖故障测试并行。

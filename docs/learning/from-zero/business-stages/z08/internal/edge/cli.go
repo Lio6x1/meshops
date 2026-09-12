@@ -18,6 +18,7 @@ import (
 	"math/rand"
 	"os"
 	"regexp"
+	"runtime"
 	"sort"
 	"strings"
 	"sync/atomic"
@@ -33,7 +34,9 @@ func endpoint(env, def string) string {
 }
 func cliError(w io.Writer, err error) int {
 	code := status.Code(err)
-	if errors.Is(err, syscall.ENOSPC) || errors.Is(err, syscall.Errno(112)) {
+	// 112 仅在 Windows 是 ERROR_DISK_FULL；其他系统的同值 errno 不是磁盘耗尽。
+	const windowsDiskFull syscall.Errno = 112
+	if errors.Is(err, syscall.ENOSPC) || runtime.GOOS == "windows" && errors.Is(err, windowsDiskFull) {
 		code = codes.ResourceExhausted
 	}
 	if code == codes.Unknown {
@@ -246,7 +249,12 @@ generation:
 	}
 	cancel()
 	if !*offline && !uploadConsumed {
-		<-uploadResult
+		// 结束生成仍须观察上传协程的最终结果，避免同时发生的鉴权/协议错误被
+		// count/duration 分支吞掉；仅本次主动关闭引起的取消可以视为正常退出。
+		uploadErr := joinUpload(uploadResult)
+		if runErr == nil {
+			runErr = uploadErr
+		}
 	}
 	if runErr != nil {
 		return cliError(out, runErr)
@@ -256,6 +264,15 @@ generation:
 	}
 	return 0
 }
+
+func joinUpload(result <-chan error) error {
+	err := <-result
+	if errors.Is(err, context.Canceled) || status.Code(err) == codes.Canceled {
+		return nil
+	}
+	return err
+}
+
 func ExecutorCLI(ctx context.Context, args []string, out, diagnostic io.Writer) int {
 	f := flag.NewFlagSet("executor-simulator", flag.ContinueOnError)
 	f.SetOutput(diagnostic)
@@ -324,7 +341,7 @@ func ExecutorCLI(ctx context.Context, args []string, out, diagnostic io.Writer) 
 	stats := new(ExecutorStats)
 	e = RunExecutor(runCtx, inbox, executorv1.NewExecutorServiceClient(commands), taskv1.NewTaskServiceClient(tasks), *executor, *mode, *concurrency, stats)
 	accepted, completed, effects, statsErr := inbox.Stats()
-	_ = json.NewEncoder(out).Encode(map[string]any{"accepted": accepted, "completed": completed, "duplicateCommands": stats.DuplicateCommands.Load(), "effectCount": effects})
+	_ = json.NewEncoder(out).Encode(map[string]any{"accepted": accepted, "completed": completed, "duplicateCommands": stats.DuplicateCommands.Load(), "invalidCommands": stats.InvalidCommands.Load(), "effectCount": effects})
 	if statsErr != nil {
 		return cliError(out, statsErr)
 	}

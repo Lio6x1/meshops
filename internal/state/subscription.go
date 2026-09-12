@@ -21,6 +21,8 @@ type subscription struct {
 	wake                      chan struct{}
 	failure                   error
 	generation, syncID        string
+	seen, known               map[string]int64
+	ready                     bool
 }
 
 func (s *subscription) put(update *entityv1.EntityUpdate) {
@@ -49,6 +51,12 @@ func (s *subscription) put(update *entityv1.EntityUpdate) {
 			s.failure = status.Error(codes.ResourceExhausted, "subscription buffer full")
 		} else {
 			s.pending[update.EntityId] = update
+			if s.known == nil {
+				s.known = map[string]int64{}
+			}
+			if update.Version > s.known[update.EntityId] {
+				s.known[update.EntityId] = update.Version
+			}
 			s.bytes = next
 		}
 	}
@@ -73,8 +81,16 @@ func (s *subscription) take() ([]*entityv1.EntityUpdate, error) {
 }
 func (e *Entity) notify(tenant, generation string, update *entityv1.EntityUpdate) {
 	e.mu.Lock()
-	defer e.mu.Unlock()
+	interested := make([]*subscription, 0, len(e.subscribers[tenant]))
 	for sub := range e.subscribers[tenant] {
+		// IDs are immutable after registration. Filter before allocating a payload
+		// clone, and do expensive fanout work without the registration mutex.
+		if sub.ids[update.EntityId] {
+			interested = append(interested, sub)
+		}
+	}
+	e.mu.Unlock()
+	for _, sub := range interested {
 		u := proto.Clone(update).(*entityv1.EntityUpdate)
 		u.ViewGeneration = generation
 		u.SyncId = sub.syncID
@@ -104,26 +120,14 @@ func (e *Entity) Subscribe(r *entityv1.SubscribeRequest, stream entityv1.EntityS
 		return err
 	}
 	tenant := platform.Identity(ctx).TenantID
-	sub := &subscription{ids: map[string]bool{}, pending: map[string]*entityv1.EntityUpdate{}, maxBytes: e.cfg.SubscriberMaxBytes, maxCount: e.cfg.SubscriberQueueSize, wake: make(chan struct{}, 1), generation: generation, syncID: newID()}
+	sub := &subscription{ids: map[string]bool{}, pending: map[string]*entityv1.EntityUpdate{}, maxBytes: e.cfg.SubscriberMaxBytes, maxCount: e.cfg.SubscriberQueueSize, wake: make(chan struct{}, 1), generation: generation, syncID: newID(), seen: map[string]int64{}, known: map[string]int64{}}
 	for _, id := range r.EntityIds {
 		sub.ids[id] = true
 	}
 	// Registration precedes all reads. Notification racing a read is retained and
 	// version-filtered after SNAPSHOT_END rather than being lost.
-	e.mu.Lock()
-	if e.subscribers[tenant] == nil {
-		e.subscribers[tenant] = map[*subscription]struct{}{}
-	}
-	e.subscribers[tenant][sub] = struct{}{}
-	e.mu.Unlock()
-	defer func() {
-		e.mu.Lock()
-		delete(e.subscribers[tenant], sub)
-		if len(e.subscribers[tenant]) == 0 {
-			delete(e.subscribers, tenant)
-		}
-		e.mu.Unlock()
-	}()
+	e.registerSubscription(tenant, sub)
+	defer e.unregisterSubscription(tenant, sub)
 	sendCtx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	frames := make(chan *entityv1.EntityUpdate)
@@ -179,6 +183,7 @@ func (e *Entity) Subscribe(r *entityv1.SubscribeRequest, stream entityv1.EntityS
 			return err
 		}
 		seen[id] = v.version
+		sub.recordSeen(id, v.version)
 		if v.version > 0 && !v.deleted {
 			if _, ok := e.registry.Lookup(tenant, id); ok {
 				if err = send(v.update(id, entityv1.EntityUpdateKind_ENTITY_UPDATE_KIND_SNAPSHOT)); err != nil {
@@ -190,6 +195,9 @@ func (e *Entity) Subscribe(r *entityv1.SubscribeRequest, stream entityv1.EntityS
 	if err = e.reconcile(ctx, tenant, sub, seen); err != nil {
 		return err
 	}
+	sub.mu.Lock()
+	sub.ready = true
+	sub.mu.Unlock()
 	if err = send(&entityv1.EntityUpdate{Kind: entityv1.EntityUpdateKind_ENTITY_UPDATE_KIND_SNAPSHOT_END}); err != nil {
 		return err
 	}
@@ -206,6 +214,7 @@ func (e *Entity) Subscribe(r *entityv1.SubscribeRequest, stream entityv1.EntityS
 					return err
 				}
 				seen[u.EntityId] = u.Version
+				sub.recordSeen(u.EntityId, u.Version)
 			}
 		}
 		select {
@@ -213,9 +222,6 @@ func (e *Entity) Subscribe(r *entityv1.SubscribeRequest, stream entityv1.EntityS
 			return ctx.Err()
 		case <-sub.wake:
 		case <-ticker.C:
-			if err = e.reconcile(ctx, tenant, sub, seen); err != nil {
-				return err
-			}
 			if err = send(&entityv1.EntityUpdate{Kind: entityv1.EntityUpdateKind_ENTITY_UPDATE_KIND_HEARTBEAT}); err != nil {
 				return err
 			}
@@ -223,32 +229,13 @@ func (e *Entity) Subscribe(r *entityv1.SubscribeRequest, stream entityv1.EntityS
 	}
 }
 func (e *Entity) reconcile(ctx context.Context, tenant string, s *subscription, seen map[string]int64) error {
-	g, err := e.generation(ctx)
+	keys := make(map[entityAddress]struct{}, len(s.ids))
+	for id := range s.ids {
+		keys[entityAddress{tenant, id}] = struct{}{}
+	}
+	generation, versions, err := e.readVersions(ctx, keys)
 	if err != nil {
 		return err
 	}
-	if g != s.generation {
-		return status.Error(codes.FailedPrecondition, "view generation changed; full resync required")
-	}
-	for id := range s.ids {
-		v, err := e.read(ctx, g, tenant, id)
-		if err != nil {
-			return err
-		}
-		s.mu.Lock()
-		pending := s.pending[id]
-		failure := s.failure
-		expected := seen[id]
-		if pending != nil && pending.Version > expected {
-			expected = pending.Version
-		}
-		s.mu.Unlock()
-		if failure != nil {
-			return failure
-		}
-		if v.version > expected || v.version < seen[id] {
-			return status.Error(codes.FailedPrecondition, "subscription version gap; full resync required")
-		}
-	}
-	return nil
+	return s.checkVersions(tenant, generation, versions, seen)
 }

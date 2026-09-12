@@ -15,8 +15,8 @@
 
 ```text
 from-zero/
-├── lessons/                 学生讲义：z00—z09.md
-│   ├── steps/               Z04—Z09 的 20 个分步操作
+├── lessons/                 学生讲义：z00—z10.md
+│   ├── steps/               Z04—Z10 的分步操作
 │   └── files/               各阶段完整文件答案
 ├── exercises/              讲义明确要求运行的辅助练习
 ├── （最终工程位于仓库根目录，不在教材内另存一份）
@@ -46,4 +46,12 @@ from-zero/
 
 六类状态接入、查询/订阅、历史、四类实体的 inspect、可靠分发与恢复已在参考工程实现。各阶段已有完整文件答案及连续验证；教程的全部说明和操作衔接仍待最终复核。
 
-任务搜索（MySQL → Canal → Kafka → Elasticsearch）已纳入下一阶段意向，目前没有实现，也没有对应已完成课程。它不计入现有验收成绩。
+任务搜索（MySQL → Canal → Kafka → Elasticsearch）已在根工程与 Z10 实现，并配有完整答案、分步操作及搜索引导/恢复验证。Z09 保留加入搜索之前的阶段能力；阅读阶段材料时以阶段编号区分，不把 Z09 的边界理解成根工程缺失。
+
+## PowerShell 命令约定
+
+`powershell -ExecutionPolicy Bypass -File ...` 为新进程执行脚本；设置只影响该次进程。`. ./scripts/env.ps1`（点与路径之间有空格）将环境变量加载进当前终端，两者用途不同。Z04 起需要当前终端保留数据库和 RPC 环境，所以使用点调用。
+
+如果可信课程脚本被本机执行策略阻止，先运行 `Get-ExecutionPolicy -List` 查看限制；普通个人学习环境可在当前终端执行 `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` 后继续。它不会永久修改系统策略，关闭终端即失效；企业组策略限制须按企业规则处理。不要将秘密环境变量输出到截图或日志。
+
+修改协议所需工具见根工程 [协议工具与基线说明](../../../testdata/proto/README.md)。显式完整依赖验收使用 `./scripts/test.ps1 -Integration`；支持 CGO/C 编译器的环境可加 `-Race`，Linux CI 对全部依赖路径执行 race。普通无依赖测试中的 Skip 不代表集成能力已验收。

@@ -62,6 +62,8 @@ func (s *Service) PublishOutbox(ctx context.Context, b Bus) error {
 	return nil
 }
 func (s *Service) publishOne(ctx context.Context, b Bus) (bool, error) {
+	// 每个任务只领取最早未发布事件；租约过期可重发同一事件，但不能越过它。
+	// 领取事务先提交再调用 Kafka，成功后按 owner 标记，网络不占用数据库行锁。
 	tx, e := s.db.BeginTx(ctx, nil)
 	if e != nil {
 		return false, e

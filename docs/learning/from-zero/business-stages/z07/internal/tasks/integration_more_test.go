@@ -206,6 +206,7 @@ func TestA22CancellationSuccessTimeoutBarrierAndOldEvent(t *testing.T) {
 	task := create(t, f, "race")
 	original := proto.Clone(task).(*commonv1.Task)
 	persistCreated(t, f, task)
+	persistDispatchIntent(t, f)
 	version := int32(1)
 	for _, st := range []commonv1.TaskStatus{commonv1.TaskStatus_TASK_STATUS_ACKED, commonv1.TaskStatus_TASK_STATUS_EXECUTING} {
 		r, e := f.client.ReportTaskStatus(f.ctx("tenant", "executor"), &taskv1.ReportTaskStatusRequest{EventId: platform.NewID(), TaskId: task.TaskId, ExecutionKey: task.TaskId, ExecutorId: "executor", DispatchId: task.TaskId + "-execute-1", ExpectedStatusVersion: version, Status: st, OccurredAt: timestamppb.Now()})
@@ -227,6 +228,7 @@ func TestA22CancellationSuccessTimeoutBarrierAndOldEvent(t *testing.T) {
 		t.Fatal("repeated cancel modified version/reason")
 	}
 	emitTaskEvent(t, f, current.Task, commonv1.TaskEventType_TASK_EVENT_TYPE_CANCEL_REQUESTED)
+	persistDispatchIntent(t, f)
 	wrong := &taskv1.ReportTaskStatusRequest{EventId: platform.NewID(), TaskId: task.TaskId, ExecutionKey: task.TaskId, ExecutorId: "executor", DispatchId: task.TaskId + "-execute-1", ExpectedStatusVersion: 4, Status: commonv1.TaskStatus_TASK_STATUS_CANCELLED, OccurredAt: timestamppb.Now()}
 	if _, e = f.client.ReportTaskStatus(f.ctx("tenant", "executor"), wrong); status.Code(e) != codes.PermissionDenied {
 		t.Fatal("CANCELLED accepted execute dispatch", e)

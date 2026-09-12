@@ -21,6 +21,11 @@ var idPattern = regexp.MustCompile(`^[a-z0-9_-]+$`)
 func ValidID(s string, max int) bool { return len(s) > 0 && len(s) <= max && idPattern.MatchString(s) }
 func NewID() string                  { return uuid.NewString() }
 func Hash(b []byte) string           { h := sha256.Sum256(b); return hex.EncodeToString(h[:]) }
+
+// Authenticate validates a high-entropy machine token, not a user's password.
+// SHA-256 这里只用于查找可信身份；不能据此实现用户密码存储。课程脚本生成
+// 32 字节随机令牌，进程从本地环境读取；Credentials 还用于模拟执行方的出站认证，
+// 因而内存中保留原令牌。此设计不提供本地凭证文件或进程内存泄露后的保护。
 func (r *Registry) Authenticate(token string) (Principal, error) {
 	h := Hash([]byte(token))
 	p, ok := r.Principals[h]
@@ -139,7 +144,7 @@ func LoadRegistry(paths string) (*Registry, error) {
 				return nil, errors.New("invalid/duplicate source_id")
 			}
 			sourceIDs[s.ID] = true
-			if s.Generation < 1 || s.Generation > 9007199254740991 {
+			if s.Generation < 1 || s.Generation > MaxEntityVersion {
 				return nil, errors.New("source_generation outside range")
 			}
 			switch s.Adapter {

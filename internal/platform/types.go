@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+// MaxEntityVersion is the largest integer Redis Lua can compare exactly.
+// 版本号与来源代次都会经过 Lua number（IEEE 754 双精度）；超过 2^53-1
+// 后不同整数可能被当成同一个值，因此入口、磁盘队列和投影必须共用此上限。
+const MaxEntityVersion int64 = 1<<53 - 1
+
 type Principal struct {
 	ID, TenantID, Role, SourceID, ExecutorID string
 	EntityIDs                                []string

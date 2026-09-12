@@ -1,6 +1,6 @@
 # A01—A28 证据索引
 
-范围为 `docs/learning/from-zero/reference` 独立模块。用例标准沿用原 [acceptance.md](../../docs/implementation/acceptance.md)，不把旧骨架或课程稿的状态混入本表。下列测试名可在 [integration.jsonl](integration.jsonl) 搜索，并在 `internal/` 对应包定位源码。具名测试及其子测试全部通过，没有因缺依赖而跳过；`[no test files]` 是无测试包，不算业务验收。
+范围为 `docs/learning/from-zero/reference` 独立模块。用例标准沿用原 acceptance.md（原记录路径 `../../docs/implementation/acceptance.md`），不把旧骨架或课程稿的状态混入本表。下列测试名可在 [integration.jsonl](integration.jsonl) 搜索，并在 `internal/` 对应包定位源码。具名测试及其子测试全部通过，没有因缺依赖而跳过；`[no test files]` 是无测试包，不算业务验收。
 
 | ID | 主要证据 | 核对结果 |
 | --- | --- | --- |
@@ -39,3 +39,5 @@
 - 慢流测试用较大的传输层测试帧尽快耗尽 HTTP/2 流窗口；业务字段验证由适配器与六类真实链路测试另验。它不是大字段业务准入测试或订阅扇出压测。
 - 恢复测试只证明保留窗口内、期望清单明确的状态恢复。Kafka已经删除的冷实体事实不能凭空恢复；新影子不完整时保留旧视图。
 - 这里按 README 命令完成工程自验；空库/升级分别由隔离迁移测试验证。未宣称已经让外部学生把整套课程逐课复制一遍。
+
+> 归档路径说明：上述原记录路径属于当时的原工程或本机缓存；阶段副本/仓库不携带这些目标，不能将它们作为可下载附件。历史日期和计数保持不变，当前文件清单与结果请从课程目录和最新复核台账进入。

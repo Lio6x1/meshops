@@ -220,7 +220,7 @@ func Faults(ctx context.Context, root string) (report FaultReport, err error) {
 					if x := env.publishVersion(ctx, version); x != nil {
 						return fmt.Errorf("healthy Ingest/Kafka failed to retain outage event: %w", x)
 					}
-					lag, x := env.Bus.Lag(ctx, env.Prefix+"entity-projector-v1", env.Prefix+"entity-state-events.v1")
+					lag, x := env.Bus.Lag(ctx, env.projectorGroup, env.Prefix+"entity-state-events.v1")
 					if x != nil || lag < 1 {
 						return fmt.Errorf("failed projection did not retain lag: %d %v", lag, x)
 					}

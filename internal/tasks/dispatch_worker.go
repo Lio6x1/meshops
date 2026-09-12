@@ -78,6 +78,18 @@ func (d *Dispatcher) dispatchOne(ctx context.Context) (bool, error) {
 	if liveOwner.String != owner {
 		return true, nil
 	}
+	// 租约只防止其他发送 worker 领取，不能阻止 Kafka 更新同一投递记录。
+	// 必须重读投递状态/镜像版本，避免用 RPC 前的快照覆盖已提交的 ACK 或终态。
+	a, e = scanAttempt(tx.QueryRowContext(ctx, "SELECT "+dispatchColumns+" FROM task_dispatches WHERE id=?", a.id))
+	if e != nil {
+		return false, e
+	}
+	if a.version > t.StatusVersion || a.status != "pending" && a.status != "dispatched" {
+		if _, e = tx.ExecContext(ctx, `UPDATE task_dispatches SET lease_owner=NULL,lease_until=NULL,next_attempt_at=? WHERE id=? AND lease_owner=?`, time.Now().UTC().Add(time.Second), a.id, owner); e != nil {
+			return false, e
+		}
+		return true, tx.Commit()
+	}
 	if e = mirrorTask(ctx, tx, t); e != nil {
 		return false, e
 	}

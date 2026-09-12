@@ -3,6 +3,8 @@ package tasks
 import (
 	commonv1 "example.com/meshops-course/gen/common/v1"
 	taskv1 "example.com/meshops-course/gen/task/v1"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"os"
 	"strings"
@@ -19,6 +21,28 @@ func TestInspectValidation(t *testing.T) {
 	p, e := ParseInspect(`{"note":"合法","duration_seconds":60}`)
 	if e != nil || p.DurationSeconds != 60 || p.Note != "合法" {
 		t.Fatalf("valid inspect rejected: %+v %v", p, e)
+	}
+}
+
+func TestInspectRejectsCaseAliasesAndBoundsErrors(t *testing.T) {
+	for _, raw := range []string{
+		`{"duration_seconds":1,"DURATION_SECONDS":2}`,
+		`{"DURATION_SECONDS":1}`,
+		`{"duration_seconds":1,"Note":"alias"}`,
+		`{"duration_seconds":1,"NOTE":null}`,
+		`{"duration_seconds":null}`,
+		`{"duration_seconds":1,"note":null}`,
+		`{"duration_seconds":1,"` + strings.Repeat("private-input", 1000) + `":1}`,
+	} {
+		r := &taskv1.CreateTaskRequest{TaskType: "inspect", TargetEntityId: "drone-001", Payload: &commonv1.TaskPayload{PayloadJson: raw}}
+		_, _, _, e := normalizeCreate(r)
+		if status.Code(e) != codes.InvalidArgument {
+			t.Errorf("invalid inspect accepted (prefix %.80q): %v", raw, e)
+			continue
+		}
+		if len(status.Convert(e).Message()) > 256 || strings.Contains(e.Error(), "private-input") {
+			t.Errorf("unbounded or reflected decoder error: %d bytes", len(e.Error()))
+		}
 	}
 }
 func TestCreateHashUsesDeadlinePresenceNotClock(t *testing.T) {

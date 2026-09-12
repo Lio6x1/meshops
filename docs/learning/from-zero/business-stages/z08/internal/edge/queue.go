@@ -15,6 +15,7 @@ import (
 	"time"
 
 	commonv1 "example.com/meshops-course/gen/common/v1"
+	"example.com/meshops-course/internal/platform"
 	bolt "go.etcd.io/bbolt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -165,7 +166,7 @@ func validateQueue(tx *bolt.Tx) error {
 		return errors.New("pending byte accounting mismatch")
 	}
 	return v.ForEach(func(k, b []byte) error {
-		if len(k) == 0 || number(b) < 1 || number(b) > 9007199254740991 {
+		if len(k) == 0 || number(b) < 1 || number(b) > platform.MaxEntityVersion {
 			return errors.New("invalid entity version")
 		}
 		return nil
@@ -192,7 +193,7 @@ func (q *Queue) Generate(entityKey string, build func(int64) (*commonv1.EntitySt
 			version = 0
 		}
 		version++
-		if version > 9007199254740991 {
+		if version > platform.MaxEntityVersion {
 			return status.Error(codes.ResourceExhausted, "entity version exhausted")
 		}
 		event, e := build(version)
@@ -211,7 +212,7 @@ func (q *Queue) Generate(entityKey string, build func(int64) (*commonv1.EntitySt
 	return seq, err
 }
 func (q *Queue) enqueue(tx *bolt.Tx, event *commonv1.EntityStateEvent) (int64, error) {
-	if event == nil || event.EntityVersion < 1 || event.EntityVersion > 9007199254740991 || event.TenantId == "" || event.EntityId == "" {
+	if event == nil || event.EntityVersion < 1 || event.EntityVersion > platform.MaxEntityVersion || event.TenantId == "" || event.EntityId == "" {
 		return 0, errors.New("invalid event")
 	}
 	b, err := proto.MarshalOptions{Deterministic: true}.Marshal(event)

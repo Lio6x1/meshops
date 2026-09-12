@@ -1,10 +1,12 @@
 # MeshOps 多源实体实时协同与可靠任务调度平台
 
-本目录是固定的 Z09 教学答案；仓库根目录继续开发搜索扩展。此阶段的 Go module：`example.com/meshops-course`。它使用模拟数据来源和模拟执行方，复现六类实体的统一接入、状态查询/订阅、inspect 任务下发与执行跟踪。旧骨架已移除，业务程序、协议、配置和脚本都在当前根目录。
+本目录是 Z09 教学答案，保留加入搜索之前的能力；仓库根目录与 Z10 已包含搜索。此阶段的 Go module：`example.com/meshops-course`。它使用模拟数据来源和模拟执行方，复现六类实体的统一接入、状态查询/订阅、inspect 任务下发与执行跟踪。旧骨架已移除，业务程序、协议、配置和脚本都在当前根目录。
+
+本页导航按参考仓库内的位置解析；复制到独立学习目录后，请回到参考仓库阅读教材和历史证据。
 
 **开始学习：[Z00—Z09 课程目录](../../../../../docs/learning/from-zero/lessons/README.md)。** 教材与阶段答案位于 `docs/learning/from-zero/`，你自己的学习工程仍使用 `D:\job\golang\projects\meshops-course-lab`。
 
-原定关键实现及 A01—A28 已有 [验收记录](../../../../../verification/2026-09-10/summary.md)。课程有完整文件答案和连续复制证据，全部讲解与操作仍需最终统一复核。**任务搜索（MySQL → Canal → Kafka → ES）及对应课程尚未实现。** 最新维护状态见 [工作记录](../../../../../docs/learning/from-zero/BUILD-LEDGER.md)。
+原定关键实现及 A01—A28 已有 [验收记录](../../../../../verification/2026-09-10/summary.md)。课程有完整文件答案和连续复制证据。**本阶段不包含任务搜索；MySQL → Canal → Kafka → ES 在 Z10 引入，最终工程已经实现。** 最新维护状态见 [工作记录](../../../../../docs/learning/from-zero/BUILD-LEDGER.md)。
 
 ## 数据经过哪些地方
 

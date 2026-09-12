@@ -29,7 +29,8 @@ func ParseInspect(raw string) (InspectParams, error) {
 	d := json.NewDecoder(strings.NewReader(raw))
 	d.DisallowUnknownFields()
 	if err := d.Decode(&p); err != nil {
-		return p, err
+		// Decoder 的 unknown-field 错误会原样回显任意长键名；公开错误保持固定长度。
+		return p, fmt.Errorf("invalid inspect JSON or unsupported parameter")
 	}
 	if err := d.Decode(new(any)); err != io.EOF {
 		return p, fmt.Errorf("one JSON object required")
@@ -37,7 +38,8 @@ func ParseInspect(raw string) (InspectParams, error) {
 	if p.DurationSeconds < 1 || p.DurationSeconds > 60 || len(p.Note) > 256 {
 		return p, fmt.Errorf("duration_seconds must be 1..60; note at most 256 UTF-8 bytes")
 	}
-	// Reject duplicate fields and null scalar values rather than silently last-wins.
+	// encoding/json 会忽略字段名大小写；协议只接受精确键名，并拒绝重复/null，
+	// 防止 duration_seconds 与 DURATION_SECONDS 绕过重复检查、产生后写覆盖。
 	d = json.NewDecoder(strings.NewReader(raw))
 	tok, e := d.Token()
 	if e != nil || tok != json.Delim('{') {
@@ -47,16 +49,19 @@ func ParseInspect(raw string) (InspectParams, error) {
 	for d.More() {
 		t, e := d.Token()
 		if e != nil {
-			return p, e
+			return p, fmt.Errorf("invalid inspect object")
 		}
 		k := t.(string)
+		if k != "duration_seconds" && k != "note" {
+			return p, fmt.Errorf("unsupported inspect parameter")
+		}
 		if seen[k] {
 			return p, fmt.Errorf("duplicate parameter %s", k)
 		}
 		seen[k] = true
 		var v json.RawMessage
 		if e = d.Decode(&v); e != nil {
-			return p, e
+			return p, fmt.Errorf("invalid inspect parameter value")
 		}
 		if bytes.Equal(bytes.TrimSpace(v), []byte("null")) {
 			return p, fmt.Errorf("null parameter %s", k)
@@ -115,6 +120,8 @@ func normalizeCreate(r *taskv1.CreateTaskRequest) (string, string, int32, error)
 	}
 	b, _ := json.Marshal(p)
 	deadline := ""
+	// 幂等摘要保留“是否显式提供 deadline”，不把首次生成的默认时间混入摘要；
+	// 否则同一无 deadline 请求稍后重试会被误判为参数冲突。
 	if r.Deadline != nil {
 		if e = r.Deadline.CheckValid(); e != nil {
 			return "", "", 0, status.Error(codes.InvalidArgument, "invalid deadline")

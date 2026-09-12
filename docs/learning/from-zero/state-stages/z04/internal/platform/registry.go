@@ -21,6 +21,8 @@ var idPattern = regexp.MustCompile(`^[a-z0-9_-]+$`)
 func ValidID(s string, max int) bool { return len(s) > 0 && len(s) <= max && idPattern.MatchString(s) }
 func NewID() string                  { return uuid.NewString() }
 func Hash(b []byte) string           { h := sha256.Sum256(b); return hex.EncodeToString(h[:]) }
+// Authenticate checks a random machine token, not a user password. SHA-256
+// is an identity lookup key; plaintext tokens remain available for local RPC.
 func (r *Registry) Authenticate(token string) (Principal, error) {
 	h := Hash([]byte(token))
 	p, ok := r.Principals[h]
@@ -139,7 +141,7 @@ func LoadRegistry(paths string) (*Registry, error) {
 				return nil, errors.New("invalid/duplicate source_id")
 			}
 			sourceIDs[s.ID] = true
-			if s.Generation < 1 || s.Generation > 9007199254740991 {
+			if s.Generation < 1 || s.Generation > MaxEntityVersion {
 				return nil, errors.New("source_generation outside range")
 			}
 			switch s.Adapter {

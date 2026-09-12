@@ -340,6 +340,7 @@ func TestA15A16A17TaskTransactionsAndIsolation(t *testing.T) {
 	}
 	task, _ := f.client.GetTask(f.ctx("tenant", "operator"), &taskv1.GetTaskRequest{TaskId: id})
 	persistCreated(t, f, task.Task)
+	persistDispatchIntent(t, f)
 	report := &taskv1.ReportTaskStatusRequest{EventId: platform.NewID(), TaskId: id, ExecutionKey: id, ExecutorId: "executor", DispatchId: id + "-execute-1", ExpectedStatusVersion: 1, Status: commonv1.TaskStatus_TASK_STATUS_ACKED, OccurredAt: timestamppb.Now()}
 	competing := proto.Clone(report).(*taskv1.ReportTaskStatusRequest)
 	competing.EventId = platform.NewID()
@@ -459,6 +460,7 @@ func TestA18OutboxOrderFailureAndExpiredLease(t *testing.T) {
 		t.Fatal("per-task event ordering or old pending retention failed")
 	}
 }
+
 // Release all callers after reading the same task so network latency cannot
 // accidentally turn the concurrent retry check into ten sequential requests.
 type gatedTaskReadClient struct {
@@ -554,6 +556,7 @@ func TestA22TerminalResultAndLateAudit(t *testing.T) {
 	f := fixtureFor(t)
 	task := create(t, f, "terminal")
 	persistCreated(t, f, task)
+	persistDispatchIntent(t, f)
 	version := int32(1)
 	for _, st := range []commonv1.TaskStatus{commonv1.TaskStatus_TASK_STATUS_ACKED, commonv1.TaskStatus_TASK_STATUS_EXECUTING, commonv1.TaskStatus_TASK_STATUS_SUCCEEDED} {
 		r := &taskv1.ReportTaskStatusRequest{EventId: platform.NewID(), TaskId: task.TaskId, ExecutionKey: task.TaskId, ExecutorId: "executor", DispatchId: task.TaskId + "-execute-1", ExpectedStatusVersion: version, Status: st, OccurredAt: timestamppb.Now()}

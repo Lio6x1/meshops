@@ -35,6 +35,7 @@ func TestReportRemoteValidationDoesNotHoldTaskLock(t *testing.T) {
 	f := fixtureFor(t)
 	task := create(t, f, "no-network-lock")
 	persistCreated(t, f, task)
+	persistDispatchIntent(t, f)
 	block := &blockedDispatch{DispatcherServiceClient: f.service.dispatcher, entered: make(chan struct{}), release: make(chan struct{})}
 	f.service.dispatcher = block
 	finished := make(chan error, 1)

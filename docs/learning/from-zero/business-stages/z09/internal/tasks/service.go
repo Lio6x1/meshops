@@ -161,12 +161,15 @@ func (s *Service) CreateTask(ctx context.Context, r *taskv1.CreateTaskRequest) (
 	if e != nil {
 		return nil, unavailable(e)
 	}
-	if e = writeAudit(ctx, tx, t, commonv1.TaskStatus_TASK_STATUS_UNSPECIFIED, p.ID, "create request "+r.IdempotencyKey, platform.NewID()); e != nil {
+	// 两条创建审计共享摘要用于关联；不再把客户端原始幂等键复制到 reason。
+	// Task 仍保留原键以维持幂等查询，这里仅减少审计文本的重复留存。
+	creationReason := "create request sha256:" + digest([]byte(r.IdempotencyKey))
+	if e = writeAudit(ctx, tx, t, commonv1.TaskStatus_TASK_STATUS_UNSPECIFIED, p.ID, creationReason, platform.NewID()); e != nil {
 		return nil, unavailable(e)
 	}
 	t.Status = commonv1.TaskStatus_TASK_STATUS_DISPATCH_PENDING
 	t.StatusVersion = 1
-	if e = persistChange(ctx, tx, t, commonv1.TaskStatus_TASK_STATUS_CREATED, p.ID, "create request "+r.IdempotencyKey, platform.NewID(), commonv1.TaskEventType_TASK_EVENT_TYPE_CREATED); e != nil {
+	if e = persistChange(ctx, tx, t, commonv1.TaskStatus_TASK_STATUS_CREATED, p.ID, creationReason, platform.NewID(), commonv1.TaskEventType_TASK_EVENT_TYPE_CREATED); e != nil {
 		return nil, unavailable(e)
 	}
 	if e = tx.Commit(); e != nil {
@@ -214,6 +217,8 @@ func (s *Service) CancelTask(ctx context.Context, r *taskv1.CancelTaskRequest) (
 	if e != nil {
 		return nil, unavailable(e)
 	}
+	// 取消是只推进一次的请求标记，行锁与回报/超时共用；无需客户端提供旧版本。
+	// 重复请求保留第一次 reason，已提交的终态则直接返回当前执行事实。
 	if !Terminal(t.Status) && !t.CancelRequested {
 		t.CancelRequested = true
 		t.CancelledReason = r.Reason
@@ -285,6 +290,11 @@ func (s *Service) ReportTaskStatus(ctx context.Context, r *taskv1.ReportTaskStat
 	}
 	if d.TaskId != pre.TaskId || d.DispatchId != r.DispatchId || d.ExecutorId != pre.ExecutorId || d.ExecutionKey != pre.ExecutionKey || d.CommandKind != kind {
 		return nil, status.Error(codes.PermissionDenied, "referenced dispatch binding or kind mismatch")
+	}
+	// pending 仅说明命令已入队，不能授权执行回报。dispatched_at 是发送前落盘的
+	// 持久意图，不证明已收到字节；旧 timeout/DLQ 回报仍可凭这项历史事实验权。
+	if d.DispatchedAt == nil || d.DispatchedAt.CheckValid() != nil {
+		return nil, status.Error(codes.FailedPrecondition, "referenced dispatch has no durable send intent")
 	}
 	// Task row serializes receipts, transitions, cancellation and timeout. No accepted receipt survives rollback.
 	tx, e := s.db.BeginTx(ctx, nil)

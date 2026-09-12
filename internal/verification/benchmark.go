@@ -327,7 +327,7 @@ func (d *loadDriver) phase(ctx context.Context, rate, count int, warmup bool) (P
 	byteStats := distribution(sizes)
 	result.MessageBytes = ByteDistribution(byteStats)
 	var probeErr error
-	result.ProjectorLag, probeErr = e.Bus.Lag(ctx, e.Prefix+"entity-projector-v1", e.Prefix+"entity-state-events.v1")
+	result.ProjectorLag, probeErr = e.Bus.Lag(ctx, e.projectorGroup, e.Prefix+"entity-state-events.v1")
 	if probeErr != nil {
 		return result, probeErr
 	}
@@ -403,7 +403,7 @@ func Benchmark(ctx context.Context, root string, seconds int) (report BenchmarkR
 	// Wait for all warmup events to be applied before measuring a steady load.
 	limit := time.Now().Add(60 * time.Second)
 	for {
-		lag, x := env.Bus.Lag(ctx, env.Prefix+"entity-projector-v1", env.Prefix+"entity-state-events.v1")
+		lag, x := env.Bus.Lag(ctx, env.projectorGroup, env.Prefix+"entity-state-events.v1")
 		if x != nil {
 			return report, x
 		}

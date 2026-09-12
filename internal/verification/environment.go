@@ -22,6 +22,7 @@ import (
 	entityv1 "example.com/meshops-course/gen/entity/v1"
 	"example.com/meshops-course/internal/bus"
 	"example.com/meshops-course/internal/platform"
+	"example.com/meshops-course/internal/state"
 	"example.com/meshops-course/internal/tasks"
 	"github.com/go-sql-driver/mysql"
 	"github.com/redis/go-redis/v9"
@@ -47,6 +48,7 @@ type Environment struct {
 	Processes                                                 map[string]*Process
 	Connections                                               []*grpc.ClientConn
 	Entity                                                    entityv1.EntityServiceClient
+	projectorGroup                                            string
 	env                                                       map[string]string
 	admin                                                     *sql.DB
 }
@@ -268,6 +270,18 @@ func (e *Environment) Connect() error {
 	}
 	e.Connections = append(e.Connections, c)
 	e.Entity = entityv1.NewEntityServiceClient(c)
+	// Cache the namespace while Redis is healthy. Fault probes deliberately query
+	// Kafka lag during a Redis outage, when resolving the namespace would fail.
+	ctx, cancel := context.WithTimeout(platform.Outgoing(context.Background(), e.Operator), 5*time.Second)
+	defer cancel()
+	snapshot, err := e.Entity.GetSnapshot(ctx, &entityv1.GetSnapshotRequest{EntityId: "person-00000"})
+	if err != nil {
+		return err
+	}
+	if !platform.ValidID(snapshot.ViewGeneration, 128) {
+		return errors.New("entity returned invalid view generation")
+	}
+	e.projectorGroup = state.ProjectorGroupName(e.Prefix, snapshot.ViewGeneration)
 	return nil
 }
 func (e *Environment) Stop(role string) {

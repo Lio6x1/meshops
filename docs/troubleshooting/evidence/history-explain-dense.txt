@@ -1,0 +1,10 @@
+Table	Op	Msg_type	Msg_text
+meshops_review_history_20260912.entity_history_samples	analyze	status	OK
+experiment
+case-C-dense-backlog
+EXPLAIN
+-> Limit: 500 row(s)  (cost=23.7 rows=278) (actual time=9.88..10.1 rows=500 loops=1)\n    -> Filter: ((entity_history_samples.sampled_at < TIMESTAMP'2026-09-05 00:00:00') or (entity_history_samples.occurred_at < TIMESTAMP'2026-09-05 00:00:00'))  (cost=23.7 rows=278) (actual time=9.88..10 rows=500 loops=1)\n        -> Index scan on entity_history_samples using PRIMARY  (cost=23.7 rows=500) (actual time=0.0127..8.24 rows=30500 loops=1)\n
+EXPLAIN
+-> Limit: 500 row(s)  (cost=9720 rows=500) (actual time=0.0118..0.175 rows=500 loops=1)\n    -> Filter: (entity_history_samples.sampled_at < TIMESTAMP'2026-09-05 00:00:00')  (cost=9720 rows=48383) (actual time=0.0114..0.158 rows=500 loops=1)\n        -> Covering index range scan on entity_history_samples using idx_sampled_at over (sampled_at < '2026-09-05 00:00:00.000000')  (cost=9720 rows=48383) (actual time=0.0107..0.134 rows=500 loops=1)\n
+EXPLAIN
+-> Limit: 500 row(s)  (cost=9734 rows=500) (actual time=0.00559..0.174 rows=500 loops=1)\n    -> Filter: (entity_history_samples.occurred_at < TIMESTAMP'2026-09-05 00:00:00')  (cost=9734 rows=48383) (actual time=0.00537..0.158 rows=500 loops=1)\n        -> Covering index range scan on entity_history_samples using idx_history_occurred_retention over (occurred_at < '2026-09-05 00:00:00.000000')  (cost=9734 rows=48383) (actual time=0.00489..0.134 rows=500 loops=1)\n

@@ -16,6 +16,7 @@ import (
 	"math/rand"
 	"os"
 	"regexp"
+	"runtime"
 	"sort"
 	"strings"
 	"sync/atomic"
@@ -31,7 +32,7 @@ func endpoint(env, def string) string {
 }
 func cliError(w io.Writer, err error) int {
 	code := status.Code(err)
-	if errors.Is(err, syscall.ENOSPC) || errors.Is(err, syscall.Errno(112)) {
+	if errors.Is(err, syscall.ENOSPC) || runtime.GOOS == "windows" && errors.Is(err, syscall.Errno(112)) {
 		code = codes.ResourceExhausted
 	}
 	if code == codes.Unknown {
@@ -244,7 +245,10 @@ generation:
 	}
 	cancel()
 	if !*offline && !uploadConsumed {
-		<-uploadResult
+		uploadErr := joinUpload(uploadResult)
+		if runErr == nil {
+			runErr = uploadErr
+		}
 	}
 	if runErr != nil {
 		return cliError(out, runErr)
@@ -253,4 +257,13 @@ generation:
 		return cliError(out, status.Error(codes.DeadlineExceeded, "duration elapsed before requested count"))
 	}
 	return 0
+}
+
+// joinUpload keeps a concrete uploader failure visible when generation ends.
+func joinUpload(result <-chan error) error {
+	err := <-result
+	if errors.Is(err, context.Canceled) || status.Code(err) == codes.Canceled {
+		return nil
+	}
+	return err
 }

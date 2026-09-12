@@ -9,6 +9,9 @@ import (
 	"time"
 )
 
+// MaxEntityVersion bounds Redis Lua exact integer comparisons (2^53-1).
+const MaxEntityVersion int64 = 1<<53 - 1
+
 type Principal struct {
 	ID, TenantID, Role, SourceID, ExecutorID string
 	EntityIDs                                []string

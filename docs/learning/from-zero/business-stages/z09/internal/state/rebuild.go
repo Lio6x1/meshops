@@ -159,6 +159,9 @@ func (e *Entity) Rebuild(ctx context.Context, generation, manifestPath string) e
 	if err = e.redis.Set(ctx, "meshops:view:bounds:"+generation, encoded, 0).Err(); err != nil {
 		return err
 	}
+	if err = e.redis.Set(ctx, "meshops:view:topic:"+generation, topic, 0).Err(); err != nil {
+		return err
+	}
 	observed := map[string]bool{}
 	for _, bound := range bounds {
 		if bound.Start >= bound.End {
@@ -215,15 +218,12 @@ func (e *Entity) Rebuild(ctx context.Context, generation, manifestPath string) e
 	if err = e.VerifyGeneration(ctx, generation, expected); err != nil {
 		return err
 	}
-	switched, err := switchView.Run(ctx, e.redis, []string{activeKey}, old, generation).Int()
+	switched, err := activateVerifiedView.Run(ctx, e.redis, []string{e.activeKey(), "meshops:view:build:" + generation, "meshops:view:bounds:" + generation, "meshops:view:topic:" + generation}, old, generation).Int()
 	if err != nil {
 		return err
 	}
 	if switched != 1 {
 		return errors.New("active generation changed during rebuild; shadow not activated")
-	}
-	if err = e.redis.Set(ctx, "meshops:view:build:"+generation, "verified", 0).Err(); err != nil {
-		slog.WarnContext(ctx, "view activated but build marker unavailable", "generation", generation)
 	}
 	slog.InfoContext(ctx, "verified view activated", "generation", generation, "entities", strconv.Itoa(len(expected)))
 	return nil

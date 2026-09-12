@@ -43,25 +43,8 @@ jobs:
         run: |
           mkdir -p results
           set -o pipefail
-          go test -tags integration ./... -json -count=1 -timeout=10m | tee results/integration.jsonl
-          go test -race -tags integration ./internal/search -json -count=1 -timeout=5m | tee results/search-race.jsonl
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-
-          events = [json.loads(line) for line in Path('results/search-race.jsonl').read_text().splitlines() if line.strip()]
-          required = {
-              'TestRealElasticsearchVersionProjection',
-              'TestSnapshotEstablishesReadViewBeforeReleasingLock',
-              'TestCDCRebuildStartsAfterOldHistory',
-          }
-          passed = {event.get('Test') for event in events if event.get('Action') == 'pass'}
-          missing = required - passed
-          failed = any(event.get('Action') in {'fail', 'build-fail'} for event in events)
-          if missing or failed:
-              raise SystemExit(f'Search race verification failed; required tests not passed: {sorted(missing)}')
-          print('Required MySQL/Kafka/ES search race tests passed; none silently skipped.')
-          PY
+          go test -race -tags integration ./... -json -count=1 -timeout=15m | tee results/integration-race.jsonl
+          python3 scripts/check-test-results.py results/integration-race.jsonl
       - name: Upload acceptance output
         if: always()
         uses: actions/upload-artifact@v6

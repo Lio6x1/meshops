@@ -4,7 +4,9 @@
 
 **开始学习：[Z00—Z10 课程目录](docs/learning/from-zero/lessons/README.md)。** 教材与阶段答案位于 `docs/learning/from-zero/`，你自己的学习工程仍使用 `D:\job\golang\projects\meshops-course-lab`。
 
-原定关键实现及 A01—A28 已有 [验收记录](verification/2026-09-10/summary.md)。**任务搜索（MySQL → Canal → Kafka → ES）已完成真实同步、依赖停机恢复、维护重建和 Z10 教程；独立学习目录的升级与故障后继续同步已通过验证。** Z09 固定为教学快照，新增代码不会混进前九阶段。复制验证、已知边界及复核范围见 [工作记录](docs/learning/from-zero/BUILD-LEDGER.md)。
+学习目录只复制各阶段需要的运行文件，不复制整套参考教材。本页的 `docs/` 导航用于在参考仓库中阅读；在自己的学习目录开发时，请从参考仓库打开课程和排错文档。
+
+原定关键实现及 A01—A28 已有 [验收记录](verification/2026-09-10/summary.md)。**任务搜索（MySQL → Canal → Kafka → ES）已完成真实同步、依赖停机恢复、维护重建和 Z10 教程；独立学习目录的升级与故障后继续同步已通过验证。** Z09 保留加入搜索之前的教学范围；共同缺陷的修复会同步到适用阶段，新增搜索能力只在 Z10 引入。复制验证、已知边界及复核范围见 [工作记录](docs/learning/from-zero/BUILD-LEDGER.md)。
 
 ## 数据经过哪些地方
 
@@ -44,7 +46,7 @@ docker version
 docker compose version
 ```
 
-已使用 Go 1.25.10 构建；依赖版本以 [go.mod](go.mod) 和 [go.sum](go.sum) 为准。已提交 `gen/`，直接构建不要求先安装代码生成工具。修改 Proto 时才需要 `protoc`、`protoc-gen-go` 和 `protoc-gen-go-grpc`，并执行 [generate.ps1](scripts/generate.ps1)。生成代码不能手改。
+已使用 Go 1.25.10 构建；依赖版本以 [go.mod](go.mod) 和 [go.sum](go.sum) 为准。已提交 `gen/`，直接构建不要求先安装代码生成工具。修改 Proto 时才需要 `protoc`、`protoc-gen-go` 和 `protoc-gen-go-grpc`，工具获取与锁定版本见 [协议工具说明](testdata/proto/README.md)，生成时执行 [generate.ps1](scripts/generate.ps1)。生成代码不能手改。
 
 在当前用户电脑上，若 PATH 未包含已安装的 Go，可在当前终端执行：
 
@@ -129,7 +131,7 @@ Windows 的停止脚本采用强制进程退出，用于本地操作；服务收
 
 安装 [锁定的协议工具](testdata/proto/README.md) 并加入 PATH 后，运行 `./scripts/verify-proto.ps1` 检查 lint、兼容性与生成一致性。独立模块相对原骨架的 Go import 和四个 optional 字段存在有意的源码接口差异，不能直接替换旧生成包。Linux 单元/竞态检查可用 `go test -race ./... -count=1`；需 C/C++ 编译器。[项目 CI](.github/workflows/ci.yml)直接验证根目录工程；本地检查不表示远端 Actions 已运行。
 
-课程已有阶段连续复制验证，但全部讲解、操作衔接以及新增搜索后的统一验收仍需完成。代码测试通过不能直接推导“整套课程已验收”。
+课程已有阶段连续复制和搜索升级验证；当前完整性以最新复核报告及其提交、命令和适用范围为准。代码测试通过不能直接推导“整套课程已验收”。
 
 ## 文件与职责
 
@@ -161,3 +163,14 @@ Windows 的停止脚本采用强制进程退出，用于本地操作；服务收
 真实链路与早期运行记录见 [搜索运行记录](docs/learning/from-zero/verification/2026-09-11-search-runtime.md)。搜索扩展需要额外启动 Canal 和 Elasticsearch；按 [Z10 教程](docs/learning/from-zero/lessons/z10.md) 学习协议、实现、启动、查询和故障恢复，独立学习目录的验证见 [课程验收](docs/learning/from-zero/verification/2026-09-12-search-course.md)。
 
 搜索初始化中断或 ES 任务索引丢失时，使用 `./scripts/rebuild-search.ps1` 在维护窗口从 MySQL 重建。原本未运行 Search 时，再执行 `./scripts/start-search.ps1`；随后用 `./scripts/demo-search.ps1` 核对新增任务同步。已完成的故障与数据保留检查见 [维护重建记录](docs/learning/from-zero/verification/2026-09-12-search-rebuild.md)。
+
+## 本轮复核、排错与界面设计
+
+四项交付、复验命令、教程复制和运行证据见 [全面复核验收记录](docs/review/2026-09-12/acceptance.md)。
+
+- [完整问题台账](docs/review/2026-09-12/assessment.md)：逐条判定外部 28 项意见及自查新增问题，区分当前缺陷与旧报告状态。
+- [本地排错知识库](docs/troubleshooting/README.md)：数据库锁、重放、投影恢复、SQL 执行计划、Git 换行和测试门禁。
+- [前端 UI 设计与离线原型](docs/ui/README.md)：模拟交互，不连接真实业务；浏览器 BFF 和实体枚举等接入缺口在方案中明确列出。
+- [当前工程验证边界](docs/production-readiness-checklist.md)：机器令牌不是用户密码体系，单实例和有限压测不作为生产容量保证。
+
+完整集成验收需 Python 3：`./scripts/test.ps1 -Integration` 会启动 ES 与专用故障 Redis、保存 JSON 结果，并拒绝关键测试缺失或业务测试跳过。在支持 CGO 的平台加 `-Race`；云端 CI 在依赖启动后运行全包 race。PowerShell 点调用与执行策略说明见 [课程导航](docs/learning/from-zero/README.md)。

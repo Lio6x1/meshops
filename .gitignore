@@ -15,6 +15,9 @@
 *.out
 coverage.out
 coverage.html
+**/integration-results.txt
+__pycache__/
+*.py[cod]
 
 # Go workspace
 go.work
@@ -27,7 +30,7 @@ go.work.sum
 # Protobuf 生成代码
 # ============================================================================
 # 本项目提交 gen/ 下的生成代码，确保新克隆无需安装 protoc/goctl 即可构建。
-# 修改 proto 后运行 make proto，并一并提交生成结果。
+# 修改 proto 后运行 scripts/generate.ps1，并一并提交生成结果。
 
 # ============================================================================
 # 配置与密钥（绝不提交）

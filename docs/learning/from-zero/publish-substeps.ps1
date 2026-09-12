@@ -38,12 +38,16 @@ foreach ($stageID in @('z04','z05','z06','z07','z08','z09','z10')) {
         )
     } elseif ($stageID -eq 'z08') {
         $definitions = @(
-            @{id='z08-01'; title='历史消费者与采样规则'; paths=@('internal/state/history.go','internal/state/entity.go','internal/state/state_test.go','internal/app/run.go'); remove=@(); packages=@('./internal/state'); tests=@('TestSamplingPriorityAndCircularHeading')},
+            # Constructor changes and same-package tests must move together: go test
+            # compiles every test file even when -run selects only the sampling test.
+            @{id='z08-01'; title='历史消费者与采样规则'; paths=@('internal/state/history.go','internal/state/entity.go','internal/state/state_test.go','internal/state/review_test.go','internal/app/run.go'); remove=@(); packages=@('./internal/state'); tests=@('TestSamplingPriorityAndCircularHeading')},
             @{id='z08-02'; title='历史查询、去重分页与清理'; paths=@('*'); remove=@(); packages=@('./internal/state'); tests=@('TestMySQLSampleIdempotencePagingAgeAndBudget','TestHistoryRetentionCatchesUpMoreThanOneBatch'); needs=@('MySQL')}
         )
     } elseif ($stageID -eq 'z09') {
         $definitions = @(
-            @{id='z09-01'; title='影子generation与独立预期校验'; paths=@('internal/state/rebuild.go','internal/state/state_test.go','internal/state/rebuild_integration_test.go'); remove=@(); packages=@('./internal/state'); tests=@('TestRedisOrderingTombstoneAndManifest'); needs=@('Redis')},
+            # Rebuild defines PartitionBounds; recovery supplies atomic activation
+            # and verified floors; Entity.Run must start using those floors now.
+            @{id='z09-01'; title='影子generation与独立预期校验'; paths=@('internal/state/rebuild.go','internal/state/recovery.go','internal/state/entity.go','internal/state/state_test.go','internal/state/review_test.go','internal/state/rebuild_integration_test.go'); remove=@(); packages=@('./internal/state'); tests=@('TestRedisOrderingTombstoneAndManifest','TestVerifiedReplayFloorsRequireActivationEvidence'); needs=@('Redis')},
             @{id='z09-02'; title='故障恢复与压测报告工具'; paths=@($pending | Where-Object {$_ -match '^(internal/verification/|cmd/verify/)'}); remove=@(); packages=@('./internal/verification','./cmd/verify'); tests=@('TestStopUncertaintyStillRestoresDependency','TestRestoreErrorsAreNotLost','TestAllSupportedBenchmarkDurationsLeaveDrainBudget','TestReportWriteFailureReturnsNonzero')},
             @{id='z09-03'; title='维护入口、运行脚本与验收证据'; paths=@('*'); remove=@(); packages=@('./internal/verification','./cmd/verify'); tests=@('TestRestoreErrorsAreNotLost','TestReportWriteFailureReturnsNonzero')}
         )
@@ -105,7 +109,7 @@ foreach ($stageID in @('z04','z05','z06','z07','z08','z09','z10')) {
         } else {$lines.Add('go test ./gen/...')}
         $lines.Add('```')
         $lines.Add('')
-        $lines.Add('构建成功通常没有输出。测试必须出现下列顶层测试的PASS；[no tests to run]不是通过本步骤。')
+        if($step.tests.Count){$lines.Add('构建成功通常没有输出。测试必须出现下列顶层测试的PASS；[no tests to run]不是通过本步骤。')}
         foreach($name in $step.tests){$lines.Add('- `'+$name+'`')}
         if(-not $step.tests.Count){$lines.Add('本步骤只有生成包，[no test files]是预期，不能声称业务请求已验证。')}
         [IO.File]::WriteAllText((Join-Path $output ($definition.id+'.md')),($lines -join "`n")+"`n",$utf8)

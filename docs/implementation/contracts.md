@@ -72,6 +72,8 @@ GetSnapshot 不存在/已删除返回 found=false，不附带其他租户信息�
 
 GetTask/ListTasks/GetTaskHistory 根据认证租户过滤。ListTasks.page_size 默认20、范围1..100，status=UNSPECIFIED 表示不过滤；顺序为(created_at DESC, task_id DESC)，游标绑定租户、过滤条件、最后一项和首屏时间上界，total_count 为该时间上界内当前满足条件的计数，任务状态并发变动时不承诺多页原子视图。GetTaskHistory 按 status_version 升序；第一版单任务上限1000条（正常状态转换远低于此），超过返回 RESOURCE_EXHAUSTED 并在新增业务前扩展分页。
 
+单次 ListTasks 响应中的 COUNT 与本页 SELECT 使用同一只读 REPEATABLE READ 事务，保证本次总数与本页来自同一读快照。关闭 rows 后提交；下一次翻页会建立新的事务快照，不能把单页一致性解释成跨页冻结。
+
 游标编码为 base64url(JSON payload + HMAC-SHA256)，验证长度≤2048字节、签名、类型、租户、条件指纹及位置，再查询；过期时间15分钟，失败 INVALID_ARGUMENT。签名密钥见运行规格。JSON payload 字段为 v=1、kind、tenant_id、filter_hash、last_time、last_id、upper_time、expires_at。历史查询使用(occurred_at ASC, id ASC)，范围半开且≤24小时，page_size默认100/最大500；禁止 OFFSET 深分页。
 
 ## C04 上传与连续 ACK
@@ -96,7 +98,7 @@ received_at 不参与重复内容哈希，其余领域内容用确定性 protobu
 
 一个 Entity 进程负责 projector 与订阅索引。Kafka 使用显式提交，按分区串行处理；不同分区有界并发，不允许同分区后记录先提交越过未处理记录。持久依赖失败停住该分区，处理成功或已明确拒绝并记录原因才提交。非法编码消息输出带 topic/partition/offset 的结构化隔离日志和计数，再提交；日志不输出凭证或完整不可信 payload。
 
-Redis Key 为 `view:{generation}:tenant:{tenant}:entity:{id}:snapshot`（替代旧导航中省略 view 的示意）；一个 Hash 包含 source_id、source_generation、version、event_id、payload_hash、snapshot（二进制）、updated_at、expires_at、deleted。控制键 `meshops:view:active` 存激活视图 UUID。Lua 原子判断来源代际和版本并更新；权威元数据仍来自注册绑定。租户/实体编号先经过字符集校验才能拼接。
+Redis Key 为 `view:{generation}:tenant:{tenant}:entity:{id}:snapshot`；一个 Hash 包含 source_id、source_generation、version、event_id、payload_hash、snapshot（二进制）、updated_at、expires_at、deleted。默认控制键 `meshops:view:active` 存激活视图 UUID；隔离环境使用非空 TopicPrefix 时，控制键同时带此前缀，避免不同事件流共用恢复证据。Lua 原子判断来源代际和版本并更新；权威元数据仍来自注册绑定。租户/实体编号先经过字符集校验才能拼接。
 
 Hash 不设置物理 TTL；expires_at 是逻辑过期，DELETE 留墓碑；核心版不自动清理版本记录。Redis noeviction，OOM 作为可观测错误处理。清理/长期归档是后续管理功能。新来源代际切换仅在停服并更新配置、重建视图后进行，本版无热切换写入竞态。
 
@@ -104,9 +106,11 @@ Hash 不设置物理 TTL；expires_at 是逻辑过期，DELETE 留墓碑；核�
 
 **原子更新 Redis 与进程内通知间仍有崩溃/取消窗口。** 重复投影不能因为“Redis已是同版本”就完全不通知：重处理时可重发当前版本，客户端去重。订阅每10秒重新核对所订阅实体版本；缺口或视图代际变化结束当前流并返回 FAILED_PRECONDITION，客户端全量重连。初始化期间核对失败也重来，不把扫描快照称作跨实体原子快照。
 
+周期核对由同一 Entity 实例共享：按租户/实体去重后批量读取版本元数据，再逐连接比较已发送、已知和待发送版本。广播先过滤关注的实体再克隆消息。首个订阅注册时启动巡检，最后一个注销时取消并在索引锁外等待退出；共享读取不改变每条流独立的队列、版本和错误边界。
+
 恢复工具是 Entity 二进制 `--rebuild-view --generation <uuid> --expected-manifest <path>` 模式，不新增服务。演示先暂停生成、等网关补传清零、停止普通Entity，再捕获Kafka各分区起始/结束位点；独立reader重建影子命名空间到该结束水位，校验输入清单中的每个最新版本及DELETE后原子切换active，然后退出重建模式并重启普通Entity。expected-manifest是测试输入产生的JSON数组，每项含tenant_id/entity_id/source_generation/entity_version/operation；它不是从Redis导出的期望值。
 
-影子恢复不提交普通projector group位点，也不清理旧命名空间；普通Entity仍从原位点续传，重复由版本判断消除。若原位点低于Kafka保留起点，记录重放缺口并从保留起点续传，此时完整性结论只能来自已完成的清单验证。校验缺失或重建中断时不切换active；无完整清单不宣称完整恢复。停止普通Entity避免它在影子构建期间推进消费位点导致切换后漏数据；这是有维护窗口的恢复，不是在线无损切换。
+影子恢复不提交旧 projector group 位点，也不清理旧命名空间。普通 Entity 的消费组包含当前视图 UUID；同代次重启续传，丢失视图后创建新代次则重新回放。初始代次严格从零检查完整性；验证重建完成后，将 verified 标记与 active 指针原子激活，再以每个分区已验证的独占 End 作为恢复下界。提交位点比下界新时保留其进度；Kafka 保留起点超过应读位置时明确失败，不能自动接受不完整后缀。恢复证据还绑定原事件主题，不能借用其他环境的边界。停止普通 Entity 避免在线切换期间遗漏数据；这仍是有维护窗口的恢复，不是在线无损切换。抽样历史使用独立固定消费组，允许有日志诊断的有损保留期恢复，不享有最新视图恢复下界。
 
 本版恢复验收限于受控数据集，Kafka 包含所有实体的最新UPSERT/DELETE。冷实体事件超保留时输出明确失败/缺失列表；不通过 MySQL 历史抽样冒充完整最新事实。正常业务只启动一个 Entity，动态多实例仍为可选扩展。
 
@@ -138,6 +142,8 @@ TaskEvent.data_json 统一为完整 Task 的 protojson，Kafka value 为整个Ta
 
 Task服务需验证回报所引用的dispatch。S01在GetDispatchRequest新增dispatch_id=2，空表示最新attempt；GetDispatchResponse新增command_id=9、execution_key=10、delivery_status=11（pending/dispatched/acked/executing/succeeded/failed/timeout/cancelled/abandoned/dlq）、command_kind=12（execute/cancel）。现有TaskStatus status字段仅表示关联任务最近已知状态，不能将其当作投递记录状态。Task通过只读内部RPC核对租户、task_id、executor_id、execution_key及命令种类，不直接写Dispatcher表。
 
+新回报还必须引用具有 `dispatched_at` 的尝试。该时间表示发送前已持久化投递意图；只有 pending 行、从未建立投递意图不能推进任务状态。它不证明设备已经物理收到命令，也不排斥实际收到命令的历史 timeout/dlq 尝试回报。分发器在远程查询 Task 后重新锁定尝试并核对任务镜像版本，防止旧查询覆盖新终态；人工 execute 重试还须拒绝已 ACKED/EXECUTING 的任务或更新镜像，取消命令仍按取消语义处理。
+
 初始EXECUTE命令ID=`<task_id>-execute`，取消ID=`<task_id>-cancel`，dispatchID=`<command_id>-<attempt>`，attempt从1开始。同命令再次发送当前attempt内容不变；确认超时后的新尝试才增加attempt。每task/command_kind/attempt数据库唯一。持久待发队列落库后才提交Kafka位点；命令先到而Task状态尚未推进时允许合法ACK，不允许状态回退。
 
 Dispatcher接到CREATED事件时，先GetTask核对尚未终态/取消，再事务插入确定的命令记录；检查后发生取消仍依靠执行方取消墓碑与任务状态机收敛。每个executor只允许一条ListenTasks流，队列上限100、字节上限8MiB；同命令去重。没有连接保持pending，按next_attempt_at重试；发送和等待ACK不能持有数据库事务锁。
@@ -145,6 +151,8 @@ Dispatcher接到CREATED事件时，先GetTask核对尚未终态/取消，再事�
 对已有投递记录按last_task_status_version条件更新任务状态镜像，旧事件不得回退镜像、复活旧attempt或创建新的命令；相同版本按重复处理。尚无记录的旧CREATED仍先查当前Task，只有任务仍可投递时才创建初始记录。任务进入终态后停止该任务所有命令重试，待发取消命令也关闭；历史timeout/dlq事实及其时间保留。GetDispatch的delivery_status描述指定attempt，status描述最近已知任务状态，两者可不同。
 
 执行方bbolt buckets：inbox(execution_key→task摘要、首次dispatch、accepted/running/terminal、cancel标记)、reports(event_id→待回报序列)、results(execution_key→确定结果及effect_count)。接收落盘后生成ACK回报，再串行回报EXECUTING；运行的计时可在重启后重新等待，唯一模拟副作用是终态事务中effect_count从0写为1并保存结果，不把“计时重启”计为又执行一次业务。
+
+`inbox_pending` 与 `inbox_active` 是派生索引，与主记录在同一 bbolt 事务维护；运行期间只扫描待处理键，并最多读取容量上限所需的 active 键。打开旧文件时先完整校验事实，再原子重建索引；Done 与待确认报告同时存在、保留的 EXECUTE 载荷非法等情况拒绝打开并保留文件。完成墓碑与结果不自动删除，因此这是热路径扫描优化，不是无期限磁盘保留策略。
 
 成功结果JSON固定为 `{"inspection_id":"<task_id>","entity_id":"<id>","outcome":"ok","effect_count":1}`。不生成随机成功内容；故障测试可通过模拟器参数选择fail/reject，但不能把测试开关放进公开任务payload。重复执行命令读取已有inbox/result，允许重发待确认回报，不产生第二份结果。执行方忙时并发上限4，超过容量的任务在未接受时回报REJECTED，不无界排队。
 

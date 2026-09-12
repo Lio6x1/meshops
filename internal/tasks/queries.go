@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/hmac"
 	"crypto/sha256"
+	"database/sql"
 	"encoding/base64"
 	"encoding/json"
 	commonv1 "example.com/meshops-course/gen/common/v1"
@@ -90,7 +91,14 @@ func (s *Service) ListTasks(ctx context.Context, r *taskv1.ListTasksRequest) (*t
 		args = append(args, statusName(r.Status))
 	}
 	response := &taskv1.ListTasksResponse{}
-	if e = s.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM tasks WHERE "+where, args...).Scan(&response.TotalCount); e != nil {
+	// 单次响应中的总数和列表读取同一快照，避免状态变化造成 count 与行矛盾。
+	// 游标仍只固定创建时间上界；跨多次 RPC 不承诺同一个历史快照。
+	tx, e := s.db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelRepeatableRead, ReadOnly: true})
+	if e != nil {
+		return nil, unavailable(e)
+	}
+	defer tx.Rollback()
+	if e = tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM tasks WHERE "+where, args...).Scan(&response.TotalCount); e != nil {
 		return nil, unavailable(e)
 	}
 	if c.LastID != "" {
@@ -98,7 +106,7 @@ func (s *Service) ListTasks(ctx context.Context, r *taskv1.ListTasksRequest) (*t
 		args = append(args, c.LastTime, c.LastTime, c.LastID)
 	}
 	args = append(args, n+1)
-	rows, e := s.db.QueryContext(ctx, "SELECT "+columns+" FROM tasks WHERE "+where+" ORDER BY created_at DESC,task_id DESC LIMIT ?", args...)
+	rows, e := tx.QueryContext(ctx, "SELECT "+columns+" FROM tasks WHERE "+where+" ORDER BY created_at DESC,task_id DESC LIMIT ?", args...)
 	if e != nil {
 		return nil, unavailable(e)
 	}
@@ -111,6 +119,12 @@ func (s *Service) ListTasks(ctx context.Context, r *taskv1.ListTasksRequest) (*t
 		response.Tasks = append(response.Tasks, t)
 	}
 	if e = rows.Err(); e != nil {
+		return nil, unavailable(e)
+	}
+	if e = rows.Close(); e != nil {
+		return nil, unavailable(e)
+	}
+	if e = tx.Commit(); e != nil {
 		return nil, unavailable(e)
 	}
 	if len(response.Tasks) > int(n) {

@@ -35,8 +35,11 @@ func (b crashPublisher) Publish(c context.Context, topic, key string, raw []byte
 
 func TestDurableCrashChild(t *testing.T) {
 	mode := os.Getenv("MESHOPS_CRASH_MODE")
+	if mode == "" {
+		t.Skip("helper subprocess; exercised by TestOutboxAndDispatcherForceKillDurableBoundaries")
+	}
 	if mode != "outbox_after_publish" && mode != "dispatch_before_offset" {
-		return
+		t.Fatalf("unknown subprocess crash mode %q", mode)
 	}
 	db, err := platform.OpenDB("MESHOPS_CRASH_DSN")
 	if err != nil {

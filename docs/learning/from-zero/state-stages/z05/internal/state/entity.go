@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+	"errors"
 	commonv1 "example.com/meshops-course/gen/common/v1"
 	entityv1 "example.com/meshops-course/gen/entity/v1"
 	"example.com/meshops-course/internal/platform"
@@ -63,13 +64,22 @@ func NewEntity(cfg platform.Settings, r *platform.Registry, cache *redis.Client)
 	e := &Entity{cfg: cfg, registry: r, redis: cache}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	if err := cache.SetNX(ctx, activeKey, newID(), 0).Err(); err != nil {
+	if err := cache.SetNX(ctx, e.activeKey(), newID(), 0).Err(); err != nil {
 		return nil, err
 	}
 	return e, nil
 }
+
+// Active namespaces are isolated with their input topic. Empty prefix preserves
+// the normal demo key; disposable verification topics cannot adopt its view.
+func (e *Entity) activeKey() string {
+	if e.cfg.TopicPrefix == "" {
+		return activeKey
+	}
+	return activeKey + ":" + e.cfg.TopicPrefix
+}
 func (e *Entity) generation(ctx context.Context) (string, error) {
-	s, err := e.redis.Get(ctx, activeKey).Result()
+	s, err := e.redis.Get(ctx, e.activeKey()).Result()
 	if err != nil || !validID(s, 128) {
 		return "", status.Error(codes.Unavailable, "active view unavailable")
 	}
@@ -278,8 +288,35 @@ func (e *Entity) projectInto(ctx context.Context, generation string, v *commonv1
 
 type Consumer interface {
 	Consume(context.Context, string, string, func(context.Context, []byte) error) error
+	ConsumeStrictPartitions(context.Context, string, string, map[int]int64, func(context.Context, []byte) error) error
 }
 
 func (e *Entity) Run(ctx context.Context, b Consumer) error {
-	return b.Consume(ctx, e.cfg.ConsumerGroupPrefix+"entity-projector-v1", e.cfg.TopicPrefix+"entity-state-events.v1", e.Project)
+	generation, err := e.generation(ctx)
+	if err != nil {
+		return err
+	}
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	out := make(chan error, 2)
+	// Verified snapshot waivers enter in Z09; earlier lessons replay from zero.
+	go func() {
+		out <- b.ConsumeStrictPartitions(ctx, ProjectorGroupName(e.cfg.ConsumerGroupPrefix, generation), e.cfg.TopicPrefix+"entity-state-events.v1", nil, func(c context.Context, raw []byte) error {
+			event, err := e.decode(raw)
+			if err != nil {
+				quarantine(c, "invalid_event")
+				return nil
+			}
+			_, err = e.projectInto(c, generation, event, true)
+			return err
+		})
+	}()
+	go func() { out <- e.watchGeneration(ctx, generation) }()
+	err = <-out
+	cancel()
+	<-out
+	if errors.Is(err, context.Canceled) {
+		return ctx.Err()
+	}
+	return err
 }

@@ -47,6 +47,8 @@ func reconnectDelay(attempt int) time.Duration {
 
 // Upload maintains one in-flight contiguous batch. The ten-second timer cancels
 // this stream on a stuck Send/Recv; there is no unary deadline on stream life.
+// drain=false 的生命周期由调用者 context 控制：队列暂时为空只等待下一批生成，
+// 不代表流已完成。每次重连从本地已确认水位重发，只有 ACK 才能删除持久化前缀。
 func Upload(ctx context.Context, q *Queue, client ingestv1.IngestServiceClient, batch, rate int, drain bool, stats *UplinkStats) error {
 	if batch < 1 || batch > 100 || rate < 1 {
 		return errors.New("invalid batch or recovery rate")
@@ -59,12 +61,14 @@ func Upload(ctx context.Context, q *Queue, client ingestv1.IngestServiceClient, 
 		if err == nil {
 			return nil
 		}
-		if ctx.Err() != nil {
-			return ctx.Err()
-		}
+		// 若已经收到明确的鉴权/协议失败，生成器此刻结束并取消 context 也不能
+		// 覆盖它；否则 CLI 会把错误当作正常关闭吞掉。可重试的传输失败再服从取消。
 		switch status.Code(err) {
 		case codes.InvalidArgument, codes.PermissionDenied, codes.Unauthenticated, codes.FailedPrecondition:
 			return err
+		}
+		if ctx.Err() != nil {
+			return ctx.Err()
 		}
 		stats.Reconnects.Add(1)
 		if e := pause(ctx, reconnectDelay(attempt)); e != nil {

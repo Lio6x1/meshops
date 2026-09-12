@@ -10,12 +10,16 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"log/slog"
 	"sync"
 	"sync/atomic"
 	"time"
 )
 
-type ExecutorStats struct{ DuplicateCommands atomic.Int64 }
+type ExecutorStats struct {
+	DuplicateCommands atomic.Int64
+	InvalidCommands   atomic.Int64
+}
 
 func terminal(s commonv1.TaskStatus) bool { return s >= commonv1.TaskStatus_TASK_STATUS_SUCCEEDED }
 func retryable(err error) bool {
@@ -56,12 +60,21 @@ func RunExecutor(ctx context.Context, inbox *Inbox, commands executorv1.Executor
 						e = recvErr
 						break
 					}
-					if cmd.Task == nil || cmd.Task.ExecutorId != executor {
-						errCh <- errors.New("received command for another executor")
-						return
+					var fresh bool
+					var acceptErr error
+					if cmd.GetTask().GetExecutorId() != executor {
+						acceptErr = errInvalidCommand
+					} else {
+						fresh, acceptErr = inbox.AcceptWithLimit(cmd, concurrency, mode == "reject")
 					}
-					fresh, acceptErr := inbox.AcceptWithLimit(cmd, concurrency, mode == "reject")
 					if acceptErr != nil {
+						// 单个非法命令不能取消其他已持久化任务；只隔离明确的输入错误。
+						// 磁盘/事务错误意味着没有可靠接收，必须退出，不能假装接收成功。
+						if errors.Is(acceptErr, errInvalidCommand) {
+							stats.InvalidCommands.Add(1)
+							slog.Warn("executor ignored invalid command", "executor", executor, "error", acceptErr)
+							continue
+						}
 						errCh <- acceptErr
 						return
 					}

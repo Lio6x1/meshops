@@ -1,0 +1,179 @@
+{
+  "baseline": "641bf62",
+  "note": "Local verification of this review working tree; unrelated to production capacity.",
+  "faults": {
+    "RunID": "99ec77734afb4150bb1ebd1d97ababbe",
+    "StartedAt": "2026-09-12T07:02:40Z",
+    "Steps": [
+      {
+        "Dependency": "kafka",
+        "StoppedAt": "2026-09-12T07:02:50.2524892Z",
+        "RestoredAt": "2026-09-12T07:02:58.3020152Z",
+        "FailureObserved": "kafka publication not confirmed",
+        "FailureSeconds": 0.0020866,
+        "RecoverySeconds": 36.2951631,
+        "Recovered": true
+      },
+      {
+        "Dependency": "redis",
+        "StoppedAt": "2026-09-12T07:03:27.7966094Z",
+        "RestoredAt": "2026-09-12T07:03:33.5367361Z",
+        "FailureObserved": "rpc error: code = Unavailable desc = active view unavailable",
+        "FailureSeconds": 1.7418518,
+        "RecoverySeconds": 3.999484,
+        "Recovered": true
+      },
+      {
+        "Dependency": "mysql",
+        "StoppedAt": "2026-09-12T07:03:38.1071575Z",
+        "RestoredAt": "2026-09-12T07:03:42.8625104Z",
+        "FailureObserved": "rpc error: code = Unavailable desc = persistent dependency unavailable",
+        "FailureSeconds": 0.0010587,
+        "RecoverySeconds": 4.7569583,
+        "Recovered": true
+      },
+      {
+        "Dependency": "entity-process",
+        "StoppedAt": "2026-09-12T07:03:42.8980136Z",
+        "RestoredAt": "2026-09-12T07:03:43.166819Z",
+        "FailureObserved": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:4376: connectex: No connection could be made because the target machine actively refused it.\"",
+        "FailureSeconds": 0.0246212,
+        "RecoverySeconds": 28.6705098,
+        "Recovered": true
+      }
+    ],
+    "Passed": true
+  },
+  "benchmark": {
+    "RunID": "5f8ef867e3924efd9c6984222f503632",
+    "StartedAt": "2026-09-12T07:05:16Z",
+    "Go": "go1.25.10",
+    "OS": "windows",
+    "Arch": "amd64",
+    "CPU": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "LogicalCPUs": 24,
+    "Entities": 10000,
+    "Sources": 10,
+    "Partitions": 3,
+    "Batch": 1,
+    "Scope": "real standalone Ingest -> Kafka -> Entity -> Redis/MySQL; excludes gateway bbolt, task execution and subscription fanout",
+    "MemoryMeaning": "Go live heap per standalone service; not RSS or total machine RAM",
+    "ObservationMeaning": "every 50th scheduled event; independent polling observes same or higher entity version; latency includes polling delay",
+    "InitialIngest": {
+      "series": 62,
+      "goHeapBytes": 10857904,
+      "goroutines": 14
+    },
+    "InitialEntity": {
+      "series": 62,
+      "goHeapBytes": 8773064,
+      "goroutines": 26
+    },
+    "WarmupAccepted": 10000,
+    "WarmupSnapshots": 10000,
+    "Phases": [
+      {
+        "offeredEventsPerSecond": 100,
+        "scheduled": 3000,
+        "generatorQueueDrops": 0,
+        "accepted": 3000,
+        "errors": 0,
+        "errorExamples": null,
+        "elapsedIncludingDrainSeconds": 30.0030311,
+        "acceptedEventsPerSecond": 99.989897354071,
+        "clientToKafkaAck": {
+          "samples": 3000,
+          "p50Ms": 1.595,
+          "p99Ms": 2.782,
+          "maxMs": 13.413
+        },
+        "generatedToObserved": {
+          "samples": 60,
+          "p50Ms": 3.887,
+          "p99Ms": 12.303,
+          "maxMs": 22.077
+        },
+        "observationCandidates": 60,
+        "observationMisses": 0,
+        "projectorLag": 0,
+        "historyLag": 0,
+        "ingest": {
+          "series": 62,
+          "goHeapBytes": 12925840,
+          "goroutines": 19
+        },
+        "entity": {
+          "series": 64,
+          "goHeapBytes": 12400000,
+          "goroutines": 53
+        },
+        "messageBytesDistribution": {
+          "samples": 3000,
+          "p50Bytes": 288,
+          "p99Bytes": 289,
+          "maxBytes": 289
+        }
+      },
+      {
+        "offeredEventsPerSecond": 500,
+        "scheduled": 15000,
+        "generatorQueueDrops": 0,
+        "accepted": 15000,
+        "errors": 0,
+        "errorExamples": null,
+        "elapsedIncludingDrainSeconds": 30.0027215,
+        "acceptedEventsPerSecond": 499.95464578105026,
+        "clientToKafkaAck": {
+          "samples": 15000,
+          "p50Ms": 1.629,
+          "p99Ms": 2.925,
+          "maxMs": 18.184
+        },
+        "generatedToObserved": {
+          "samples": 300,
+          "p50Ms": 4.748,
+          "p99Ms": 22.221,
+          "maxMs": 111.389
+        },
+        "observationCandidates": 300,
+        "observationMisses": 0,
+        "projectorLag": 0,
+        "historyLag": 0,
+        "ingest": {
+          "series": 62,
+          "goHeapBytes": 11047912,
+          "goroutines": 20
+        },
+        "entity": {
+          "series": 64,
+          "goHeapBytes": 15503800,
+          "goroutines": 53
+        },
+        "messageBytesDistribution": {
+          "samples": 15000,
+          "p50Bytes": 289,
+          "p99Bytes": 289,
+          "maxBytes": 289
+        }
+      }
+    ]
+  },
+  "freshCourse": {
+    "project": "meshops-search-copy-a8f6e974",
+    "failure": null,
+    "steps": [
+      "Z09 fresh initialize, six entities and four task executions",
+      "Z10 preserves credentials, imports pre-upgrade tasks and synchronizes new terminal task",
+      "Missing index and incomplete bootstrap rebuilt; business checksums preserved; new CDC converges",
+      "Published test.ps1 -Integration passed the required-test gate",
+      "Published learner source hashes unchanged"
+    ],
+    "cleanupErrors": [],
+    "passed": true
+  },
+  "freshCourseIntegration": {
+    "pass": 145,
+    "skip": 3,
+    "fail": 0
+  }
+}

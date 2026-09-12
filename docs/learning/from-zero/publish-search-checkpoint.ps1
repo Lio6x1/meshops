@@ -12,6 +12,7 @@ foreach ($directory in @('.github','cmd','configs','gen','internal','migrations'
     foreach ($file in Get-ChildItem -LiteralPath (Join-Path $repo $directory) -File -Recurse) {
         $relative = [IO.Path]::GetRelativePath($repo,$file.FullName).Replace('\','/')
         if ($relative -match '(^|/)integration-results\.txt$') { continue }
+        if ($relative -match '(^|/)__pycache__(/|$)|\.py[cod]$') { continue }
         if ($relative -match '(^|/)(\.local|\.cache|bin|data|results)(/|$)|\.(exe|test)$') { throw "Runtime artifact in published source: $relative" }
         if ($file.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Linked source file: $relative" }
         $candidates.Add($relative)

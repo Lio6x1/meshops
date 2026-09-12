@@ -16,7 +16,7 @@ import (
 
 func TestDurableCrashChild(t *testing.T) {
 	if os.Getenv("MESHOPS_CRASH_MODE") != "redis_before_offset" {
-		return
+		t.Skip("subprocess entry point; exercised by parent crash test")
 	}
 	ctx := context.Background()
 	cache := redis.NewClient(&redis.Options{Addr: os.Getenv("MESHOPS_TEST_REDIS_ADDR"), DB: 15})
