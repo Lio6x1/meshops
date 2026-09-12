@@ -5,6 +5,23 @@ on:
   pull_request:
 
 jobs:
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24.15.0'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install locked browser dependencies
+        working-directory: web
+        run: npm ci
+      - name: Browser domain tests and production build
+        working-directory: web
+        run: |
+          npm test
+          npm run build
   reference:
     runs-on: ubuntu-latest
     defaults:

@@ -1,0 +1,40 @@
+syntax = "proto3";
+package meshops.search.v1;
+option go_package = "example.com/meshops-course/gen/search/v1;searchv1";
+
+import "common/v1/task.proto";
+import "google/protobuf/timestamp.proto";
+
+// A read-only eventual projection. GetTask remains the authority for actions.
+service SearchService {
+  rpc SearchTasks(SearchTasksRequest) returns (SearchTasksResponse);
+}
+
+message SearchTasksRequest {
+  string keyword = 1;
+  meshops.common.v1.TaskStatus status = 2;
+  string target_entity_id = 3;
+  google.protobuf.Timestamp created_from = 4;   // Inclusive.
+  google.protobuf.Timestamp created_before = 5; // Exclusive.
+  int32 page_size = 6; // 0 defaults to 20; otherwise 1..100.
+  string page_token = 7;
+  // Tenant is deliberately absent: it comes from the trusted identity.
+}
+
+message TaskSearchHit {
+  string task_id = 1;
+  string target_entity_id = 2;
+  string task_type = 3;
+  meshops.common.v1.TaskStatus status = 4;
+  int32 status_version = 5;
+  string note = 6;
+  string cancelled_reason = 7;
+  string failure_reason = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+message SearchTasksResponse {
+  repeated TaskSearchHit tasks = 1;
+  string next_page_token = 2;
+}

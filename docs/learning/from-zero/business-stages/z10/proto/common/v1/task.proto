@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+package meshops.common.v1;
+
+option go_package = "example.com/meshops-course/gen/common/v1;commonv1";
+
+import "google/protobuf/timestamp.proto";
+
+// ============================================================================
+// 共享任务数据结构（被任务服务、分发器、执行方和 Kafka 消息复用）
+// ============================================================================
+
+enum TaskStatus {
+  TASK_STATUS_UNSPECIFIED = 0;
+  TASK_STATUS_CREATED = 1;
+  TASK_STATUS_DISPATCH_PENDING = 2;
+  TASK_STATUS_DISPATCHED = 3;
+  TASK_STATUS_ACKED = 4;
+  TASK_STATUS_EXECUTING = 5;
+  TASK_STATUS_SUCCEEDED = 6;
+  TASK_STATUS_FAILED = 7;
+  TASK_STATUS_CANCELLED = 8;
+  TASK_STATUS_TIMED_OUT = 9;
+  TASK_STATUS_REJECTED = 10;
+}
+
+message TaskPayload {
+  string payload_json = 1;
+}
+
+message TaskDefinition {
+  string task_type = 1;
+  string description = 2;
+  // Declarative parameter schema only; never executable code.
+  string parameter_schema_json = 3;
+}
+
+message TaskCatalog {
+  repeated TaskDefinition definitions = 1;
+}
+
+message Task {
+  string task_id = 1;
+  string tenant_id = 2;
+  string idempotency_key = 3;
+  string task_type = 4;
+  string target_entity_id = 5;
+  TaskPayload payload = 6;
+  int32 priority = 7;
+  TaskStatus status = 8;
+  int32 status_version = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+  google.protobuf.Timestamp deadline = 12;
+  string created_by = 13;
+  string cancelled_reason = 14;
+  string failure_reason = 15;
+  string executor_id = 16;
+  // Stable across all delivery attempts for this business operation.
+  string execution_key = 17;
+  // A cancellation request does not prove execution has stopped.
+  bool cancel_requested = 18;
+  string result_json = 19;
+  google.protobuf.Timestamp completed_at = 20;
+}
+
+message TaskStatusChange {
+  TaskStatus from_status = 1;
+  TaskStatus to_status = 2;
+  google.protobuf.Timestamp changed_at = 3;
+  string changed_by = 4;
+  string reason = 5;
+  int32 status_version = 6;
+  string event_id = 7;
+}
+
+enum TaskEventType {
+  TASK_EVENT_TYPE_UNSPECIFIED = 0;
+  TASK_EVENT_TYPE_CREATED = 1;
+  TASK_EVENT_TYPE_DISPATCHED = 2;
+  TASK_EVENT_TYPE_ACKED = 3;
+  TASK_EVENT_TYPE_EXECUTING = 4;
+  TASK_EVENT_TYPE_SUCCEEDED = 5;
+  TASK_EVENT_TYPE_FAILED = 6;
+  TASK_EVENT_TYPE_CANCELLED = 7;
+  TASK_EVENT_TYPE_TIMED_OUT = 8;
+  TASK_EVENT_TYPE_CANCEL_REQUESTED = 9;
+  TASK_EVENT_TYPE_REJECTED = 10;
+}
+
+message TaskEvent {
+  string event_id = 1;
+  string task_id = 2;
+  string tenant_id = 3;
+  TaskEventType event_type = 4;
+  TaskStatus current_status = 5;
+  int32 status_version = 6;
+  google.protobuf.Timestamp occurred_at = 7;
+  string data_json = 8;
+}

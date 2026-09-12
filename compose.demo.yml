@@ -1,0 +1,254 @@
+name: meshops-demo
+
+x-env: &demo-env
+  MESHOPS_NETWORK_MODE: compose-demo
+  MESHOPS_DEMO_STATE: /state
+  MESHOPS_MANIFEST: /app/configs/simulation.yaml
+  MESHOPS_KAFKA_BROKERS: kafka:29092
+  MESHOPS_REDIS_ADDR: redis:6379
+  MESHOPS_INGEST_ENDPOINT: ingest:50051
+  MESHOPS_ENTITY_ENDPOINT: entity:50052
+  MESHOPS_TASK_ENDPOINT: task:50053
+  MESHOPS_DISPATCHER_ENDPOINT: dispatcher:50054
+  MESHOPS_SEARCH_ENDPOINT: search:50055
+
+x-backend: &backend
+  image: meshops-demo-backend:local
+  build:
+    context: .
+    target: backend
+    args: {GOPROXY: "${MESHOPS_BUILD_GOPROXY:-https://proxy.golang.org,direct}"}
+  environment: *demo-env
+  volumes: ["bootstrap-state:/state:ro"]
+  networks: [private]
+  restart: unless-stopped
+  stop_grace_period: 30s
+  security_opt: ["no-new-privileges:true"]
+
+x-health: &health
+  interval: 5s
+  timeout: 4s
+  retries: 30
+  start_period: 10s
+
+x-simulator: &simulator
+  <<: *backend
+  volumes: ["bootstrap-state:/state:ro", "simulator-data:/data"]
+  depends_on:
+    ingest: {condition: service_healthy}
+    entity: {condition: service_healthy}
+    dispatcher: {condition: service_healthy}
+    task: {condition: service_healthy}
+
+services:
+  init:
+    <<: *backend
+    user: "0:0"
+    restart: "no"
+    profiles: [tools]
+    entrypoint: ["/app/demo-init"]
+    command: ["initialize"]
+    environment:
+      <<: *demo-env
+      MESHOPS_DEMO_DATA: /data
+    volumes: ["bootstrap-state:/state", "simulator-data:/data"]
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /state/mysql-root-password
+      MYSQL_DATABASE: meshops_course
+      TZ: UTC
+    command: ["--default-time-zone=+00:00", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci", "--server-id=1", "--log-bin=meshops-bin", "--binlog-format=ROW", "--binlog-row-image=FULL", "--binlog-expire-logs-seconds=604800"]
+    volumes: ["mysql-data:/var/lib/mysql", "bootstrap-state:/state:ro"]
+    networks: [private]
+    restart: unless-stopped
+    healthcheck:
+      <<: *health
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost --silent"]
+
+  redis:
+    image: redis:7.2-alpine
+    command: ["redis-server", "--maxmemory", "256mb", "--maxmemory-policy", "noeviction", "--appendonly", "yes"]
+    volumes: ["redis-data:/data"]
+    networks: [private]
+    restart: unless-stopped
+    healthcheck:
+      <<: *health
+      test: ["CMD", "redis-cli", "ping"]
+
+  kafka-init:
+    image: apache/kafka:3.7.0
+    user: "0:0"
+    entrypoint: ["/bin/sh", "-c", "chown 1000:1000 /tmp/kraft-combined-logs"]
+    volumes: ["kafka-data:/tmp/kraft-combined-logs"]
+    networks: [private]
+  kafka:
+    image: apache/kafka:3.7.0
+    hostname: kafka
+    depends_on: {kafka-init: {condition: service_completed_successfully}}
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: INTERNAL://:29092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_LOG_RETENTION_HOURS: 168
+      KAFKA_LOG_RETENTION_BYTES: 1073741824
+    volumes: ["kafka-data:/tmp/kraft-combined-logs"]
+    networks: [private]
+    restart: unless-stopped
+    healthcheck:
+      <<: *health
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:29092 >/dev/null 2>&1"]
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.19.4
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    mem_limit: 1536m
+    volumes: ["search-data:/usr/share/elasticsearch/data"]
+    networks: [private]
+    restart: unless-stopped
+    healthcheck:
+      <<: *health
+      retries: 60
+      test: ["CMD-SHELL", "curl -fsS http://localhost:9200/_cluster/health >/dev/null"]
+
+  canal:
+    image: meshops-demo-canal:local
+    build:
+      context: .
+      target: canal
+      args: {GOPROXY: "${MESHOPS_BUILD_GOPROXY:-https://proxy.golang.org,direct}"}
+    environment:
+      MESHOPS_DEMO_STATE: /state
+      TZ: UTC
+      canal.destinations: meshops
+      canal.auto.scan: "false"
+      canal.serverMode: kafka
+      canal.auto.reset.latest.pos.mode: "false"
+      canal.file.data.dir: /home/admin/canal-server/meta
+      canal.instance.global.spring.xml: classpath:spring/file-instance.xml
+      canal.instance.master.address: mysql:3306
+      canal.instance.mysql.slaveId: "91011"
+      canal.instance.dbUsername: meshops_canal
+      canal.instance.connectionCharset: UTF-8
+      canal.instance.filter.regex: meshops_course\.tasks
+      canal.instance.filter.black.regex: (mysql|information_schema|performance_schema|sys)\..*
+      canal.instance.binlog.format: ROW
+      canal.instance.binlog.image: FULL
+      canal.instance.memory.buffer.size: "1024"
+      canal.instance.parser.parallel: "false"
+      canal.mq.flatMessage: "true"
+      canal.mq.topic: meshops-task-search-cdc-v1
+      canal.mq.partition: "0"
+      canal.mq.send.thread.size: "1"
+      canal.mq.build.thread.size: "1"
+      kafka.bootstrap.servers: kafka:29092
+      kafka.acks: all
+      kafka.max.in.flight.requests.per.connection: "1"
+    volumes: ["bootstrap-state:/state:ro", "canal-position:/home/admin/canal-server/meta"]
+    networks: [private]
+    restart: unless-stopped
+
+  ingest:
+    <<: *backend
+    command: ["/app/ingest", "-f", "/app/deploy/demo/configs/ingest.yaml"]
+    healthcheck: {<<: *health, test: ["CMD", "/app/demo-init", "probe", "http://127.0.0.1:18080/readyz"]}
+  entity:
+    <<: *backend
+    command: ["/app/entity", "-f", "/app/deploy/demo/configs/entity.yaml"]
+    healthcheck: {<<: *health, test: ["CMD", "/app/demo-init", "probe", "http://127.0.0.1:18081/readyz"]}
+  task:
+    <<: *backend
+    command: ["/app/task", "-f", "/app/deploy/demo/configs/task.yaml"]
+    healthcheck: {<<: *health, test: ["CMD", "/app/demo-init", "probe", "http://127.0.0.1:18082/readyz"]}
+  dispatcher:
+    <<: *backend
+    command: ["/app/dispatcher", "-f", "/app/deploy/demo/configs/dispatcher.yaml"]
+    healthcheck: {<<: *health, test: ["CMD", "/app/demo-init", "probe", "http://127.0.0.1:18083/readyz"]}
+  search:
+    <<: *backend
+    command: ["/app/search", "-f", "/app/deploy/demo/configs/search.yaml"]
+    healthcheck: {<<: *health, test: ["CMD", "/app/demo-init", "probe", "http://127.0.0.1:18084/readyz"]}
+  gateway:
+    <<: *backend
+    user: "10002:10001"
+    command: ["/app/web-gateway"]
+    environment:
+      <<: *demo-env
+      MESHOPS_WEB_LISTEN: 0.0.0.0:18090
+      MESHOPS_WEB_ORIGINS: http://localhost:18090,http://127.0.0.1:18090
+      MESHOPS_WEB_TENANT: demo_tenant
+    depends_on:
+      entity: {condition: service_healthy}
+      task: {condition: service_healthy}
+      dispatcher: {condition: service_healthy}
+      search: {condition: service_healthy}
+    healthcheck: {<<: *health, test: ["CMD", "/app/demo-init", "probe", "http://127.0.0.1:18090/livez"]}
+  web:
+    image: meshops-demo-web:local
+    build: {context: ., target: web}
+    ports: ["127.0.0.1:18090:8080"]
+    depends_on: {gateway: {condition: service_healthy}}
+    # A host-facing bridge is required for Docker Desktop to publish this port.
+    # Only Nginx joins it; RPC services and databases remain on private.
+    networks: [frontend, private]
+    restart: unless-stopped
+    healthcheck:
+      <<: *health
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
+
+  source-person:
+    <<: *simulator
+    command: ["/app/gateway-simulator", "--manifest", "/app/configs/simulation.yaml", "--source", "personnel_sim", "--db", "/data/personnel_sim.db", "--rate", "2", "--duration", "24h"]
+  source-drone:
+    <<: *simulator
+    command: ["/app/gateway-simulator", "--manifest", "/app/configs/simulation.yaml", "--source", "drone_sim", "--db", "/data/drone_sim.db", "--rate", "2", "--duration", "24h"]
+  source-vehicle:
+    <<: *simulator
+    command: ["/app/gateway-simulator", "--manifest", "/app/configs/simulation.yaml", "--source", "vehicle_sim", "--db", "/data/vehicle_sim.db", "--rate", "2", "--duration", "24h"]
+  source-robot:
+    <<: *simulator
+    command: ["/app/gateway-simulator", "--manifest", "/app/configs/simulation.yaml", "--source", "robot_sim", "--db", "/data/robot_sim.db", "--rate", "2", "--duration", "24h"]
+  source-sensor:
+    <<: *simulator
+    command: ["/app/gateway-simulator", "--manifest", "/app/configs/simulation.yaml", "--source", "sensor_sim", "--db", "/data/sensor_sim.db", "--rate", "2", "--duration", "24h"]
+  source-facility:
+    <<: *simulator
+    command: ["/app/gateway-simulator", "--manifest", "/app/configs/simulation.yaml", "--source", "facility_sim", "--db", "/data/facility_sim.db", "--rate", "2", "--duration", "24h"]
+  executor-person:
+    <<: *simulator
+    command: ["/app/executor-simulator", "--manifest", "/app/configs/simulation.yaml", "--executor", "simulated_personnel", "--db", "/data/simulated_personnel.db"]
+  executor-drone:
+    <<: *simulator
+    command: ["/app/executor-simulator", "--manifest", "/app/configs/simulation.yaml", "--executor", "simulated_aircraft", "--db", "/data/simulated_aircraft.db"]
+  executor-vehicle:
+    <<: *simulator
+    command: ["/app/executor-simulator", "--manifest", "/app/configs/simulation.yaml", "--executor", "simulated_vehicle", "--db", "/data/simulated_vehicle.db"]
+  executor-robot:
+    <<: *simulator
+    command: ["/app/executor-simulator", "--manifest", "/app/configs/simulation.yaml", "--executor", "simulated_robot", "--db", "/data/simulated_robot.db"]
+
+networks:
+  frontend: {}
+  private: {internal: true}
+volumes:
+  mysql-data:
+  redis-data:
+  kafka-data:
+  search-data:
+  canal-position:
+  bootstrap-state:
+  simulator-data:

@@ -1,0 +1,14 @@
+version: v1
+
+lint:
+  use:
+    - STANDARD
+  except:
+    # 仓库按业务域从 proto/ 直接分层，不重复 meshops 包名前缀。
+    - PACKAGE_DIRECTORY_MATCH
+    # 订阅流直接返回可复用的领域更新消息 EntityUpdate。
+    - RPC_RESPONSE_STANDARD_NAME
+
+breaking:
+  use:
+    - FILE

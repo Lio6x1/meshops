@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package meshops.entity.v1;
+
+option go_package = "example.com/meshops-course/gen/entity/v1;entityv1";
+
+import "google/protobuf/timestamp.proto";
+import "common/v1/entity.proto";
+
+// ============================================================================
+// 实体服务 - 快照查询 & 实时订阅
+// Subscribe 是服务端流；有界队列/慢消费者/版本去重在 logic 中用 grpc-go 控制。
+// ============================================================================
+
+service EntityService {
+  // 订阅实体更新（服务端流）
+  rpc Subscribe(SubscribeRequest) returns (stream EntityUpdate);
+  // 获取单个快照（一元）
+  rpc GetSnapshot(GetSnapshotRequest) returns (GetSnapshotResponse);
+  // 批量获取快照（一元）
+  rpc BatchGetSnapshots(BatchGetSnapshotsRequest) returns (BatchGetSnapshotsResponse);
+  // Bounded sampled history, not a complete raw event archive.
+  rpc ListHistorySamples(ListHistorySamplesRequest) returns (ListHistorySamplesResponse);
+}
+
+message SubscribeRequest {
+  repeated string entity_ids   = 1;  // V1 requires 1..100 explicit IDs within the authenticated tenant.
+  repeated string entity_types = 2;
+  string          region       = 3;
+  repeated string source_ids   = 4;
+  int64           snapshot_version = 5 [deprecated = true]; // Not a cross-entity cursor.
+}
+
+message EntityUpdate {
+  string entity_id = 1;
+  int64  version   = 2;
+  meshops.common.v1.EntitySnapshot snapshot   = 3;
+  google.protobuf.Timestamp         updated_at = 4;
+  EntityUpdateKind kind = 5;
+  string sync_id = 6; // New per subscription; SNAPSHOT_END ends initialization.
+  string view_generation = 7; // Changes when a rebuilt namespace is activated.
+  string source_id = 8;
+  int64 source_generation = 9;
+  google.protobuf.Timestamp expires_at = 10;
+}
+
+enum EntityUpdateKind {
+  ENTITY_UPDATE_KIND_UNSPECIFIED = 0;
+  ENTITY_UPDATE_KIND_SNAPSHOT = 1;
+  ENTITY_UPDATE_KIND_SNAPSHOT_END = 2;
+  ENTITY_UPDATE_KIND_UPSERT = 3;
+  ENTITY_UPDATE_KIND_DELETE = 4;
+  ENTITY_UPDATE_KIND_HEARTBEAT = 5;
+}
+
+message GetSnapshotRequest  { string entity_id = 1; }
+message GetSnapshotResponse {
+  string entity_id = 1;
+  int64  version   = 2;
+  meshops.common.v1.EntitySnapshot snapshot   = 3;
+  google.protobuf.Timestamp         updated_at = 4;
+  bool   found     = 5;
+  string source_id = 6;
+  int64 source_generation = 7;
+  string view_generation = 8;
+  google.protobuf.Timestamp expires_at = 9;
+  string executor_id = 10; // Configured entity binding; cannot be set by telemetry.
+}
+
+message BatchGetSnapshotsRequest  { repeated string entity_ids = 1; }
+message BatchGetSnapshotsResponse { repeated GetSnapshotResponse snapshots = 1; }
+
+message ListHistorySamplesRequest {
+  string entity_id = 1;
+  google.protobuf.Timestamp start_time = 2;
+  google.protobuf.Timestamp end_time = 3;
+  int32 page_size = 4; // Default 100, maximum 500.
+  string page_token = 5;
+}
+
+message HistorySample {
+  string sample_id = 1;
+  string event_id = 2;
+  google.protobuf.Timestamp occurred_at = 3;
+  google.protobuf.Timestamp sampled_at = 4;
+  meshops.common.v1.EntitySnapshot snapshot = 5;
+  string sample_reason = 6;
+}
+
+message ListHistorySamplesResponse {
+  repeated HistorySample samples = 1;
+  string next_page_token = 2;
+}

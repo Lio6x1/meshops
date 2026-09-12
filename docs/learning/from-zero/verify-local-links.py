@@ -20,7 +20,7 @@ import unicodedata
 from urllib.parse import unquote, urlsplit
 
 
-EXCLUDED = {".cache", ".git", ".worktrees"}
+EXCLUDED = {".cache", ".git", ".worktrees", ".local", "node_modules", "dist", "test-results", "playwright-report"}
 FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
 DEFINITION = re.compile(r"^ {0,3}\[([^\]\n]+)\]:[ \t]*(.*)$", re.M)
 SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")

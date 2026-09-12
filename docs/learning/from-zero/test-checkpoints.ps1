@@ -55,9 +55,13 @@ New-Item -ItemType Junction -Path $junction -Target $outside | Out-Null
 Reject { & $scriptPath -Stage z01 -Destination (Join-Path $junction 'nested/learner') } 'symbolic link or junction'
 Assert (-not (Test-Path (Join-Path $outside 'nested'))) 'Wrote through a junction ancestor'
 if ($AllStages) {
-    foreach ($stage in @('z03','z04','z05','z06','z07','z08','z09','z10')) { & $scriptPath -Stage $stage -Destination $learner }
-    & $scriptPath -Stage z10 -Destination $learner
+    foreach ($stage in @('z03','z04','z05','z06','z07','z08','z09','z10','z11','z12','z13')) { & $scriptPath -Stage $stage -Destination $learner }
+    & $scriptPath -Stage z13 -Destination $learner
     Assert (Test-Path (Join-Path $learner 'cmd/search/main.go')) 'Search service missing from final checkpoint'
+    Assert (Test-Path (Join-Path $learner 'cmd/web-gateway/main.go')) 'Browser gateway missing from final checkpoint'
+    Assert (Test-Path (Join-Path $learner 'web/package-lock.json')) 'Reproducible frontend dependencies missing'
+    Assert (Test-Path (Join-Path $learner 'compose.demo.yml')) 'Full demo deployment missing'
+    Assert (-not (Test-Path (Join-Path $learner 'web/node_modules'))) 'Installed frontend cache leaked into checkpoint'
     Assert (-not (Test-Path (Join-Path $learner 'internal/tasks/integration-results.txt'))) 'Transient test output leaked into checkpoint'
     Assert (-not (Test-Path (Join-Path $learner 'cmd/course/main.go'))) 'Obsolete course CLI still present'
     Assert (Test-Path (Join-Path $learner 'cmd/verify/main.go')) 'Final verification command missing'

@@ -1,0 +1,1382 @@
+[
+  {
+    "package": "example.com/meshops-course/cmd/verify",
+    "test": "TestReportWriteFailureReturnsNonzero",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/app",
+    "test": "TestReadinessRequiresRPCRegistrationAndDependencies",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/platform",
+    "test": "TestConfigDefaultsAndPath",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/platform",
+    "test": "TestAuthBoundary",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/platform",
+    "test": "TestPlaintextRPCRejectsNonLoopback/dial_0.0.0.0:50052",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/platform",
+    "test": "TestPlaintextRPCRejectsNonLoopback/dial_192.0.2.1:50052",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/platform",
+    "test": "TestPlaintextRPCRejectsNonLoopback/dial_[::]:50052",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/platform",
+    "test": "TestPlaintextRPCRejectsNonLoopback/dial_example.com:50052",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/platform",
+    "test": "TestPlaintextRPCRejectsNonLoopback/dial_dns:///127.0.0.1:50052",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/platform",
+    "test": "TestPlaintextRPCRejectsNonLoopback/dial_127.0.0.1:0",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/platform",
+    "test": "TestPlaintextRPCRejectsNonLoopback/dial_127.0.0.1:65536",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/platform",
+    "test": "TestPlaintextRPCRejectsNonLoopback",
+    "action": "pass",
+    "elapsed": 0.01
+  },
+  {
+    "package": "example.com/meshops-course/internal/platform",
+    "test": "TestCursorScopeAndExpiry",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/platform",
+    "test": "TestInvalidConfigurationAndCredentialsFailWithoutLeaking/missing_manifest",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestDurableCrashChild",
+    "action": "skip",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/platform",
+    "test": "TestInvalidConfigurationAndCredentialsFailWithoutLeaking/negative_capacity",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/platform",
+    "test": "TestInvalidConfigurationAndCredentialsFailWithoutLeaking/oversize_batch",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/platform",
+    "test": "TestInvalidConfigurationAndCredentialsFailWithoutLeaking/missing_token",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/platform",
+    "test": "TestInvalidConfigurationAndCredentialsFailWithoutLeaking/duplicate_token",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/platform",
+    "test": "TestInvalidConfigurationAndCredentialsFailWithoutLeaking",
+    "action": "pass",
+    "elapsed": 0.01
+  },
+  {
+    "package": "example.com/meshops-course/internal/platform",
+    "test": "TestSearchMethodPermissions",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/verification",
+    "test": "TestStopUncertaintyStillRestoresDependency",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/verification",
+    "test": "TestRestoreErrorsAreNotLost",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/verification",
+    "test": "TestAllSupportedBenchmarkDurationsLeaveDrainBudget",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestBootstrapMarkerRequiresCompletionAndIdentity",
+    "action": "pass",
+    "elapsed": 0.04
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestCanalFullRowsAndSafeProjection",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestCanalRejectsBrokenFullImage/missing_tenant",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestCanalRejectsBrokenFullImage/missing_nullable_column",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestCanalRejectsBrokenFullImage/bad_version",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestCanalRejectsBrokenFullImage/overflow_version",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestCanalRejectsBrokenFullImage/unknown_status",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestCanalRejectsBrokenFullImage/invalid_timestamp",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestCanalRejectsBrokenFullImage/invalid_payload",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestCanalRejectsBrokenFullImage/numeric_version",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestCanalRejectsBrokenFullImage",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestCanalRejectsUnsupportedEnvelope",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestCanalMySQLEnumOrdinal",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestCanalIgnoresForeignDatabaseDDL",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestHandlerOnlyAcknowledgesWholeMessage",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestSubscriptionReconnectReplacesSnapshot/OK",
+    "action": "pass",
+    "elapsed": 0.71
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestSubscriptionReconnectReplacesSnapshot/Unavailable",
+    "action": "pass",
+    "elapsed": 0.7
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestSubscriptionReconnectReplacesSnapshot",
+    "action": "pass",
+    "elapsed": 1.41
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestSubscriptionDeleteRetainsVersion",
+    "action": "pass",
+    "elapsed": 0.2
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestSubscriptionRequiresCompleteSnapshot",
+    "action": "pass",
+    "elapsed": 0.1
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestSubscriptionPermissionDeniedIsNotRetried",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestGatewayCLIHundredOfflineEventsRestartAndDrain",
+    "action": "pass",
+    "elapsed": 1.93
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestGatewayCLIProducesEverySourceAndPreservesDuplicate/person",
+    "action": "pass",
+    "elapsed": 0.11
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestRealElasticsearchVersionProjection",
+    "action": "pass",
+    "elapsed": 2.03
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestIndexVersionConflict/duplicate",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestIndexVersionConflict/old_event",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestIndexVersionConflict/same_version_different_content",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestIndexVersionConflict/unexpected_lower_version",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestIndexVersionConflict",
+    "action": "pass",
+    "elapsed": 0.01
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestIndexDoesNotHideDependencyOrNonVersionErrors",
+    "action": "pass",
+    "elapsed": 0.01
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestIndexEndpointAndIndexValidation",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestSearchTenantPagingAndCursorBinding",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestExpiredSearchCursor",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestSearchRejectsInvalidFiltersBeforeNetwork",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestGatewayCLIProducesEverySourceAndPreservesDuplicate/drone",
+    "action": "pass",
+    "elapsed": 0.11
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestSubscriptionDiscardsInterruptedInitialization",
+    "action": "pass",
+    "elapsed": 0.6
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestSubscriptionDoesNotCountUnattemptedRetry",
+    "action": "pass",
+    "elapsed": 0.02
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestSubscriptionCancellationDoesNotReportSuccess",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestUsageValidatedBeforeAuthentication/snapshot",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestUsageValidatedBeforeAuthentication/task_create_--entity_e",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestUsageValidatedBeforeAuthentication/task_cancel_--id_t",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestUsageValidatedBeforeAuthentication/task_list_--page-size_4294967296",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestUsageValidatedBeforeAuthentication/task_list_--page-size_-1",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestUsageValidatedBeforeAuthentication/task_list_--status_wrong",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestUsageValidatedBeforeAuthentication/history_--entity_e_--start_bad_--end_bad",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestUsageValidatedBeforeAuthentication/task_create_--entity_e_--key_k_--deadline_bad",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestUsageValidatedBeforeAuthentication/subscribe_--entities_,",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestUsageValidatedBeforeAuthentication/subscribe_--entities_e_--duration_0s",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestUsageValidatedBeforeAuthentication",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestOpctlRealRPCAndProtoJSON",
+    "action": "pass",
+    "elapsed": 0.01
+  },
+  {
+    "package": "example.com/meshops-course/internal/cli",
+    "test": "TestOpctlSearchCallsSearchRPC",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestGatewayCLIProducesEverySourceAndPreservesDuplicate/vehicle",
+    "action": "pass",
+    "elapsed": 0.09
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestGatewayCLIProducesEverySourceAndPreservesDuplicate/robot",
+    "action": "pass",
+    "elapsed": 0.1
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestGatewayCLIProducesEverySourceAndPreservesDuplicate/sensor",
+    "action": "pass",
+    "elapsed": 0.11
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestGatewayCLIProducesEverySourceAndPreservesDuplicate/facility",
+    "action": "pass",
+    "elapsed": 0.11
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestGatewayCLIProducesEverySourceAndPreservesDuplicate",
+    "action": "pass",
+    "elapsed": 0.63
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestSimulationSeedReproducesMotionWithoutAddingPower",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestGatewayDrainTimeoutPreservesQueue",
+    "action": "pass",
+    "elapsed": 0.18
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestDurableCrashChild",
+    "action": "skip",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestGatewayForceKillAfterRemoteACKBeforeLocalCommit",
+    "action": "pass",
+    "elapsed": 1.33
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestExecutorForceKillRetainsSingleEffectAndExactReport",
+    "action": "pass",
+    "elapsed": 0.21
+  },
+  {
+    "package": "example.com/meshops-course/internal/bus",
+    "test": "TestPartitionFailureDoesNotBlockHealthyPartition",
+    "action": "pass",
+    "elapsed": 5.1
+  },
+  {
+    "package": "example.com/meshops-course/internal/bus",
+    "test": "TestOperationsHonorContextWithSilentBroker/Lag",
+    "action": "pass",
+    "elapsed": 0.05
+  },
+  {
+    "package": "example.com/meshops-course/internal/bus",
+    "test": "TestOperationsHonorContextWithSilentBroker/Ping",
+    "action": "pass",
+    "elapsed": 0.05
+  },
+  {
+    "package": "example.com/meshops-course/internal/bus",
+    "test": "TestOperationsHonorContextWithSilentBroker/EnsureTopics",
+    "action": "pass",
+    "elapsed": 0.05
+  },
+  {
+    "package": "example.com/meshops-course/internal/bus",
+    "test": "TestOperationsHonorContextWithSilentBroker",
+    "action": "pass",
+    "elapsed": 0.15
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestExecutorReportsSeriallyAndRetriesExactIdentity",
+    "action": "pass",
+    "elapsed": 2.14
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestExecutorCancellationUsesCancelDispatch",
+    "action": "pass",
+    "elapsed": 0.11
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestCLIRejectsMissingAndInvalidArguments",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestExecutorRestartAfterResultBeforeReport",
+    "action": "pass",
+    "elapsed": 0.13
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestInboxCorruptionCannotEraseDurableEffects",
+    "action": "pass",
+    "elapsed": 0.08
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestInboxEffectAndReportSurviveRestart",
+    "action": "pass",
+    "elapsed": 0.12
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestInboxCancelBeforeExecuteSurvivesRestart",
+    "action": "pass",
+    "elapsed": 0.08
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestInboxCancelCompetesWithResultTransaction",
+    "action": "pass",
+    "elapsed": 1.11
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestInboxCapacityRejectsBeforeAcceptance",
+    "action": "pass",
+    "elapsed": 0.12
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestQueueRestartAndActualSentACK",
+    "action": "pass",
+    "elapsed": 0.08
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestQueueCapacityAndGenerationRollback",
+    "action": "pass",
+    "elapsed": 0.05
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestQueueDuplicateDoesNotAllocateVersion",
+    "action": "pass",
+    "elapsed": 0.07
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestQueueCorruptionPreservesFile",
+    "action": "pass",
+    "elapsed": 0.05
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestCompactionRetainsOriginalAndAllState",
+    "action": "pass",
+    "elapsed": 1.25
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestInboxReopenRejectsUnschedulableFactsWithoutChangingFile/done-with-report",
+    "action": "pass",
+    "elapsed": 0.07
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestInboxReopenRejectsUnschedulableFactsWithoutChangingFile/invalid-execute-payload",
+    "action": "pass",
+    "elapsed": 0.08
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestInboxReopenRejectsUnschedulableFactsWithoutChangingFile",
+    "action": "pass",
+    "elapsed": 0.15
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestRetireRejectedReportPreservesLocalTerminalOutcome/cancel",
+    "action": "pass",
+    "elapsed": 0.09
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestRetireRejectedReportPreservesLocalTerminalOutcome/result",
+    "action": "pass",
+    "elapsed": 0.09
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestRetireRejectedReportPreservesLocalTerminalOutcome",
+    "action": "pass",
+    "elapsed": 0.18
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestExecutorIgnoresInvalidCommandsAndContinuesSameStream",
+    "action": "pass",
+    "elapsed": 1.24
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestExecutorStorageFailureRemainsFatal",
+    "action": "pass",
+    "elapsed": 0.06
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestContinuousUploadWaitsForGenerationAndReplaysAfterLoss/false",
+    "action": "pass",
+    "elapsed": 0.29
+  },
+  {
+    "package": "example.com/meshops-course/internal/bus",
+    "test": "TestLagAndReplayAfterCanceledHandler",
+    "action": "pass",
+    "elapsed": 7.8
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestContinuousUploadWaitsForGenerationAndReplaysAfterLoss/true",
+    "action": "pass",
+    "elapsed": 1.29
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestContinuousUploadWaitsForGenerationAndReplaysAfterLoss",
+    "action": "pass",
+    "elapsed": 1.59
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestGatewayJoinPreservesUploaderFailureAtGenerationEnd",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestQueueVersionBoundarySurvivesReopen",
+    "action": "pass",
+    "elapsed": 0.05
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestInboxDerivedIndexesMigrateAndRollback",
+    "action": "pass",
+    "elapsed": 0.18
+  },
+  {
+    "package": "example.com/meshops-course/internal/bus",
+    "test": "TestRetentionGapIsNotReportedAsHealthyLag",
+    "action": "fail",
+    "elapsed": 0.51
+  },
+  {
+    "package": "example.com/meshops-course/internal/bus",
+    "test": "TestStrictPartitionFloorsRejectInvalidInput",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/bus",
+    "test": "TestBrokerFailureClassification",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestCDCRebuildStartsAfterOldHistory",
+    "action": "pass",
+    "elapsed": 12.12
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestResetTaskIndexRefusesOtherResources",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestResetTaskIndexHandlesMissingButNotFailedDelete/Not_Found",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestResetTaskIndexHandlesMissingButNotFailedDelete/Forbidden",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestResetTaskIndexHandlesMissingButNotFailedDelete/Service_Unavailable",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestResetTaskIndexHandlesMissingButNotFailedDelete",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestSearchServiceErrorContract/expired",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestSearchServiceErrorContract/invalid",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestSearchServiceErrorContract/dependency",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestSearchServiceErrorContract",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestSearchServiceUsesTrustedTenantAndReadiness",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestSixAdapters/person",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestSixAdapters/drone",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestSixAdapters/vehicle",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestSixAdapters/robot",
+    "action": "pass",
+    "elapsed": 0.01
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestSixAdapters/sensor",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestSixAdapters/facility",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestSixAdapters",
+    "action": "pass",
+    "elapsed": 0.03
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestStrictPerson",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestDroneCoordinatesAndFacilityCapacityAreValidated/drone\"lat_e7\":_910000000",
+    "action": "pass",
+    "elapsed": 0.01
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestDroneCoordinatesAndFacilityCapacityAreValidated/drone\"lon_e7\":_1810000000",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestDroneCoordinatesAndFacilityCapacityAreValidated/facility\"occupied\":_9",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestDroneCoordinatesAndFacilityCapacityAreValidated",
+    "action": "pass",
+    "elapsed": 0.01
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestDurableCrashChild",
+    "action": "skip",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestExecutorReconnectBoundedWorkersAndAppliedResponseLoss",
+    "action": "pass",
+    "elapsed": 4.16
+  },
+  {
+    "package": "example.com/meshops-course/internal/search",
+    "test": "TestSnapshotEstablishesReadViewBeforeReleasingLock",
+    "action": "pass",
+    "elapsed": 3.17
+  },
+  {
+    "package": "example.com/meshops-course/internal/bus",
+    "test": "TestStrictPerPartitionReplayBoundaries",
+    "action": "pass",
+    "elapsed": 4.64
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestExecutorRestartsAfterPendingNonterminalReportExpires/TASK_STATUS_ACKED",
+    "action": "pass",
+    "elapsed": 1.31
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestExecutorRestartsAfterPendingNonterminalReportExpires/TASK_STATUS_EXECUTING",
+    "action": "pass",
+    "elapsed": 1.33
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestExecutorRestartsAfterPendingNonterminalReportExpires",
+    "action": "pass",
+    "elapsed": 2.64
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestUploadACKLossAndCloseSendFinalACK",
+    "action": "pass",
+    "elapsed": 1.22
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestUploadPartialACKReplaysOnlySuffix",
+    "action": "pass",
+    "elapsed": 0.93
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestUploadRejectsInvalidACKWithoutDeleting",
+    "action": "pass",
+    "elapsed": 0.06
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestUploadStreamIsNotGivenUnaryFiveSecondDeadline",
+    "action": "pass",
+    "elapsed": 5.29
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestUploadCancellationUnblocksReceive",
+    "action": "pass",
+    "elapsed": 0.15
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestBackoffIsBounded",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestUploadPreservesFatalFailureDuringShutdown/InvalidArgument",
+    "action": "pass",
+    "elapsed": 0.04
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestUploadPreservesFatalFailureDuringShutdown/PermissionDenied",
+    "action": "pass",
+    "elapsed": 0.04
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestUploadPreservesFatalFailureDuringShutdown/Unauthenticated",
+    "action": "pass",
+    "elapsed": 0.04
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestUploadPreservesFatalFailureDuringShutdown/FailedPrecondition",
+    "action": "pass",
+    "elapsed": 0.04
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestUploadPreservesFatalFailureDuringShutdown/Unavailable",
+    "action": "pass",
+    "elapsed": 0.06
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestUploadPreservesFatalFailureDuringShutdown/Canceled",
+    "action": "pass",
+    "elapsed": 0.03
+  },
+  {
+    "package": "example.com/meshops-course/internal/edge",
+    "test": "TestUploadPreservesFatalFailureDuringShutdown",
+    "action": "pass",
+    "elapsed": 0.24
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestRedisForceKillBeforeOffsetReplaysWithoutRegressing",
+    "action": "pass",
+    "elapsed": 34.41
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestMySQLSampleIdempotencePagingAgeAndBudget",
+    "action": "pass",
+    "elapsed": 0.12
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestWholeBatchAndPrefixACK",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestResumeAndEpoch",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestSingleSourceStreamAndPersistentRateBudget",
+    "action": "pass",
+    "elapsed": 0.01
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestRedisOOMDoesNotCommitKafkaOffset",
+    "action": "fail",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestOutboxAndDispatcherForceKillDurableBoundaries",
+    "action": "pass",
+    "elapsed": 53.28
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestExecutorQueueBoundsIdentityAndCommandDedup",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestInspectValidation",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestInspectRejectsCaseAliasesAndBoundsErrors",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestCreateHashUsesDeadlinePresenceNotClock",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestTaskTransitionAuthorityAndTerminalBarrier",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestTaskCursorBoundToTenantFilterAndPosition",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestHistoricalMigrationsRemainExecutable",
+    "action": "pass",
+    "elapsed": 0.01
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestKafkaShadowMissingManifestDoesNotSwitch/actual_retention_truncation",
+    "action": "fail",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestKafkaShadowMissingManifestDoesNotSwitch",
+    "action": "fail",
+    "elapsed": 1.85
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestHistoryRetentionCatchesUpMoreThanOneBatch",
+    "action": "pass",
+    "elapsed": 2.28
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestHistoryRetentionBothClocksAndCutoff",
+    "action": "pass",
+    "elapsed": 0.24
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestSharedReconcileReadsUniqueEntityMetadata",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestNewEntityAndRunStrictRecoveryLifecycle",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestVerifiedReplayFloorsRequireActivationEvidence",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestReportRemoteValidationDoesNotHoldTaskLock",
+    "action": "pass",
+    "elapsed": 9.06
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestNewRedisNamespaceReplaysCommittedLatestFacts",
+    "action": "pass",
+    "elapsed": 7.7
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestNotifyFiltersBeforeCloning",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestSharedSweepRegistrationTeardownRace",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestGenerationWatcherRecoversDependencyFailure",
+    "action": "pass",
+    "elapsed": 3
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestActiveViewIsScopedToInputTopic",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestSixFixturesThroughAuthenticatedRPCAndKafka",
+    "action": "pass",
+    "elapsed": 3.84
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestHashIgnoresReceiptButDetectsDomainChange",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestSubscriptionCoalescingAndBounds",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestSamplingPriorityAndCircularHeading",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestRedisOrderingTombstoneAndManifest",
+    "action": "pass",
+    "elapsed": 0.01
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestRedisSubscriptionInitialRaceDeleteAndGap",
+    "action": "pass",
+    "elapsed": 0.06
+  },
+  {
+    "package": "example.com/meshops-course/internal/state",
+    "test": "TestGRPCBlockedSubscriberReleasesSenderAndDoesNotBlockPeer",
+    "action": "pass",
+    "elapsed": 0.84
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestDeadlineWorkerContinuesDuringKafkaStall",
+    "action": "pass",
+    "elapsed": 9.8
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestA17ListStableTimestampCursorAndTenantBinding",
+    "action": "pass",
+    "elapsed": 9.97
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestStateOnlyEntitiesRejectInspectWithoutPersistingTask",
+    "action": "pass",
+    "elapsed": 9.94
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestA18PublishThenMarkFailureReplaysStableEvent",
+    "action": "pass",
+    "elapsed": 8.32
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestA19AuthenticatedSingleExecutorStreamAndDurableDelivery",
+    "action": "pass",
+    "elapsed": 7.31
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestA22CancellationSuccessTimeoutBarrierAndOldEvent",
+    "action": "pass",
+    "elapsed": 7.24
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestDispatcherStatusRequiresLagDependency",
+    "action": "pass",
+    "elapsed": 6.98
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestDispatcherStatusReportsLagAndTenantCounts",
+    "action": "pass",
+    "elapsed": 7.38
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestDispatcherStatusPropagatesLagFailure",
+    "action": "pass",
+    "elapsed": 7.35
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestA03MigrationsAndNonDestructiveSeed/legacy=false",
+    "action": "pass",
+    "elapsed": 7.75
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestA03MigrationsAndNonDestructiveSeed/legacy=true",
+    "action": "pass",
+    "elapsed": 6.97
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestA03MigrationsAndNonDestructiveSeed/duplicate_audit_blocks_upgrade",
+    "action": "pass",
+    "elapsed": 5.14
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestA03MigrationsAndNonDestructiveSeed",
+    "action": "pass",
+    "elapsed": 19.86
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestA15A16A17TaskTransactionsAndIsolation",
+    "action": "pass",
+    "elapsed": 7.57
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestA18OutboxOrderFailureAndExpiredLease",
+    "action": "pass",
+    "elapsed": 7.68
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestA23DurableDLQAndConcurrentManualRetry",
+    "action": "pass",
+    "elapsed": 7.9
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestA22TerminalResultAndLateAudit",
+    "action": "pass",
+    "elapsed": 8.01
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestIntegrationFixtureFiles",
+    "action": "pass",
+    "elapsed": 0
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestReportRequiresDurableDispatchIntent/executor_ACK",
+    "action": "pass",
+    "elapsed": 7.76
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestReportRequiresDurableDispatchIntent/dispatcher_report",
+    "action": "pass",
+    "elapsed": 7.57
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestReportRequiresDurableDispatchIntent/cancellation",
+    "action": "pass",
+    "elapsed": 7.85
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestReportRequiresDurableDispatchIntent",
+    "action": "pass",
+    "elapsed": 23.19
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestCreateAuditUsesOpaqueCorrelation",
+    "action": "pass",
+    "elapsed": 12.27
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestReportHistoricalDispatchAndDuplicateOutage/timeout",
+    "action": "pass",
+    "elapsed": 12.75
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestReportHistoricalDispatchAndDuplicateOutage/dlq",
+    "action": "pass",
+    "elapsed": 8.96
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestReportHistoricalDispatchAndDuplicateOutage",
+    "action": "pass",
+    "elapsed": 21.71
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestDispatchWorkerPreservesNewerTerminalMirror/pending",
+    "action": "pass",
+    "elapsed": 8.51
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestDispatchWorkerPreservesNewerTerminalMirror/dispatched",
+    "action": "pass",
+    "elapsed": 7.96
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestDispatchWorkerPreservesNewerTerminalMirror",
+    "action": "pass",
+    "elapsed": 16.47
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestDispatchWorkerDefersNewerCancellationMirror",
+    "action": "pass",
+    "elapsed": 7.55
+  },
+  {
+    "package": "example.com/meshops-course/internal/tasks",
+    "test": "TestListTasksCountAndPageShareSnapshot",
+    "action": "pass",
+    "elapsed": 7.98
+  }
+]

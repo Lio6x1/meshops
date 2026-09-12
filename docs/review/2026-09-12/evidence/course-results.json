@@ -1,0 +1,376 @@
+{
+  "freshCourse": {
+    "project": "meshops-search-copy-a8f6e974",
+    "failure": null,
+    "steps": [
+      "Z09 fresh initialize, six entities and four task executions",
+      "Z10 preserves credentials, imports pre-upgrade tasks and synchronizes new terminal task",
+      "Missing index and incomplete bootstrap rebuilt; business checksums preserved; new CDC converges",
+      "Published test.ps1 -Integration passed the required-test gate",
+      "Published learner source hashes unchanged"
+    ],
+    "cleanupErrors": [],
+    "passed": true
+  },
+  "lessonCopy": {
+    "passed": true,
+    "source": "Markdown full-file blocks plus explicit generated/evidence links",
+    "normalized": "CRLF/LF and terminal newlines",
+    "note": "No new Docker fault or performance run; stage source equivalence checked.",
+    "stages": [
+      {
+        "stage": "z01",
+        "completeBlocks": 6,
+        "linkedGeneratedOrEvidence": 3,
+        "finalFiles": 9,
+        "sourceTextEqual": true,
+        "built": true,
+        "smoke": false
+      },
+      {
+        "stage": "z02",
+        "completeBlocks": 9,
+        "linkedGeneratedOrEvidence": 0,
+        "finalFiles": 16,
+        "sourceTextEqual": true,
+        "built": true,
+        "smoke": true
+      },
+      {
+        "stage": "z03",
+        "completeBlocks": 11,
+        "linkedGeneratedOrEvidence": 2,
+        "finalFiles": 19,
+        "sourceTextEqual": true,
+        "built": true,
+        "smoke": true
+      },
+      {
+        "stage": "z04",
+        "completeBlocks": 25,
+        "linkedGeneratedOrEvidence": 6,
+        "finalFiles": 31,
+        "sourceTextEqual": true,
+        "built": true,
+        "smoke": false
+      },
+      {
+        "stage": "z05",
+        "completeBlocks": 17,
+        "linkedGeneratedOrEvidence": 0,
+        "finalFiles": 41,
+        "sourceTextEqual": true,
+        "built": true,
+        "smoke": false
+      },
+      {
+        "stage": "z06",
+        "completeBlocks": 23,
+        "linkedGeneratedOrEvidence": 0,
+        "finalFiles": 55,
+        "sourceTextEqual": true,
+        "built": true,
+        "smoke": false
+      },
+      {
+        "stage": "z07",
+        "completeBlocks": 90,
+        "linkedGeneratedOrEvidence": 8,
+        "finalFiles": 142,
+        "sourceTextEqual": true,
+        "built": true,
+        "smoke": false
+      },
+      {
+        "stage": "z08",
+        "completeBlocks": 9,
+        "linkedGeneratedOrEvidence": 0,
+        "finalFiles": 145,
+        "sourceTextEqual": true,
+        "built": true,
+        "smoke": false
+      },
+      {
+        "stage": "z09",
+        "completeBlocks": 27,
+        "linkedGeneratedOrEvidence": 23,
+        "finalFiles": 182,
+        "sourceTextEqual": true,
+        "built": true,
+        "smoke": false
+      },
+      {
+        "stage": "z10",
+        "completeBlocks": 53,
+        "linkedGeneratedOrEvidence": 4,
+        "finalFiles": 225,
+        "sourceTextEqual": true,
+        "built": true,
+        "smoke": false
+      }
+    ]
+  },
+  "substepRuns": [
+    {
+      "sourceId": "substeps-full",
+      "passed": false,
+      "steps": [
+        {
+          "step": "z04-01",
+          "build": true,
+          "tests": [],
+          "exactTestsPassed": false
+        },
+        {
+          "step": "z04-02",
+          "build": true,
+          "tests": [
+            "TestTwoAdapters",
+            "TestStrictPerson"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z04-03",
+          "build": true,
+          "tests": [
+            "TestWholeBatchAndPrefixACK",
+            "TestResumeAndEpoch",
+            "TestSingleSourceStreamAndPersistentRateBudget"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z04-04",
+          "build": true,
+          "tests": [
+            "TestAuthenticatedWriteQueryAndVolatileRestart",
+            "TestMemoryVersionAndTenantRules"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z05-01",
+          "build": true,
+          "tests": [
+            "TestOperationsHonorContextWithSilentBroker"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z05-02",
+          "build": true,
+          "tests": [
+            "TestRedisAtomicOrderingAndTombstone",
+            "TestKafkaACKThenRedisProjection"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z06-01",
+          "build": true,
+          "tests": [
+            "TestSixAdapters",
+            "TestDroneCoordinatesAndFacilityCapacityAreValidated"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z06-02",
+          "build": true,
+          "tests": [
+            "TestQueueRestartAndActualSentACK",
+            "TestQueueCapacityAndGenerationRollback",
+            "TestQueueDuplicateDoesNotAllocateVersion",
+            "TestQueueCorruptionPreservesFile",
+            "TestCompactionRetainsOriginalAndAllState"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z06-03",
+          "build": true,
+          "tests": [
+            "TestUploadACKLossAndCloseSendFinalACK",
+            "TestUploadPartialACKReplaysOnlySuffix",
+            "TestUploadRejectsInvalidACKWithoutDeleting",
+            "TestUploadStreamIsNotGivenUnaryFiveSecondDeadline",
+            "TestUploadCancellationUnblocksReceive",
+            "TestBackoffIsBounded"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z06-04",
+          "build": true,
+          "tests": [
+            "TestKafkaACKThenRedisProjection"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z07-01",
+          "build": true,
+          "tests": [
+            "TestInspectValidation",
+            "TestCreateHashUsesDeadlinePresenceNotClock",
+            "TestTaskTransitionAuthorityAndTerminalBarrier"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z07-02",
+          "build": true,
+          "tests": [
+            "TestInspectValidation",
+            "TestTaskTransitionAuthorityAndTerminalBarrier",
+            "TestTaskCursorBoundToTenantFilterAndPosition",
+            "TestHistoricalMigrationsRemainExecutable"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z07-03",
+          "build": true,
+          "tests": [
+            "TestExecutorQueueBoundsIdentityAndCommandDedup"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z07-04",
+          "build": true,
+          "tests": [
+            "TestInboxCorruptionCannotEraseDurableEffects",
+            "TestInboxEffectAndReportSurviveRestart",
+            "TestInboxCancelBeforeExecuteSurvivesRestart",
+            "TestInboxCancelCompetesWithResultTransaction",
+            "TestInboxCapacityRejectsBeforeAcceptance"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z07-05",
+          "build": true,
+          "tests": [
+            "TestExecutorReportsSeriallyAndRetriesExactIdentity",
+            "TestExecutorRestartAfterResultBeforeReport"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z08-01",
+          "build": true,
+          "tests": [
+            "TestSamplingPriorityAndCircularHeading"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z08-02",
+          "build": true,
+          "tests": [
+            "TestMySQLSampleIdempotencePagingAgeAndBudget",
+            "TestHistoryRetentionCatchesUpMoreThanOneBatch"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z09-01",
+          "build": true,
+          "tests": [
+            "TestRedisOrderingTombstoneAndManifest",
+            "TestVerifiedReplayFloorsRequireActivationEvidence"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z09-02",
+          "build": true,
+          "tests": [
+            "TestStopUncertaintyStillRestoresDependency",
+            "TestRestoreErrorsAreNotLost",
+            "TestAllSupportedBenchmarkDurationsLeaveDrainBudget",
+            "TestReportWriteFailureReturnsNonzero"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z09-03",
+          "build": true,
+          "tests": [
+            "TestRestoreErrorsAreNotLost",
+            "TestReportWriteFailureReturnsNonzero"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z10-01",
+          "build": true,
+          "tests": [],
+          "exactTestsPassed": false
+        },
+        {
+          "step": "z10-02",
+          "build": true,
+          "tests": [
+            "TestCanalFullRowsAndSafeProjection",
+            "TestCanalMySQLEnumOrdinal",
+            "TestHandlerOnlyAcknowledgesWholeMessage",
+            "TestIndexVersionConflict",
+            "TestSearchTenantPagingAndCursorBinding",
+            "TestSearchServiceUsesTrustedTenantAndReadiness",
+            "TestResetTaskIndexRefusesOtherResources"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z10-03",
+          "build": true,
+          "tests": [
+            "TestSearchMethodPermissions",
+            "TestOpctlSearchCallsSearchRPC"
+          ],
+          "exactTestsPassed": true
+        }
+      ],
+      "failure": "End-stage hash mismatch z10/scripts/check-test-results.py"
+    },
+    {
+      "sourceId": "substeps-z10-recheck",
+      "passed": true,
+      "steps": [
+        {
+          "step": "z10-01",
+          "build": true,
+          "tests": [],
+          "exactTestsPassed": false
+        },
+        {
+          "step": "z10-02",
+          "build": true,
+          "tests": [
+            "TestCanalFullRowsAndSafeProjection",
+            "TestCanalMySQLEnumOrdinal",
+            "TestHandlerOnlyAcknowledgesWholeMessage",
+            "TestIndexVersionConflict",
+            "TestSearchTenantPagingAndCursorBinding",
+            "TestSearchServiceUsesTrustedTenantAndReadiness",
+            "TestResetTaskIndexRefusesOtherResources"
+          ],
+          "exactTestsPassed": true
+        },
+        {
+          "step": "z10-03",
+          "build": true,
+          "tests": [
+            "TestSearchMethodPermissions",
+            "TestOpctlSearchCallsSearchRPC"
+          ],
+          "exactTestsPassed": true
+        }
+      ],
+      "note": "Build and exact named tests per substep, including configured real dependencies; no full fault/performance rerun."
+    }
+  ]
+}

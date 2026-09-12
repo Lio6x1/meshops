@@ -6,12 +6,13 @@
 
 | 内容 | 依据与规则 |
 | --- | --- |
-| 最终业务实现 | [根目录完整工程](../../../../README.md)，module 为 example.com/meshops-course，旧框架已删除 |
+| 最终业务实现 | [根目录完整工程](../../../../README.md)，对应最终 Z13；module 为 example.com/meshops-course，旧框架已删除 |
 | 教学顺序 | [新课程目录](../lessons/README.md) 与 [路线取舍](../../from-zero-roadmap.md) |
-| 阶段文件及指纹 | [checkpoint-index.json](../checkpoint-index.json)，对应 starter、state-stages、business-stages；Z09 已固定到 business-stages/z09，新增搜索在根工程继续开发 |
+| 阶段文件及指纹 | [checkpoint-index.json](../checkpoint-index.json)，对应 starter、state-stages、business-stages、web-stages；Z10 已固定到 business-stages/z10，Z11/Z12 是 web-stages 快照，Z13 从根工程发布 |
 | 小步骤文件及测试 | [substep-index.json](../substep-index.json)，由发布脚本维护 |
 | 交付要求 | [完整代码标准](../../reference-code-standard.md) |
 | 当前状态与剩余工作 | [工作记录](../BUILD-LEDGER.md)；已注明历史的段落不作当前待办 |
+| 成品实际启动和双模式切换 | [完整前后端启动手册](../../../run-fullstack.md)，学生代码位于兄弟 meshops-course-lab，参考教材不整体复制过去 |
 
 修改最终代码前先判断影响哪些教学阶段，再同步对应阶段、生成讲义并验证。不要直接编辑生成的文件答案或 Proto 生成代码。阶段代码的重复是教学快照；是否存在业务内部不必要的重复，需要代码审查，不能通过删除快照解决。
 
@@ -27,14 +28,15 @@
 | [materialize-checkpoints.ps1](../materialize-checkpoints.ps1) | 维护阶段快照；会写文件，不能当普通检查运行 |
 | [publish-lesson-code.ps1](../publish-lesson-code.ps1) | 同步 Z01—Z03 正文代码；`-Check` 只检查 |
 | [publish-file-guides.ps1](../publish-file-guides.ps1) | 生成阶段完整文件答案；`-Check` 只检查 |
-| [publish-search-checkpoint.ps1](../publish-search-checkpoint.ps1) | 根工程发布为 Z10；`-Check` 检查清单，冻结的 Z01—Z09 不改 |
+| [publish-search-checkpoint.ps1](../publish-search-checkpoint.ps1) | 检查冻结 Z10 的来源和指纹；不再把根工程写成 Z10 |
+| [publish-fullstack.py](../publish-fullstack.py) | 从固定 Z10 累积发布 Z11 网关、Z12 Vue 和根工程 Z13；排除凭证、缓存、node_modules、dist，随后再生成文件答案/分步清单 |
 | [publish-substeps.ps1](../publish-substeps.ps1) | 生成分步清单、说明和过渡文件；会写文件 |
 | [test-checkpoints.ps1](../test-checkpoints.ps1) | 检查受管理复制的边界和保护 |
 | [verify-git-checkpoints.py](../verify-git-checkpoints.py) | Python 3 标准库检查当前 Git 下载目录的阶段文件指纹；提交前加 `--staged` 检查暂存内容，防止换行转换使教材失效 |
-| [verify-local-links.py](../verify-local-links.py) | Python 3 标准库检查仓库本地 Markdown 文件链接与锚点；正确跳过长围栏代码，忽略 `.cache/.git/.worktrees` 下的文档；`--output` 可保存完整 JSON 问题清单，不修改目标文件 |
-| [verify-file-guides.ps1](../verify-file-guides.ps1) | 从 Markdown 代码及原文件链接恢复工程；`-Build` 增加构建 |
+| [verify-local-links.py](../verify-local-links.py) | Python 3 标准库检查本地 Markdown 链接与锚点；跳过长围栏代码及缓存、工作树、node_modules、dist 等非源码材料；`--output` 可保存完整 JSON 问题清单 |
+| [verify-file-guides.ps1](../verify-file-guides.ps1) | 从 Markdown 代码及原文件链接恢复工程；`-Build` 增加 Go 构建，`-Frontend` 增加 Z12/Z13 的安装和前端构建 |
 | [verify-search-course.ps1](../verify-search-course.ps1) | 独立数据卷中运行 Z09→Z10、检查旧任务导入、新任务同步和维护重建，结束后恢复原依赖 |
-| [verify-substeps.ps1](../verify-substeps.ps1) | 顺序运行小步骤构建与指定测试；部分测试需要真实依赖 |
+| [verify-substeps.ps1](../verify-substeps.ps1) | 顺序运行 28 个分步构建与指定测试；部分需真实依赖，`-SearchOnly` 查 Z10 三步，`-WebOnly` 从固定 Z10 查新增五步，两参数互斥 |
 | [verify-checkpoint-chain.ps1](../verify-checkpoint-chain.ps1) | 从空目录运行整阶段链路，涉及实际服务与运行环境 |
 
 ## 验收证据怎么读
@@ -51,11 +53,15 @@
 
 Git 文本统一使用 LF。阶段清单校验原始字节，因此提交前执行 `python docs/learning/from-zero/verify-git-checkpoints.py --staged`；GitHub CI 在新检出目录执行同一检查。不要通过禁用指纹检查解决换行问题。2026-09-12 发布前统一过早期快照的换行并更新指纹，未改变其业务实现或教学顺序。
 
-## 下一阶段
+## 当前前后端阶段维护顺序
 
 结构整理、根目录迁移、搜索链路、维护重建、Z10 复制与独立学习环境验证已完成，本次整体复核见 [复核记录](../verification/2026-09-12-integrated-review.md)。搜索是新增范围，其证据单独记录，不把原有 A01—A28 验收自动算作搜索已验收。
 
-维护根源码后按顺序运行 `publish-search-checkpoint.ps1`、`publish-file-guides.ps1`、`publish-substeps.ps1`。原九阶段由固定快照提供；不要把根源码倒灌到 Z09。`verify-substeps.ps1 -SearchOnly` 从固定 Z09 起验证新增三步，默认模式按全部阶段运行；`verify-checkpoint-chain.ps1` 当前仍是原 Z01—Z09 的真实环境验证，不能据此宣称 Z10 已运行通过。
+维护最终根源码后，先检查变化归属，再按顺序运行 `publish-search-checkpoint.ps1`（验证固定 Z10）、`python publish-fullstack.py`、`publish-file-guides.ps1`、`publish-substeps.ps1`；命令位置是 `docs/learning/from-zero`，也可从根目录使用完整相对路径。不要把根源码倒灌到 Z09/Z10。Z11 只引入网关，Z12 引入前端，Z13 才收录完整部署和最终运行代码。
+
+Z04—Z09 的 20 步、Z10 的 3 步、Z11 的 2 步、Z12 的 2 步和 Z13 的 1 步，合计 28 步；它们不是 28 个完全独立业务场景。`verify-substeps.ps1 -SearchOnly` 从固定 Z09 验证搜索三步，`-WebOnly` 从固定 Z10 验证新增五步。默认模式按全部阶段运行；`verify-checkpoint-chain.ps1` 当前仍是原 Z01—Z09 的真实环境验证，不能据此宣称后续阶段已运行通过。
+
+新增阶段的完整代码、生成文件链接和锁文件必须都能恢复到学员目录；Z12-01 的领域测试依赖 `types.ts`、`domain.ts`、`transport.ts`、`requests.ts` 以及对应测试，不能漏掉辅助文件。Z12-02 和 Z13-01 才执行完整 Vue 构建。文件复制、Node 测试、Go 测试、真实 Compose 运行和浏览器多尺寸/键盘验收分别记录，前一项通过不自动证明后一项通过。
 
 本轮正确性修复已按适用能力同步回早期阶段：例如 Z05 引入严格投影，Z08 引入历史数据库后同时更新构造器及其测试，Z09 才引入经过验证的重建恢复起点。这里的“不要倒灌”指不要把最终搜索能力整体提前复制到旧阶段，不是禁止修复阶段答案中的共同缺陷。
 

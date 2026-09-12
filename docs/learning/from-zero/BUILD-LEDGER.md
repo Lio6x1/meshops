@@ -1,12 +1,23 @@
 # 新课程参考实现与维护状态
 
-**当前状态：2026-09-12 四项全面复核交付完成，修复已整合/推送，云端完整 CI 通过。** 修复与自查、必要代码注释、排错知识库和 UI 设计已交付；本轮实际验证与能力边界见 [验收记录](../../review/2026-09-12/acceptance.md)，逐项判定见 [台账](../../review/2026-09-12/assessment.md)。旧报告保留历史结果，不代替新提交验收。
+**历史后端复核状态：2026-09-12 四项全面复核交付完成，相关提交云端完整 CI 通过。** 修复与自查、必要代码注释、排错知识库和 UI 设计已交付；本轮实际验证与能力边界见 [验收记录](../../review/2026-09-12/acceptance.md)，逐项判定见 [台账](../../review/2026-09-12/assessment.md)。旧报告保留历史结果，不代替新提交验收。
+
+## 当前全栈增量（2026-09-12）
+
+完整参考工程已增加 HTTP/SSE 网关、Vue 控制台和独立 Docker Compose 演示。先按[完整启动手册](../../run-fullstack.md)体验，再在自己的空学习目录照 Z00—Z13 实现。
+
+- 最终 Z11 / Z12 / Z13 分别为 242 / 270 / 299 个运行文件；13 阶段共 1676 条文件指纹记录，含阶段间重复。当前共 350 个完整代码块、28 个细分步骤。
+- Z01—Z13 完整 Markdown 复制及构建通过；新增 5 个前后端小步骤通过指定测试与前端构建。最终仅错误文本和缓存排除的变化，已在两个复制目录补齐并核对全部 299 个源文件及运行相应测试。详见[复制验收](verification/2026-09-12-fullstack-copy.md)。
+- 本轮 Windows 真实依赖验收 168 个顶层测试 PASS、3 个子进程入口 SKIP、0 FAIL，19 项必跑门禁通过；三轮 HTTP 各 10 项、Docker 重启/重建保留、真实页面和权限检查已完成。普通 Linux race 与一次环境不匹配的 Linux 集成失败分别记录，不能合并称作全量 Linux 集成成功。详见[全栈报告](../../verification/2026-09-12-fullstack/report.md)。
+- 本轮提交的远端状态以 [GitHub Actions](https://github.com/Lio6x1/meshops/actions) 对应提交为准，下面旧 CI 链接只证明此前版本。
 
 ## 代码与材料边界
 
-完整实现已迁到仓库根目录，module 为 `example.com/meshops-course`。旧根骨架及重复的 reference 目录已移除。教学从 [Z00—Z10](lessons/README.md) 进入，维护工具见 [维护说明](maintenance/README.md)。
+完整实现已迁到仓库根目录，module 为 `example.com/meshops-course`。旧根骨架及重复的 reference 目录已移除。教学从 [Z00—Z13](lessons/README.md) 进入，维护工具见 [维护说明](maintenance/README.md)。
 
-| 内容 | 当前状态 | 证据 |
+下表为新增网页前的历史后端验收统计，不能当作当前阶段和代码块数量。
+
+| 内容 | 历史状态 | 证据 |
 | --- | --- | --- |
 | 原定后端功能 | 六类接入、状态/订阅、历史、四类 inspect、Outbox、取消/超时/DLQ 等已实现；本轮 Windows 真实依赖 145 顶层 PASS、3 helper SKIP、0 FAIL，19 项门禁通过 | [本轮验收](../../review/2026-09-12/acceptance.md) |
 | 十个阶段 | 最新 Z01—Z10 完整答案复制 Build 全部通过；阶段清单共 865 个文件记录，含跨阶段重复；Z10 最终 225 个文件 | [本轮教材验证](../../review/2026-09-12/acceptance.md)、[清单](checkpoint-index.json) |

@@ -45,6 +45,16 @@ func RunExecutor(ctx context.Context, inbox *Inbox, commands executorv1.Executor
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 	active := map[string]bool{}
+	// Notifications are hints, not the queue: bbolt remains authoritative. One
+	// buffered wake coalesces command bursts and worker completions; startup and
+	// the slow fallback recover work even when no new command arrives.
+	wake := make(chan struct{}, 1)
+	notify := func() {
+		select {
+		case wake <- struct{}{}:
+		default:
+		}
+	}
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
@@ -82,6 +92,7 @@ func RunExecutor(ctx context.Context, inbox *Inbox, commands executorv1.Executor
 						stats.DuplicateCommands.Add(1)
 					}
 					attempt = 0
+					notify()
 				}
 			}
 			if runCtx.Err() != nil {
@@ -96,8 +107,11 @@ func RunExecutor(ctx context.Context, inbox *Inbox, commands executorv1.Executor
 			}
 		}
 	}()
-	tick := time.NewTicker(50 * time.Millisecond)
+	tick := time.NewTicker(time.Second)
 	defer tick.Stop()
+	notify()
+	after := ""
+	through := ""
 	var result error
 loop:
 	for {
@@ -108,30 +122,77 @@ loop:
 		case result = <-errCh:
 			break loop
 		case <-tick.C:
-			keys, e := inbox.PendingKeys()
+		case <-wake:
+		}
+		mu.Lock()
+		full := len(active) >= concurrency
+		mu.Unlock()
+		if full {
+			continue
+		}
+		// At most two small pages (including a wrap) per wake. Advance after
+		// each examined key, not the copied page's end: unused entries must not
+		// be skipped when the pool fills midway through a page.
+		pageSize := concurrency * 2
+		var e error
+		if through == "" {
+			through, e = inbox.pendingBoundary()
 			if e != nil {
 				result = e
 				break loop
 			}
-			for _, key := range keys {
-				mu.Lock()
-				if active[key] || len(active) >= concurrency {
-					mu.Unlock()
-					continue
-				}
-				active[key] = true
+		}
+		keys, e := inbox.pendingPage(after, through, pageSize)
+		if e == nil && len(keys) == 0 && after != "" {
+			after = ""
+			through, e = inbox.pendingBoundary()
+			if e == nil {
+				keys, e = inbox.pendingPage(after, through, pageSize)
+			}
+		}
+		if e != nil {
+			result = e
+			break loop
+		}
+		examined := 0
+		for _, key := range keys {
+			mu.Lock()
+			if len(active) >= concurrency {
 				mu.Unlock()
-				wg.Add(1)
-				go func(key string) {
-					defer wg.Done()
-					defer func() { mu.Lock(); delete(active, key); mu.Unlock() }()
-					if e := executeOne(runCtx, inbox, tasks, key, mode); e != nil && runCtx.Err() == nil {
-						select {
-						case errCh <- e:
-						case <-runCtx.Done():
-						}
+				break
+			}
+			after = key
+			examined++
+			if active[key] {
+				mu.Unlock()
+				continue
+			}
+			active[key] = true
+			mu.Unlock()
+			wg.Add(1)
+			go func(key string) {
+				defer wg.Done()
+				defer func() { mu.Lock(); delete(active, key); mu.Unlock(); notify() }()
+				if e := executeOne(runCtx, inbox, tasks, key, mode); e != nil && runCtx.Err() == nil {
+					select {
+					case errCh <- e:
+					case <-runCtx.Done():
 					}
-				}(key)
+				}
+			}(key)
+		}
+		mu.Lock()
+		spare := len(active) < concurrency
+		mu.Unlock()
+		if spare {
+			// A worker may finish between the capacity break and this check.
+			// Continue the same page/round then; resetting its cursor would let
+			// a stream of lower keys repeatedly jump ahead of its unread tail.
+			if examined < len(keys) || len(keys) == pageSize {
+				notify()
+			} else {
+				after = ""
+				through = ""
 			}
 		}
 	}

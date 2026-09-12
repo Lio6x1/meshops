@@ -1,0 +1,111 @@
+syntax = "proto3";
+
+package meshops.common.v1;
+
+option go_package = "example.com/meshops-course/gen/common/v1;commonv1";
+
+import "google/protobuf/timestamp.proto";
+import "common/v1/task.proto";
+
+// ============================================================================
+// 共享实体数据结构（被接入、实体服务和 Kafka 消息复用）
+// 方案A：共享类型用原生 protoc 统一生成到 gen/common/v1，全项目单一真相源。
+// ============================================================================
+
+message EntityStateEvent {
+  string event_id = 1;
+  string tenant_id = 2;
+  string entity_id = 3;
+  int64 entity_version = 4;
+  string source_id = 5;
+  google.protobuf.Timestamp occurred_at = 6;
+  google.protobuf.Timestamp received_at = 7;
+  int32 schema_version = 8;
+  EntitySnapshot snapshot = 9;
+  // Explicit lifecycle; UNSPECIFIED is invalid once business handling is enabled.
+  EntityOperation operation = 10;
+  google.protobuf.Timestamp expires_at = 11;
+  // Assigned by ownership configuration, not by arbitrary client timestamps.
+  int64 source_generation = 12;
+}
+
+enum EntityOperation {
+  ENTITY_OPERATION_UNSPECIFIED = 0;
+  ENTITY_OPERATION_UPSERT = 1;
+  ENTITY_OPERATION_DELETE = 2;
+}
+
+message EntitySnapshot {
+  string entity_type = 1;
+  string status = 2;
+  Location location = 3;
+  Velocity velocity = 4;
+  Capability capability = 5;
+  map<string, string> metadata = 6;
+  PowerState power = 7;
+  PersonState person = 8;
+  SensorState sensor = 9;
+  TaskCatalog task_catalog = 10;
+  VehicleState vehicle = 11;
+  RobotState robot = 12;
+  FacilityState facility = 13;
+}
+
+// Optional components: absent means unknown/not applicable, not zero.
+message PowerState {
+  optional double battery_percent = 1;
+}
+
+message PersonState {
+  bool on_duty = 1;
+  string availability = 2; // idle/busy/offline; validated by the adapter.
+  repeated string skills = 3;
+}
+
+message SensorState {
+  optional double reading = 1;
+  string unit = 2;
+  google.protobuf.Timestamp measured_at = 3;
+  string health = 4;
+}
+
+message Location {
+  double latitude = 1;
+  double longitude = 2;
+  optional double altitude = 3;
+  optional double accuracy = 4;
+  string coordinate_system = 5;
+}
+
+message Velocity {
+  double speed = 1;
+  optional double heading = 2;
+  optional double vertical_speed = 3;
+}
+
+message Capability {
+  repeated string supported_tasks = 1;
+  double max_range = 2;
+  double battery_level = 3 [deprecated = true]; // Use EntitySnapshot.power.
+}
+
+enum ErrorCode {
+  ERROR_CODE_UNSPECIFIED = 0;
+  ERROR_CODE_UNAUTHENTICATED = 1001;
+  ERROR_CODE_PERMISSION_DENIED = 1002;
+  ERROR_CODE_INVALID_TENANT = 1003;
+  ERROR_CODE_RATE_LIMITED = 2001;
+  ERROR_CODE_RESOURCE_EXHAUSTED = 2002;
+  ERROR_CODE_QUEUE_FULL = 2003;
+  ERROR_CODE_ENTITY_NOT_FOUND = 3001;
+  ERROR_CODE_INVALID_VERSION = 3002;
+  ERROR_CODE_INVALID_SCHEMA_VERSION = 3003;
+  ERROR_CODE_INVALID_EVENT_FORMAT = 3004;
+  ERROR_CODE_KAFKA_UNAVAILABLE = 4001;
+  ERROR_CODE_REDIS_UNAVAILABLE = 4002;
+  ERROR_CODE_MYSQL_UNAVAILABLE = 4003;
+}
+
+message VehicleState { optional double load_kg = 1; string availability = 2; }
+message RobotState { repeated string fault_codes = 1; string availability = 2; }
+message FacilityState { string facility_type = 1; bool is_open = 2; uint32 occupied_slots = 3; uint32 total_slots = 4; }

@@ -1,0 +1,10 @@
+{
+  "event_id": "vehicle-observation-001",
+  "vehicle_id": "vehicle-001",
+  "sequence": 1,
+  "recorded_at": "2026-09-05T00:00:00Z",
+  "position": {"lat": 31.23, "lng": 121.47},
+  "speed_kmh": 36,
+  "load_kg": 120.5,
+  "availability": "idle"
+}

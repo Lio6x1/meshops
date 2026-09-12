@@ -1,0 +1,85 @@
+tenant_id: demo_tenant
+sources:
+  - source_id: personnel_sim
+    adapter: person
+    source_generation: 1
+    credential_env: MESHOPS_PERSON_SOURCE_TOKEN
+    fixture: ../testdata/sources/person.json
+    stale_after: 30s
+    rate_limit_per_second: 100
+    entities: {person-001: person-001}
+  - source_id: drone_sim
+    adapter: drone
+    source_generation: 1
+    credential_env: MESHOPS_DRONE_SOURCE_TOKEN
+    fixture: ../testdata/sources/drone.json
+    stale_after: 30s
+    rate_limit_per_second: 100
+    entities: {drone-001: drone-001}
+  - source_id: vehicle_sim
+    adapter: vehicle
+    source_generation: 1
+    credential_env: MESHOPS_VEHICLE_SOURCE_TOKEN
+    fixture: ../testdata/sources/vehicle.json
+    stale_after: 30s
+    rate_limit_per_second: 100
+    entities: {vehicle-001: vehicle-001}
+  - source_id: robot_sim
+    adapter: robot
+    source_generation: 1
+    credential_env: MESHOPS_ROBOT_SOURCE_TOKEN
+    fixture: ../testdata/sources/robot.json
+    stale_after: 30s
+    rate_limit_per_second: 100
+    entities: {robot-001: robot-001}
+  - source_id: sensor_sim
+    adapter: sensor
+    source_generation: 1
+    credential_env: MESHOPS_SENSOR_SOURCE_TOKEN
+    fixture: ../testdata/sources/sensor.json
+    stale_after: 30s
+    rate_limit_per_second: 100
+    entities: {sensor-001: sensor-001}
+  - source_id: facility_sim
+    adapter: facility
+    source_generation: 1
+    credential_env: MESHOPS_FACILITY_SOURCE_TOKEN
+    fixture: ../testdata/sources/facility.json
+    stale_after: 30s
+    rate_limit_per_second: 100
+    entities: {facility-001: facility-001}
+executors:
+  - executor_id: simulated_personnel
+    entity_ids: [person-001]
+    supported_tasks: [inspect]
+    credential_env: MESHOPS_PERSON_EXECUTOR_TOKEN
+  - executor_id: simulated_aircraft
+    entity_ids: [drone-001]
+    supported_tasks: [inspect]
+    credential_env: MESHOPS_DRONE_EXECUTOR_TOKEN
+  - executor_id: simulated_vehicle
+    entity_ids: [vehicle-001]
+    supported_tasks: [inspect]
+    credential_env: MESHOPS_VEHICLE_EXECUTOR_TOKEN
+  - executor_id: simulated_robot
+    entity_ids: [robot-001]
+    supported_tasks: [inspect]
+    credential_env: MESHOPS_ROBOT_EXECUTOR_TOKEN
+actors:
+  - id: demo_operator
+    role: operator
+    credential_env: MESHOPS_OPERATOR_TOKEN
+  - id: demo_admin
+    role: admin
+    credential_env: MESHOPS_ADMIN_TOKEN
+  - id: task_service
+    role: task_service
+    credential_env: MESHOPS_TASK_TOKEN
+  - id: dispatcher_service
+    role: dispatcher_service
+    credential_env: MESHOPS_DISPATCHER_TOKEN
+task_catalog:
+  - task_type: inspect
+    description: Simulated bounded inspection
+    parameter_schema_json: >-
+      {"type":"object","required":["duration_seconds"],"additionalProperties":false,"properties":{"duration_seconds":{"type":"integer","minimum":1,"maximum":60},"note":{"type":"string","maxLength":256}}}

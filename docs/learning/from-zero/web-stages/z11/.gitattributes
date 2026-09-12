@@ -1,0 +1,14 @@
+# Published course checkpoints hash file bytes; keep checkouts stable on Windows/Linux.
+* text=auto eol=lf
+
+.gitattributes text eol=lf
+*.go text eol=lf
+*.proto text eol=lf
+*.sh text eol=lf
+*.sql text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+.gitignore text eol=lf
+Makefile text eol=lf

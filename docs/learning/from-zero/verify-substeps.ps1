@@ -1,4 +1,4 @@
-param([switch]$SearchOnly)
+param([switch]$SearchOnly,[switch]$WebOnly)
 $ErrorActionPreference='Stop'
 $materialRoot=$PSScriptRoot
 $repoRoot=[IO.Path]::GetFullPath((Join-Path $materialRoot '../../..'))
@@ -11,6 +11,13 @@ $go='D:/go1.25.10/bin/go.exe'
 $env:GOWORK='off'
 $env:GOCACHE=Join-Path $repoRoot '.cache/go-build-reference'
 $results=[Collections.Generic.List[object]]::new()
+if($SearchOnly -and $WebOnly){throw 'Choose at most one focused verification mode'}
+function Source-Files([string]$directory) {
+    Get-ChildItem -LiteralPath $directory -File -Force
+    foreach($child in Get-ChildItem -LiteralPath $directory -Directory -Force) {
+        if($child.Name -notin @('node_modules','dist')){Source-Files $child.FullName}
+    }
+}
 function Target([string]$relative) {
     if($relative -match '(^/|\\|:|(^|/)\.\.(/|$))'){throw "Unsafe path $relative"}
     $path=[IO.Path]::GetFullPath((Join-Path $learner $relative))
@@ -34,6 +41,11 @@ try {
         $files = foreach($file in $base.files){[pscustomobject]@{path=$file.path;source=$base.source+'/'+$file.path;sha256=$file.sha256}}
         Copy-Files $files @()
         $stageIDs = @('z10')
+    } elseif ($WebOnly) {
+        $base = $stages | Where-Object stage -eq 'z10'
+        $files = foreach($file in $base.files){[pscustomobject]@{path=$file.path;source=$base.source+'/'+$file.path;sha256=$file.sha256}}
+        Copy-Files $files @()
+        $stageIDs = @('z11','z12','z13')
     }
     foreach($stageID in $stageIDs) {
         $stage=$stages|Where-Object stage -eq $stageID
@@ -55,8 +67,17 @@ try {
                         $events=Get-Content $log|ForEach-Object {$_|ConvertFrom-Json}
                         foreach($name in $step.tests){if(-not @($events|Where-Object {$_.Action -eq 'pass' -and $_.Test -eq $name}).Count){throw "Test not passed or not found: $name"}}
                     }
+                    if($step.id -eq 'z12-01') {
+                        & node --experimental-strip-types --test web/tests/*.test.ts *> (Join-Path $runRoot ($step.id+'-browser.txt'))
+                        if($LASTEXITCODE -ne 0){throw 'Browser domain tests failed'}
+                    }
+                    if($step.id -in @('z12-02','z13-01')) {
+                        & ./scripts/frontend.ps1 -Action Install *> (Join-Path $runRoot ($step.id+'-npm.txt'))
+                        & ./scripts/frontend.ps1 -Action Test *> (Join-Path $runRoot ($step.id+'-browser.txt'))
+                        & ./scripts/frontend.ps1 -Action Build *> (Join-Path $runRoot ($step.id+'-frontend-build.txt'))
+                    }
                 } finally {Pop-Location}
-                $results.Add([ordered]@{step=$step.id; build=$true; tests=@($step.tests); dependencies=@($step.needs); exactTestsPassed=($step.tests.Count -gt 0)})
+                $results.Add([ordered]@{step=$step.id; build=$true; tests=@($step.tests); dependencies=@($step.needs); exactTestsPassed=($step.tests.Count -gt 0); browserTests=($step.id -in @('z12-01','z12-02','z13-01')); frontendBuild=($step.id -in @('z12-02','z13-01'))})
                 Write-Output "$($step.id): build and required tests passed"
             }
         } else {
@@ -64,7 +85,7 @@ try {
             Copy-Files $files $stage.changes.removed
         }
         foreach($file in $stage.files){if((Get-FileHash -LiteralPath (Target $file.path)).Hash.ToLowerInvariant() -cne $file.sha256){throw "End-stage hash mismatch $stageID/$($file.path)"}}
-        $actual=@(Get-ChildItem -LiteralPath $learner -Recurse -File)
+        $actual=@(Source-Files $learner)
         if($actual.Count -ne $stage.files.Count){throw "Unexpected files remain at $stageID"}
     }
     $result=[ordered]@{passed=$true; learner=$learner; steps=$results; note='Build and exact named tests per substep, including configured real dependencies; no full fault/performance rerun.'}

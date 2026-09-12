@@ -1,0 +1,1 @@
+Process helper tests passed on PowerShell 7.6.5: identity formats, rejected records, port preflight, bounded stop, child exit.

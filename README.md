@@ -2,9 +2,24 @@
 
 仓库根目录是唯一的完整实现，Go module：`example.com/meshops-course`。它使用模拟数据来源和模拟执行方，复现六类实体的统一接入、状态查询/订阅、inspect 任务下发与执行跟踪。旧骨架已移除，业务程序、协议、配置和脚本都在当前根目录。
 
-**开始学习：[Z00—Z10 课程目录](docs/learning/from-zero/lessons/README.md)。** 教材与阶段答案位于 `docs/learning/from-zero/`，你自己的学习工程仍使用 `D:\job\golang\projects\meshops-course-lab`。
+**先看完成品：[完整前后端启动手册](docs/run-fullstack.md)。开始学习：[Z00—Z13 课程目录](docs/learning/from-zero/lessons/README.md)。** 教材与阶段答案位于 `docs/learning/from-zero/`，你自己的学习工程仍使用 `D:\job\golang\projects\meshops-course-lab`。
 
 学习目录只复制各阶段需要的运行文件，不复制整套参考教材。本页的 `docs/` 导航用于在参考仓库中阅读；在自己的学习目录开发时，请从参考仓库打开课程和排错文档。
+
+参考目录 `meshops` 用于运行完成版、阅读教材和核对答案；学习目录 `meshops-course-lab` 由你按照 Z01 从空文件夹创建，之后各课在同一学习目录增加或修改文件。不要将 `.cache/`、`.worktrees/` 或 `.local/` 凭证与运行数据整体复制到学习目录。Z11 增加 HTTP 网关，Z12 增加 Vue 控制台，Z13 将前后端、中间件和模拟器装入完整 Docker 演示。
+
+## 先体验完整网页
+
+启动 Docker Desktop 的 Linux engine，在本目录的 PowerShell 执行：
+
+```powershell
+./scripts/demo-stack.ps1 -Action Up
+./scripts/demo-stack.ps1 -Action Codes
+```
+
+打开 `http://localhost:18090`，选择操作员，输入命令输出的操作员访问码。可查看六类实体实时状态、历史记录，创建及取消巡检任务，查看分发记录和搜索任务。管理员还可查看分发运行状态及执行受约束的人工重试。页面通过 HTTP/SSE 网关调用现有 gRPC 业务服务，结果来自真实 MySQL、Redis、Kafka 和 Elasticsearch。
+
+Docker 模式不需要宿主机安装 Go、Node.js 或生成 Proto。首次构建需要下载镜像和依赖，网络排错、停止、重启、日志、搜索重建及本地 IDE 调试见[启动手册](docs/run-fullstack.md)。`Stop` 和 `Down` 保留数据卷，`Reset -ConfirmReset` 才清空独立演示数据。下文原有 CLI 路线用于后端学习，与 Docker 网页模式分别保存数据。
 
 原定关键实现及 A01—A28 已有 [验收记录](verification/2026-09-10/summary.md)。**任务搜索（MySQL → Canal → Kafka → ES）已完成真实同步、依赖停机恢复、维护重建和 Z10 教程；独立学习目录的升级与故障后继续同步已通过验证。** Z09 保留加入搜索之前的教学范围；共同缺陷的修复会同步到适用阶段，新增搜索能力只在 Z10 引入。复制验证、已知边界及复核范围见 [工作记录](docs/learning/from-zero/BUILD-LEDGER.md)。
 
@@ -32,6 +47,11 @@ flowchart LR
   P --> Q[(ES 任务索引)]
   R[opctl task search] --> P
   P -->|租户过滤 / PIT 分页| Q
+  UI[Vue 控制台] -->|HTTP / SSE| W[会话与 CSRF 网关]
+  W -->|gRPC| F
+  W -->|gRPC| J
+  W -->|gRPC| L
+  W -->|gRPC| P
 ```
 
 人员、无人机、地面车辆、巡检机器人可以执行同一种 `inspect`；固定传感器和设施仅提供状态。每个实体绑定一个权威来源，任务执行方由注册信息确定，操作员选择目标实体。本项目不包含路径规划、最优资源分配或真实设备控制。
@@ -78,6 +98,10 @@ Set-Location 'D:\job\golang\projects\meshops'
 | Ingest / Entity / Task / Dispatcher | `127.0.0.1:50051` / `50052` / `50053` / `50054` |
 | 四个服务的健康与指标 | `127.0.0.1:18080` 至 `18083` |
 | MySQL / Redis / Kafka | `127.0.0.1:13306` / `16379` / `19092` |
+| 可选 Search gRPC / 健康与指标 | `127.0.0.1:50055` / `18084` |
+| 可选 Elasticsearch HTTP | `127.0.0.1:19200` |
+
+Search 与 Elasticsearch 需按下文 [可选任务搜索](#可选任务搜索) 单独初始化和启动；这些端口不是网页控制台入口。
 
 每次打开新终端，先加载当前终端需要的凭证与地址：
 
@@ -169,6 +193,7 @@ Windows 的停止脚本采用强制进程退出，用于本地操作；服务收
 四项交付、复验命令、教程复制和运行证据见 [全面复核验收记录](docs/review/2026-09-12/acceptance.md)。
 
 - [完整问题台账](docs/review/2026-09-12/assessment.md)：逐条判定外部 28 项意见及自查新增问题，区分当前缺陷与旧报告状态。
+- [脱敏证据归档](docs/review/2026-09-12/evidence/README.md)：逐测试终态、课程复制结果、原始文件 SHA-256，以及证据保留与清理边界；不依赖临时构建缓存才能阅读结论。
 - [本地排错知识库](docs/troubleshooting/README.md)：数据库锁、重放、投影恢复、SQL 执行计划、Git 换行和测试门禁。
 - [前端 UI 设计与离线原型](docs/ui/README.md)：模拟交互，不连接真实业务；浏览器 BFF 和实体枚举等接入缺口在方案中明确列出。
 - [当前工程验证边界](docs/production-readiness-checklist.md)：机器令牌不是用户密码体系，单实例和有限压测不作为生产容量保证。

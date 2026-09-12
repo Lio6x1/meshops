@@ -1,0 +1,60 @@
+# Optional search dependencies. The default Z09 compose path remains unchanged.
+services:
+  mysql:
+    command: ["--default-time-zone=+00:00", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci", "--server-id=1", "--binlog-format=ROW", "--binlog-row-image=FULL"]
+  canal:
+    image: canal/canal-server:v1.1.8
+    profiles: ["search"]
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      TZ: UTC
+      canal.destinations: meshops
+      canal.auto.scan: "false"
+      canal.serverMode: kafka
+      canal.auto.reset.latest.pos.mode: "false"
+      canal.file.data.dir: /home/admin/canal-server/meta
+      canal.instance.global.spring.xml: classpath:spring/file-instance.xml
+      canal.instance.master.address: mysql:3306
+      canal.instance.master.journal.name: ${MESHOPS_CANAL_BINLOG_FILE:-NOT_BOOTSTRAPPED}
+      canal.instance.master.position: ${MESHOPS_CANAL_BINLOG_POSITION:-4}
+      canal.instance.mysql.slaveId: "91011"
+      canal.instance.dbUsername: meshops_canal
+      canal.instance.dbPassword: ${MESHOPS_CANAL_PASSWORD:-NOT_BOOTSTRAPPED}
+      canal.instance.connectionCharset: UTF-8
+      canal.instance.filter.regex: meshops_course\.tasks
+      canal.instance.filter.black.regex: (mysql|information_schema|performance_schema|sys)\..*
+      canal.instance.binlog.format: ROW
+      canal.instance.binlog.image: FULL
+      canal.instance.memory.buffer.size: "1024"
+      canal.instance.parser.parallel: "false"
+      canal.mq.flatMessage: "true"
+      canal.mq.topic: meshops-task-search-cdc-v1
+      canal.mq.partition: "0"
+      canal.mq.send.thread.size: "1"
+      canal.mq.build.thread.size: "1"
+      kafka.bootstrap.servers: kafka:29092
+      kafka.acks: all
+      kafka.max.in.flight.requests.per.connection: "1"
+    volumes: ["canal-position:/home/admin/canal-server/meta"]
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.19.4
+    profiles: ["search"]
+    ports: ["127.0.0.1:19200:9200"]
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    mem_limit: 1536m
+    volumes: ["search-data:/usr/share/elasticsearch/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:9200/_cluster/health >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+volumes:
+  search-data:
+  canal-position:

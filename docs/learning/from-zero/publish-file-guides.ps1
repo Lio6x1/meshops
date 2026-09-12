@@ -37,13 +37,14 @@ foreach ($stage in $index.stages) {
         if ((Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash.ToLowerInvariant() -cne $file.sha256) { throw "Stage index is stale: $source" }
         $lines.Add('### `' + $file.path + '`')
         $lines.Add('')
-        if ($file.path.StartsWith('gen/') -or $file.path.StartsWith('verification/') -or $file.path.EndsWith('.bin')) {
+        if ($file.path.StartsWith('gen/') -or $file.path.StartsWith('verification/') -or $file.path.EndsWith('.bin') -or $file.path.EndsWith('package-lock.json')) {
             $lines.Add('<!-- linked-file:' + $file.path + ' -->')
             $reason = if ($file.path.EndsWith('.bin')) {'这是二进制协议基线，必须直接复制表中的原文件，不能用文本编辑器保存或从代码块还原。'} elseif ($file.path.StartsWith('gen/')) {'这是生成文件。复制表中的完整原文件，或按本阶段生成脚本生成；不要手写。'} else {'这是已有验收记录，供查阅与复现比较，不是新代码，也不能当作你本机已经运行通过的证据。若需要完全一致的阶段目录，复制表中的原文件。'}
+            if ($file.path.EndsWith('package-lock.json')) { $reason = '这是 npm 生成的精确依赖锁定文件。直接复制表中的完整原文件，再运行 npm ci；不要手写或删除它，否则依赖版本将失去复现保证。' }
             $lines.Add($reason)
         } else {
             $code = [IO.File]::ReadAllText($source).Replace("`r`n", "`n")
-            $language = switch ([IO.Path]::GetExtension($source)) { '.go' {'go'} '.proto' {'protobuf'} '.ps1' {'powershell'} '.sql' {'sql'} '.yaml' {'yaml'} '.json' {'json'} '.md' {'markdown'} default {'text'} }
+            $language = switch ([IO.Path]::GetExtension($source)) { '.go' {'go'} '.proto' {'protobuf'} '.ps1' {'powershell'} '.sql' {'sql'} '.yaml' {'yaml'} '.yml' {'yaml'} '.json' {'json'} '.md' {'markdown'} '.vue' {'vue'} '.ts' {'typescript'} '.css' {'css'} '.html' {'html'} '.sh' {'bash'} default {'text'} }
             # 长围栏容纳 README 中自身的代码围栏。
             if ($code.Contains('`````')) { throw "Unsupported nested fence: $source" }
             $lines.Add('<!-- file:' + $file.path + ' -->')

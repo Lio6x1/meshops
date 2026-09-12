@@ -1,0 +1,248 @@
+{
+  "passed": true,
+  "sources": {
+    "fullMarkdown": {
+      "sha256": "873c654ad9a9da0d316210df70410dcbcefc67fc0db87425eee0939b1cae3a35",
+      "passed": true,
+      "source": ".cache/lesson-copy-84440923c9ce45c4994a5e9f66164ed1/result.json",
+      "stages": [
+        {
+          "stage": "z01",
+          "completeBlocks": 6,
+          "linkedGeneratedOrEvidence": 3,
+          "finalFiles": 9,
+          "sourceTextEqual": true,
+          "built": true,
+          "smoke": false,
+          "frontendBuilt": false
+        },
+        {
+          "stage": "z02",
+          "completeBlocks": 9,
+          "linkedGeneratedOrEvidence": 0,
+          "finalFiles": 16,
+          "sourceTextEqual": true,
+          "built": true,
+          "smoke": true,
+          "frontendBuilt": false
+        },
+        {
+          "stage": "z03",
+          "completeBlocks": 11,
+          "linkedGeneratedOrEvidence": 2,
+          "finalFiles": 19,
+          "sourceTextEqual": true,
+          "built": true,
+          "smoke": true,
+          "frontendBuilt": false
+        },
+        {
+          "stage": "z04",
+          "completeBlocks": 25,
+          "linkedGeneratedOrEvidence": 6,
+          "finalFiles": 31,
+          "sourceTextEqual": true,
+          "built": true,
+          "smoke": false,
+          "frontendBuilt": false
+        },
+        {
+          "stage": "z05",
+          "completeBlocks": 17,
+          "linkedGeneratedOrEvidence": 0,
+          "finalFiles": 41,
+          "sourceTextEqual": true,
+          "built": true,
+          "smoke": false,
+          "frontendBuilt": false
+        },
+        {
+          "stage": "z06",
+          "completeBlocks": 23,
+          "linkedGeneratedOrEvidence": 0,
+          "finalFiles": 55,
+          "sourceTextEqual": true,
+          "built": true,
+          "smoke": false,
+          "frontendBuilt": false
+        },
+        {
+          "stage": "z07",
+          "completeBlocks": 90,
+          "linkedGeneratedOrEvidence": 8,
+          "finalFiles": 142,
+          "sourceTextEqual": true,
+          "built": true,
+          "smoke": false,
+          "frontendBuilt": false
+        },
+        {
+          "stage": "z08",
+          "completeBlocks": 9,
+          "linkedGeneratedOrEvidence": 0,
+          "finalFiles": 145,
+          "sourceTextEqual": true,
+          "built": true,
+          "smoke": false,
+          "frontendBuilt": false
+        },
+        {
+          "stage": "z09",
+          "completeBlocks": 27,
+          "linkedGeneratedOrEvidence": 23,
+          "finalFiles": 182,
+          "sourceTextEqual": true,
+          "built": true,
+          "smoke": false,
+          "frontendBuilt": false
+        },
+        {
+          "stage": "z10",
+          "completeBlocks": 53,
+          "linkedGeneratedOrEvidence": 4,
+          "finalFiles": 225,
+          "sourceTextEqual": true,
+          "built": true,
+          "smoke": false,
+          "frontendBuilt": false
+        },
+        {
+          "stage": "z11",
+          "completeBlocks": 18,
+          "linkedGeneratedOrEvidence": 4,
+          "finalFiles": 242,
+          "sourceTextEqual": true,
+          "built": true,
+          "smoke": false,
+          "frontendBuilt": false
+        },
+        {
+          "stage": "z12",
+          "completeBlocks": 30,
+          "linkedGeneratedOrEvidence": 1,
+          "finalFiles": 273,
+          "sourceTextEqual": true,
+          "built": true,
+          "smoke": false,
+          "frontendBuilt": true
+        },
+        {
+          "stage": "z13",
+          "completeBlocks": 35,
+          "linkedGeneratedOrEvidence": 2,
+          "finalFiles": 302,
+          "sourceTextEqual": true,
+          "built": true,
+          "smoke": false,
+          "frontendBuilt": true
+        }
+      ],
+      "normalization": "CRLF/LF and terminal newlines"
+    },
+    "webSteps": {
+      "sha256": "9d68be3ade55a1135564f5c56dbc8e5e9f062d4f696bb079d4b6514affd528ad",
+      "passed": true,
+      "source": ".cache/substeps-ac60d432f2554be3adc539a611a1ab0a/result.json",
+      "steps": [
+        {
+          "step": "z11-01",
+          "build": true,
+          "tests": [],
+          "dependencies": [
+            null
+          ],
+          "exactTestsPassed": false,
+          "browserTests": false,
+          "frontendBuild": false
+        },
+        {
+          "step": "z11-02",
+          "build": true,
+          "tests": [
+            "TestSessionBoundary",
+            "TestSessionExpiresAndDoesNotReturnMachineToken",
+            "TestGeneratedGatewayAndStreamCancellation"
+          ],
+          "dependencies": [
+            null
+          ],
+          "exactTestsPassed": true,
+          "browserTests": false,
+          "frontendBuild": false
+        },
+        {
+          "step": "z12-01",
+          "build": true,
+          "tests": [],
+          "dependencies": [
+            null
+          ],
+          "exactTestsPassed": false,
+          "browserTests": true,
+          "frontendBuild": false
+        },
+        {
+          "step": "z12-02",
+          "build": true,
+          "tests": [],
+          "dependencies": [
+            null
+          ],
+          "exactTestsPassed": false,
+          "browserTests": true,
+          "frontendBuild": true
+        },
+        {
+          "step": "z13-01",
+          "build": true,
+          "tests": [
+            "TestSessionBoundary",
+            "TestGeneratedGatewayAndStreamCancellation"
+          ],
+          "dependencies": [
+            null
+          ],
+          "exactTestsPassed": true,
+          "browserTests": true,
+          "frontendBuild": true
+        }
+      ]
+    },
+    "finalDelta": {
+      "sha256": "d84c3d22b0857ec5db7d0523267cb88d80fc6e15dc5cfd2b5ce8023ee7dfe1e0",
+      "passed": true,
+      "source": ".cache/fullstack/final-teaching-delta.json",
+      "scope": "Three ST1005 error-message lowercase corrections plus npm cache exclusions in git/docker ignore files; excluded npm cache is not application source. Full stage runs remain recorded separately.",
+      "copies": [
+        {
+          "kind": "markdown",
+          "updated_files": {
+            "cmd/demo-init/recovery.go": "9273ffca9bf773a041f00bca212e36be9f3a8013967de7905b0001b95ad20cda",
+            ".dockerignore": "3ec28e3a109a054a437b0a79faa2bc06304d6cbb509650e7b4cbdb2387b1a265",
+            ".gitignore": "f36bfc3b736e1824b545f255f44db67223ea75b3dc0fe0f0bdbb9e6dc8149ca3"
+          },
+          "final_stage_files": 299,
+          "all_final_source_hashes_verified": true,
+          "all_learner_source_contents_equal": true,
+          "delta_test_passed": true
+        },
+        {
+          "kind": "substeps",
+          "updated_files": {
+            "cmd/demo-init/recovery.go": "9273ffca9bf773a041f00bca212e36be9f3a8013967de7905b0001b95ad20cda",
+            ".dockerignore": "3ec28e3a109a054a437b0a79faa2bc06304d6cbb509650e7b4cbdb2387b1a265",
+            ".gitignore": "f36bfc3b736e1824b545f255f44db67223ea75b3dc0fe0f0bdbb9e6dc8149ca3"
+          },
+          "final_stage_files": 299,
+          "all_final_source_hashes_verified": true,
+          "all_learner_source_contents_equal": true,
+          "delta_test_passed": true
+        }
+      ]
+    }
+  },
+  "finalStageFiles": 299,
+  "finalCompleteBlocks": 350,
+  "publishedStageFileRecords": 1676,
+  "totalSubsteps": 28
+}

@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "archivedOn": "2026-09-12",
+  "reviewBaseline": "641bf62e6913912e404704e5c3dd1d7604692994",
+  "archiveInputRepositoryHead": "efaa070f2ceff4fe905122de46d87006a945ce19",
+  "localRunsExactTestedCommit": null,
+  "association": "Local files were retained from the review worktree, whose implementation was committed in 31fda577d2269f319f2d51deabf454e8f2aa3b36, with later fault restoration fix a30432ab78111a852e6782d3c91a850a88bf9fb5. Sources do not embed an exact tested Git SHA; these associations are documentary, not an assertion that every run tested final HEAD.",
+  "ciExactCommit": "a30432ab78111a852e6782d3c91a850a88bf9fb5",
+  "ciRunUrl": "https://github.com/Lio6x1/meshops/actions/runs/34685426074",
+  "sources": {
+    "windows-integration": {
+      "locator": ".worktrees/comprehensive-review-20260912/.cache/review/windows-integration.jsonl",
+      "bytes": 225618,
+      "sha256": "20ed62b6ee189f7f319a994ba3be4c318f293fd2e0683daca26d135685067a32"
+    },
+    "fresh-course-integration": {
+      "locator": ".worktrees/comprehensive-review-20260912/.cache/search-course-a8f6e9746a7e42eaa9e8f8c71926ddde/learner/results/integration.jsonl",
+      "bytes": 226720,
+      "sha256": "1f121792777214e5cdc5b3e45ef6734212af8c669ab3872582173aa7cea78e5a"
+    },
+    "linux-first-race": {
+      "locator": ".worktrees/comprehensive-review-20260912/.cache/review/linux-results/integration-race.jsonl",
+      "bytes": 216724,
+      "sha256": "537fbc5c23484eb99bc2b72ff8622fb5314b5316802313268a847c25c9269ef2"
+    },
+    "gate-definition": {
+      "locator": "scripts/check-test-results.py",
+      "bytes": 3064,
+      "sha256": "6c113f1c35bdf4d01ad9d38a55660f6ec4752304302d7c64f7b32966e77f3fbf"
+    },
+    "fresh-course": {
+      "locator": ".worktrees/comprehensive-review-20260912/.cache/search-course-a8f6e9746a7e42eaa9e8f8c71926ddde/result.json",
+      "bytes": 681,
+      "sha256": "d72c4c0ae283b105b4d360a528d89236c6acc8c2ff72a2107736babad3f73944"
+    },
+    "lesson-copy": {
+      "locator": ".worktrees/comprehensive-review-20260912/.cache/lesson-copy-a6db68c127314dc781c1aa9b3fafc77c/result.json",
+      "bytes": 2490,
+      "sha256": "6596bae9a84aa8f6102dda18a2953c6c1d983ffbc08f578c3562a4b22e7c334a"
+    },
+    "substeps-full": {
+      "locator": ".worktrees/comprehensive-review-20260912/.cache/substeps-32485ec36d5e436cb233d34768e759ac/result.json",
+      "bytes": 7129,
+      "sha256": "7678debf4ac663508f1e1847a643259369551cc4eb07f42bfaca9974b71dbbcf"
+    },
+    "substeps-z10-recheck": {
+      "locator": ".worktrees/comprehensive-review-20260912/.cache/substeps-1e63c376dcbb42c5b9245b38c8c1d84b/result.json",
+      "bytes": 1248,
+      "sha256": "4a50e198c87d6411dae28cc8950b3054c1c9dcf6124af4aea33ee557b26f00f7"
+    },
+    "published-runtime-results": {
+      "locator": "docs/review/2026-09-12/runtime-results.json",
+      "bytes": 8080,
+      "sha256": "c881cb7aeabb164e85254bd6ecf4bb974bac7ec3966aeaba085957b8e42ae185"
+    },
+    "published-ci-results": {
+      "locator": "docs/review/2026-09-12/ci-results.json",
+      "bytes": 1790,
+      "sha256": "253597caeeb58e9e4ab9131c936e7e8dac85516d7cddae4c59befdf91e8cc3fd"
+    },
+    "faults-final": {
+      "locator": ".worktrees/comprehensive-review-20260912/.cache/review/faults-final.json",
+      "bytes": 1561,
+      "sha256": "55ed5595e4d30ad168994858710d45978f2641389eba5b4c0d5b63399c0458a1",
+      "runId": "99ec77734afb4150bb1ebd1d97ababbe"
+    },
+    "benchmark-final": {
+      "locator": ".worktrees/comprehensive-review-20260912/.cache/review/benchmark-final.json",
+      "bytes": 2418,
+      "sha256": "32cef266d83667443b11ccab2a3a15727661d588b06af727533126f907501cd8",
+      "runId": "5f8ef867e3924efd9c6984222f503632"
+    },
+    "fault-preservation-green": {
+      "locator": ".worktrees/comprehensive-review-20260912/.cache/review/fault-preservation-green.txt",
+      "bytes": 1561,
+      "sha256": "ee0bd532be4b35ec455b0622321982623ee6c11a75fd7487f9a65b6fc0918e2e",
+      "runId": "f83f6ece0cc24a7a978c1bedcfaa93ac"
+    },
+    "fault-preservation-red": {
+      "locator": ".worktrees/comprehensive-review-20260912/.cache/review/fault-preservation-red.txt",
+      "bytes": 1564,
+      "sha256": "6f4a324ee0036174d270a6d1f87b572ba3e6886aaab861e38a6f013f9b666c29",
+      "runId": "819ac37a1e1d47aeac7a8355b12f7e2f",
+      "limit": "Raw JSON records probe success only; wrapper exit and container identity failure are documented in runtime-results.json, not encoded in this source."
+    },
+    "fault-config-before": {
+      "locator": ".worktrees/comprehensive-review-20260912/.cache/review/fault-config-before.json",
+      "bytes": 168,
+      "sha256": "75863f4c17630aa33ed984763602503201f237852e7145837e75dbe785a39cf9"
+    },
+    "fault-config-after": {
+      "locator": ".worktrees/comprehensive-review-20260912/.cache/review/fault-config-after.json",
+      "bytes": 168,
+      "sha256": "75863f4c17630aa33ed984763602503201f237852e7145837e75dbe785a39cf9"
+    }
+  }
+}

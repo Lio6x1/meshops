@@ -1,0 +1,31 @@
+# Equivalent to google.api.http annotations, kept separate from the wire schema.
+# Only browser-facing unary methods are exported. Executor/source APIs stay gRPC.
+type: google.api.Service
+config_version: 3
+http:
+  rules:
+    - selector: meshops.entity.v1.EntityService.GetSnapshot
+      get: /api/v1/entities/{entity_id}
+    - selector: meshops.entity.v1.EntityService.ListHistorySamples
+      get: /api/v1/entities/{entity_id}/history
+    - selector: meshops.task.v1.TaskService.CreateTask
+      post: /api/v1/tasks
+      body: '*'
+    - selector: meshops.task.v1.TaskService.ListTasks
+      get: /api/v1/tasks
+    - selector: meshops.task.v1.TaskService.GetTask
+      get: /api/v1/tasks/{task_id}
+    - selector: meshops.task.v1.TaskService.CancelTask
+      post: /api/v1/tasks/{task_id}/cancel
+      body: '*'
+    - selector: meshops.task.v1.TaskService.GetTaskHistory
+      get: /api/v1/tasks/{task_id}/history
+    - selector: meshops.dispatcher.v1.DispatcherService.GetDispatch
+      get: /api/v1/tasks/{task_id}/dispatch
+    - selector: meshops.dispatcher.v1.DispatcherService.RetryDLQ
+      post: /api/v1/tasks/{task_id}/retry
+      body: '*'
+    - selector: meshops.dispatcher.v1.DispatcherService.GetStatus
+      get: /api/v1/dispatcher/status
+    - selector: meshops.search.v1.SearchService.SearchTasks
+      get: /api/v1/search/tasks

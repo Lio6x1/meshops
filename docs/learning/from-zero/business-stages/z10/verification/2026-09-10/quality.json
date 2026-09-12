@@ -1,0 +1,20 @@
+{
+  "date": "2026-09-10",
+  "go": "go version go1.25.10 windows/amd64",
+  "staticcheck": "staticcheck.exe 2026.1 (v0.7.0)",
+  "buf": "1.72.0",
+  "checks": {
+    "modVerify": 0,
+    "vet": 0,
+    "staticcheckHandwritten": 0,
+    "protoLintCompatibilityAndExactGeneration": 0,
+    "processOwnership": 0,
+    "verificationToolRegression": 0
+  },
+  "notes": [
+    "Exit codes are from this completed final source check.",
+    "Staticcheck excludes generated gen packages.",
+    "Linux race and Windows real dependency integration are recorded separately.",
+    "Hosted CI configured but not run in this session."
+  ]
+}

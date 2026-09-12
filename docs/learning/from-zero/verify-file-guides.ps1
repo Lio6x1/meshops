@@ -1,4 +1,4 @@
-param([switch]$Build)
+param([switch]$Build,[switch]$Frontend)
 $ErrorActionPreference = 'Stop'
 $materialRoot = $PSScriptRoot
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $materialRoot '../../..'))
@@ -68,7 +68,15 @@ try {
                 }
             } finally { Pop-Location }
         }
-        $results.Add([ordered]@{stage=$stage.stage; completeBlocks=$blocks.Count; linkedGeneratedOrEvidence=$links.Count; finalFiles=$stage.files.Count; sourceTextEqual=$true; built=[bool]$Build; smoke=($Build -and $stage.stage -in @('z02','z03'))})
+        if($Frontend -and $stage.stage -in @('z12','z13')) {
+            Push-Location $learnerRoot
+            try {
+                & ./scripts/frontend.ps1 -Action Install *> (Join-Path $runRoot ($stage.stage+'-npm.txt'))
+                & ./scripts/frontend.ps1 -Action Test *> (Join-Path $runRoot ($stage.stage+'-browser.txt'))
+                & ./scripts/frontend.ps1 -Action Build *> (Join-Path $runRoot ($stage.stage+'-frontend-build.txt'))
+            } finally {Pop-Location}
+        }
+        $results.Add([ordered]@{stage=$stage.stage; completeBlocks=$blocks.Count; linkedGeneratedOrEvidence=$links.Count; finalFiles=$stage.files.Count; sourceTextEqual=$true; built=[bool]$Build; smoke=($Build -and $stage.stage -in @('z02','z03')); frontendBuilt=($Frontend -and $stage.stage -in @('z12','z13'))})
         Write-Output "$($stage.stage): copied from Markdown, verified $($stage.files.Count) files."
     }
     $result = [ordered]@{passed=$true; learner=$learnerRoot; source='Markdown full-file blocks plus explicit generated/evidence links'; normalized='CRLF/LF and terminal newlines'; stages=$results; note='No new Docker fault or performance run; stage source equivalence checked.'}

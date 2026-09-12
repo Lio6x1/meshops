@@ -13,7 +13,7 @@ $test = $test.Substring(0,$cut).Replace("`t`"os`"`n",'')
 $override = 'substeps/z07-01/internal/tasks/domain_test.go'
 [IO.Directory]::CreateDirectory((Split-Path (Join-Path $root $override))) | Out-Null
 [IO.File]::WriteAllText((Join-Path $root $override), $test, $utf8)
-foreach ($stageID in @('z04','z05','z06','z07','z08','z09','z10')) {
+foreach ($stageID in @('z04','z05','z06','z07','z08','z09','z10','z11','z12','z13')) {
     $stage = $index.stages | Where-Object stage -eq $stageID
     $pending = [Collections.Generic.List[string]]::new()
     foreach ($path in @($stage.changes.added)+@($stage.changes.replaced)) { $pending.Add($path) }
@@ -56,6 +56,20 @@ foreach ($stageID in @('z04','z05','z06','z07','z08','z09','z10')) {
             @{id='z10-01'; title='先定义搜索协议'; paths=@($pending | Where-Object {$_ -match '^(proto/search/|gen/search/)'}); remove=@(); packages=@('./gen/...'); tests=@()},
             @{id='z10-02'; title='搜索投影、分页与快照恢复规则'; paths=@($pending | Where-Object {$_ -match '^internal/search/'}); remove=@(); packages=@('./internal/search'); tests=@('TestCanalFullRowsAndSafeProjection','TestCanalMySQLEnumOrdinal','TestHandlerOnlyAcknowledgesWholeMessage','TestIndexVersionConflict','TestSearchTenantPagingAndCursorBinding','TestSearchServiceUsesTrustedTenantAndReadiness','TestResetTaskIndexRefusesOtherResources')},
             @{id='z10-03'; title='独立服务、Canal与维护入口接线'; paths=@('*'); remove=@($stage.changes.removed); packages=@('./internal/platform','./internal/cli'); tests=@('TestSearchMethodPermissions','TestOpctlSearchCallsSearchRPC')}
+        )
+    } elseif ($stageID -eq 'z11') {
+        $definitions = @(
+            @{id='z11-01'; title='HTTP 映射与可复现生成'; paths=@($pending | Where-Object {$_ -match '^(proto/|gen/|go\.(mod|sum)$|scripts/(generate-http|verify-proto)\.ps1$)'}); remove=@(); packages=@('./gen/...'); tests=@()},
+            @{id='z11-02'; title='可信会话、HTTP 查询与实时订阅'; paths=@('*'); remove=@($stage.changes.removed); packages=@('./internal/web'); tests=@('TestSessionBoundary','TestSessionExpiresAndDoesNotReturnMachineToken','TestGeneratedGatewayAndStreamCancellation')}
+        )
+    } elseif ($stageID -eq 'z12') {
+        $definitions = @(
+            @{id='z12-01'; title='前端领域类型、状态规则与依赖'; paths=@($pending | Where-Object {$_ -match '^web/(package.*\.json|tsconfig.*\.json|vite.config.ts|tests/|src/(domain|types|transport|requests)\.ts$)'}); remove=@(); packages=@(); tests=@()},
+            @{id='z12-02'; title='会话、六个页面与真实接口联调'; paths=@('*'); remove=@($stage.changes.removed); packages=@(); tests=@()}
+        )
+    } elseif ($stageID -eq 'z13') {
+        $definitions = @(
+            @{id='z13-01'; title='容器网络、持久初始化与统一启动'; paths=@('*'); remove=@($stage.changes.removed); packages=@('./internal/web','./internal/platform'); tests=@('TestSessionBoundary','TestGeneratedGatewayAndStreamCancellation')}
         )
     } else {
         $definitions = @(
@@ -106,12 +120,20 @@ foreach ($stageID in @('z04','z05','z06','z07','z08','z09','z10')) {
             $pattern = '^('+($step.tests -join '|')+')$'
             $lines.Add('go test '+($step.packages -join ' ')+' -run '''+$pattern+''' -count=1 -v')
             $lines.Add("if (`$LASTEXITCODE -ne 0) { throw 'test failed' }")
+        } elseif ($step.id -eq 'z12-01') {
+            $lines.Add('node --experimental-strip-types --test web/tests/*.test.ts')
+            $lines.Add("if (`$LASTEXITCODE -ne 0) { throw 'browser domain tests failed' }")
+        } elseif ($step.id -eq 'z12-02') {
+            $lines.Add('./scripts/frontend.ps1 -Action Install')
+            $lines.Add('./scripts/frontend.ps1 -Action Test')
+            $lines.Add('./scripts/frontend.ps1 -Action Build')
         } else {$lines.Add('go test ./gen/...')}
         $lines.Add('```')
         $lines.Add('')
         if($step.tests.Count){$lines.Add('构建成功通常没有输出。测试必须出现下列顶层测试的PASS；[no tests to run]不是通过本步骤。')}
         foreach($name in $step.tests){$lines.Add('- `'+$name+'`')}
-        if(-not $step.tests.Count){$lines.Add('本步骤只有生成包，[no test files]是预期，不能声称业务请求已验证。')}
+        if($step.stage -eq 'z12'){$lines.Add('Node 24.15.0 运行领域测试；第二步还必须通过 TypeScript 检查并生成 web/dist。构建通过不能代替浏览器真实业务验收。')}
+        elseif(-not $step.tests.Count){$lines.Add('本步骤只检查生成包，[no test files]是预期，不能声称业务请求已验证。')}
         [IO.File]::WriteAllText((Join-Path $output ($definition.id+'.md')),($lines -join "`n")+"`n",$utf8)
     }
     if($pending.Count){throw "Unassigned files: $pending"}

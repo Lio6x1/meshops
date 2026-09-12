@@ -1,0 +1,117 @@
+{
+  "windows-integration": {
+    "topLevel": {
+      "pass": 145,
+      "skip": 3,
+      "fail": 0
+    },
+    "terminalRecordsIncludingSubtests": 235,
+    "requiredTests": 19,
+    "missingRequired": [],
+    "businessSkips": [],
+    "failuresIncludingPackageEvents": [],
+    "requiredGatePassed": true,
+    "passByPackage": {
+      "example.com/meshops-course/cmd/verify": 1,
+      "example.com/meshops-course/internal/app": 1,
+      "example.com/meshops-course/internal/bus": 7,
+      "example.com/meshops-course/internal/cli": 10,
+      "example.com/meshops-course/internal/edge": 37,
+      "example.com/meshops-course/internal/platform": 6,
+      "example.com/meshops-course/internal/search": 20,
+      "example.com/meshops-course/internal/state": 27,
+      "example.com/meshops-course/internal/tasks": 33,
+      "example.com/meshops-course/internal/verification": 3
+    }
+  },
+  "fresh-course-integration": {
+    "topLevel": {
+      "pass": 145,
+      "skip": 3,
+      "fail": 0
+    },
+    "terminalRecordsIncludingSubtests": 235,
+    "requiredTests": 19,
+    "missingRequired": [],
+    "businessSkips": [],
+    "failuresIncludingPackageEvents": [],
+    "requiredGatePassed": true,
+    "passByPackage": {
+      "example.com/meshops-course/cmd/verify": 1,
+      "example.com/meshops-course/internal/app": 1,
+      "example.com/meshops-course/internal/bus": 7,
+      "example.com/meshops-course/internal/cli": 10,
+      "example.com/meshops-course/internal/edge": 37,
+      "example.com/meshops-course/internal/platform": 6,
+      "example.com/meshops-course/internal/search": 20,
+      "example.com/meshops-course/internal/state": 27,
+      "example.com/meshops-course/internal/tasks": 33,
+      "example.com/meshops-course/internal/verification": 3
+    }
+  },
+  "linux-first-race": {
+    "topLevel": {
+      "pass": 139,
+      "skip": 3,
+      "fail": 3
+    },
+    "terminalRecordsIncludingSubtests": 230,
+    "requiredTests": 19,
+    "missingRequired": [
+      {
+        "package": "example.com/meshops-course/internal/bus",
+        "test": "TestRetentionGapIsNotReportedAsHealthyLag"
+      },
+      {
+        "package": "example.com/meshops-course/internal/state",
+        "test": "TestRedisOOMDoesNotCommitKafkaOffset"
+      }
+    ],
+    "businessSkips": [],
+    "failuresIncludingPackageEvents": [
+      {
+        "package": "example.com/meshops-course/internal/bus",
+        "test": "TestRetentionGapIsNotReportedAsHealthyLag",
+        "action": "fail"
+      },
+      {
+        "package": "example.com/meshops-course/internal/bus",
+        "test": null,
+        "action": "fail"
+      },
+      {
+        "package": "example.com/meshops-course/internal/state",
+        "test": "TestRedisOOMDoesNotCommitKafkaOffset",
+        "action": "fail"
+      },
+      {
+        "package": "example.com/meshops-course/internal/state",
+        "test": "TestKafkaShadowMissingManifestDoesNotSwitch/actual_retention_truncation",
+        "action": "fail"
+      },
+      {
+        "package": "example.com/meshops-course/internal/state",
+        "test": "TestKafkaShadowMissingManifestDoesNotSwitch",
+        "action": "fail"
+      },
+      {
+        "package": "example.com/meshops-course/internal/state",
+        "test": null,
+        "action": "fail"
+      }
+    ],
+    "requiredGatePassed": false,
+    "passByPackage": {
+      "example.com/meshops-course/cmd/verify": 1,
+      "example.com/meshops-course/internal/app": 1,
+      "example.com/meshops-course/internal/bus": 6,
+      "example.com/meshops-course/internal/cli": 10,
+      "example.com/meshops-course/internal/edge": 37,
+      "example.com/meshops-course/internal/platform": 6,
+      "example.com/meshops-course/internal/search": 20,
+      "example.com/meshops-course/internal/state": 25,
+      "example.com/meshops-course/internal/tasks": 30,
+      "example.com/meshops-course/internal/verification": 3
+    }
+  }
+}

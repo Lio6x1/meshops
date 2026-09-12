@@ -1,0 +1,208 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-12",
+  "source": {
+    "locator": ".local/archives/review-20260912/cleanup-results.json",
+    "bytes": 5594,
+    "sha256": "22d24f90c2127f68769cbe45f769d1cdbaca2a94ffde2c1aff0c7735576132ca"
+  },
+  "removedLogicalBytes": 4119914506,
+  "removedGiB": 3.837,
+  "measurement": "Sum of pre-cleanup regular-file logical sizes for 30 removed targets, excluding reparse targets; not a measurement of filesystem free-space change or the entire cache after concurrent work.",
+  "archive": {
+    "path": ".local/archives/review-20260912",
+    "files": 921,
+    "bytes": 6504033,
+    "verifiedSHA256": true,
+    "privateOnly": true
+  },
+  "retained": [
+    ".cache/go-build-reference",
+    ".cache/fullstack",
+    ".local/archives/review-20260912",
+    "bin"
+  ],
+  "remainingWorktrees": 1,
+  "targets": [
+    {
+      "path": ".worktrees/comprehensive-review-20260912",
+      "beforeBytes": 2255792778,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".local/linux-go-build",
+      "beforeBytes": 1206000109,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/course-copy-24851de5962142fe8f072ec8f91c9570",
+      "beforeBytes": 68115,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/course-copy-43e927a906bd411f91c26d6f30b25922",
+      "beforeBytes": 1427920,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/course-copy-4fa65ed55c5e427481260f741fc7fa33",
+      "beforeBytes": 97748,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/course-copy-6abde73410654ae0b19a19f27e87ee5e",
+      "beforeBytes": 1434102,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/course-copy-838e3bf2779b4bcd96fbad1ad4173ec4",
+      "beforeBytes": 1612300,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/course-copy-886d2ede0bf744f29087102aea40865a",
+      "beforeBytes": 1430119,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/course-copy-97e07a99a65b4d2c93cfd55d62a3b16e",
+      "beforeBytes": 1621577,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/course-copy-c51e36affe884692965e4021ebf80d6a",
+      "beforeBytes": 68117,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/course-copy-cdab18ec1ac64f2eb7d823ea224574ac",
+      "beforeBytes": 1154211,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/course-copy-df335e3557d148c9912a903f615686df",
+      "beforeBytes": 1434101,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/lesson-copy-12bc9d55e348427795db4a7f124c9006",
+      "beforeBytes": 1277013,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/lesson-copy-16507018fc2349f19d33ca72adcec22c",
+      "beforeBytes": 1275813,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/lesson-copy-1773f8a9065f429884697c163dfe934d",
+      "beforeBytes": 1276166,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/lesson-copy-1bcaf5ac50394ac28087ace5a72796aa",
+      "beforeBytes": 1276002,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/lesson-copy-29963684e3da4d9790f27e48504b1bbf",
+      "beforeBytes": 1277338,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/lesson-copy-6ae58d1edbe44f698c8214bfd80d4023",
+      "beforeBytes": 126489795,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/lesson-copy-71ca836cdbb548c5b62998cf971f552d",
+      "beforeBytes": 1275434,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/lesson-copy-a521bce9d1c94fa48b635aff998e768a",
+      "beforeBytes": 126622668,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/lesson-copy-d0cf8876fb3d44b3a1bbda1eaa8d066d",
+      "beforeBytes": 126619982,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/lesson-copy-f28a0764bee945ae8182d5a231e025a4",
+      "beforeBytes": 126493361,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/lesson-copy-fd0698b8cb214a91a51c8a5ba24fef5f",
+      "beforeBytes": 126498190,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/lesson-copy-ff3eb4dc055e446d9283e86ac430338e",
+      "beforeBytes": 1146821,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/substeps-0e6bda9aa43e4abcb7166a6d982596de",
+      "beforeBytes": 1287204,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/substeps-1fad5c84685d471893cf3d123b4bea8f",
+      "beforeBytes": 1289951,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/substeps-447fe469c6664aafa740036a9e6bab13",
+      "beforeBytes": 1224361,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/substeps-5aca6d025a124ea6a72c3158fb20c974",
+      "beforeBytes": 328352,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/substeps-9634d1c2891149e0b7087e61bc41104d",
+      "beforeBytes": 1216678,
+      "afterBytes": 0,
+      "removed": true
+    },
+    {
+      "path": ".cache/substeps-a40bbd35811045dfac35b6dc75419355",
+      "beforeBytes": 898180,
+      "afterBytes": 0,
+      "removed": true
+    }
+  ]
+}

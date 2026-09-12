@@ -1,0 +1,10 @@
+{
+  "event_id": "facility-observation-001",
+  "facility_id": "facility-001",
+  "revision": 1,
+  "observed_at": "2026-09-05T00:00:00Z",
+  "coordinates": {"latitude": 31.23, "longitude": 121.47},
+  "kind": "charging_station",
+  "open": true,
+  "slots": {"occupied": 2, "total": 8}
+}

@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package meshops.task.v1;
+
+option go_package = "example.com/meshops-course/gen/task/v1;taskv1";
+
+import "google/protobuf/timestamp.proto";
+import "common/v1/task.proto";
+
+// ============================================================================
+// 任务服务 - 任务创建/查询/取消（全部一元 RPC）
+// ============================================================================
+
+service TaskService {
+  rpc CreateTask   (CreateTaskRequest)    returns (CreateTaskResponse);
+  rpc CancelTask   (CancelTaskRequest)    returns (CancelTaskResponse);
+  rpc GetTask      (GetTaskRequest)       returns (GetTaskResponse);
+  rpc ListTasks    (ListTasksRequest)     returns (ListTasksResponse);
+  rpc GetTaskHistory(GetTaskHistoryRequest) returns (GetTaskHistoryResponse);
+  // Authenticated execution feedback; status/audit/outbox update atomically.
+  rpc ReportTaskStatus(ReportTaskStatusRequest) returns (ReportTaskStatusResponse);
+}
+
+message CreateTaskRequest {
+  string idempotency_key  = 1;  // 幂等键（客户端生成）
+  string task_type        = 2;
+  string target_entity_id = 3; // Entity selected by the operator to execute the task.
+  meshops.common.v1.TaskPayload payload  = 4;
+  int32  priority         = 5;  // [1-10]，默认5
+  google.protobuf.Timestamp deadline = 6;
+}
+
+message CreateTaskResponse {
+  string task_id = 1;
+  meshops.common.v1.TaskStatus status     = 2;
+  google.protobuf.Timestamp    created_at = 3;
+}
+
+message CancelTaskRequest  { string task_id = 1; string reason = 2; }
+message CancelTaskResponse {
+  bool   success        = 1;
+  meshops.common.v1.TaskStatus current_status = 2;
+  string message        = 3;
+  bool cancel_requested = 4; // Accepted request, possibly awaiting executor confirmation.
+}
+
+message GetTaskRequest  { string task_id = 1; }
+message GetTaskResponse { meshops.common.v1.Task task = 1; }
+
+message ListTasksRequest {
+  string target_entity_id = 1;
+  meshops.common.v1.TaskStatus status     = 2;
+  int32  page_size        = 3;
+  string page_token       = 4;
+}
+
+message ListTasksResponse {
+  repeated meshops.common.v1.Task tasks           = 1;
+  string next_page_token = 2;
+  int32  total_count     = 3;
+}
+
+message GetTaskHistoryRequest  { string task_id = 1; }
+message GetTaskHistoryResponse {
+  repeated meshops.common.v1.TaskStatusChange history = 1;
+}
+
+message ReportTaskStatusRequest {
+  string event_id = 1; // Stable for retries of this particular report.
+  string task_id = 2;
+  string execution_key = 3;
+  string executor_id = 4; // Must match authenticated identity and assignment.
+  string dispatch_id = 5;
+  int32 expected_status_version = 6;
+  meshops.common.v1.TaskStatus status = 7;
+  string result_json = 8;
+  string reason = 9;
+  google.protobuf.Timestamp occurred_at = 10;
+}
+
+message ReportTaskStatusResponse {
+  meshops.common.v1.TaskStatus current_status = 1;
+  int32 status_version = 2;
+  StatusReportDisposition disposition = 3;
+}
+
+enum StatusReportDisposition {
+  STATUS_REPORT_DISPOSITION_UNSPECIFIED = 0;
+  STATUS_REPORT_DISPOSITION_APPLIED = 1;
+  STATUS_REPORT_DISPOSITION_DUPLICATE = 2;
+  STATUS_REPORT_DISPOSITION_LATE_RESULT = 3; // Audited without replacing a terminal state.
+}

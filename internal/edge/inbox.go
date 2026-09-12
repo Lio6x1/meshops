@@ -1,6 +1,7 @@
 package edge
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	commonv1 "example.com/meshops-course/gen/common/v1"
@@ -351,6 +352,58 @@ func (i *Inbox) PendingKeys() ([]string, error) {
 			keys = append(keys, string(k))
 			return nil
 		})
+	})
+	return keys, err
+}
+
+// PendingPage copies at most limit keys after an exclusive, caller-owned cursor.
+// Cursor bytes never escape the read transaction. If the preceding key has been
+// completed/deleted, Seek already points at its successor and must not skip it.
+// Pages are live views rather than a snapshot: the scheduler wraps at the end so
+// newly inserted smaller keys are revisited without keeping a long read lock.
+func (i *Inbox) PendingPage(after string, limit int) ([]string, error) {
+	return i.pendingPage(after, "", limit)
+}
+
+// A fixed upper key gives each scheduler round a finite end even while newer,
+// higher keys arrive continuously. Lower-key arrivals are served next round.
+func (i *Inbox) pendingBoundary() (string, error) {
+	var end string
+	err := i.db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket(inboxPendingBucket)
+		if b == nil {
+			return errors.New("inbox pending index missing")
+		}
+		key, _ := b.Cursor().Last()
+		end = string(key)
+		return nil
+	})
+	return end, err
+}
+
+func (i *Inbox) pendingPage(after, through string, limit int) ([]string, error) {
+	if limit < 1 || limit > 64 {
+		return nil, errors.New("pending page limit must be 1..64")
+	}
+	keys := make([]string, 0, limit)
+	err := i.db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket(inboxPendingBucket)
+		if b == nil {
+			return errors.New("inbox pending index missing")
+		}
+		cursor := b.Cursor()
+		key, _ := cursor.First()
+		if after != "" {
+			key, _ = cursor.Seek([]byte(after))
+			if bytes.Equal(key, []byte(after)) {
+				key, _ = cursor.Next()
+			}
+		}
+		for key != nil && len(keys) < limit && (through == "" || bytes.Compare(key, []byte(through)) <= 0) {
+			keys = append(keys, string(key))
+			key, _ = cursor.Next()
+		}
+		return nil
 	})
 	return keys, err
 }

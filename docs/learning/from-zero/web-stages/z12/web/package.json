@@ -1,0 +1,27 @@
+{
+  "name": "meshops-console",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "node --experimental-strip-types --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "element-plus": "2.13.2",
+    "vue": "3.5.30",
+    "vue-router": "4.6.4"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "@vitejs/plugin-vue": "6.0.4",
+    "typescript": "5.9.3",
+    "vite": "7.3.6",
+    "vue-tsc": "3.2.5"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

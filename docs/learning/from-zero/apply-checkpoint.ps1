@@ -1,11 +1,12 @@
 param(
-    [Parameter(Mandatory=$true)][ValidateSet('z01','z02','z03','z04','z05','z06','z07','z08','z09','z10')][string]$Stage,
+    [Parameter(Mandatory=$true)][ValidateSet('z01','z02','z03','z04','z05','z06','z07','z08','z09','z10','z11','z12','z13')][string]$Stage,
     [Parameter(Mandatory=$true)][string]$Destination
 )
 $ErrorActionPreference = 'Stop'
-$source = if ($Stage -in @('z01','z02','z03')) { Join-Path $PSScriptRoot "starter/$Stage" } elseif ($Stage -in @('z04','z05','z06')) { Join-Path $PSScriptRoot "state-stages/$Stage" } else { Join-Path $PSScriptRoot "business-stages/$Stage" }
-$source = [IO.Path]::GetFullPath($source)
-if ($Stage -eq 'z10') { $source = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../..')) }
+$published = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'checkpoint-index.json') -Raw | ConvertFrom-Json
+$selected = @($published.stages | Where-Object stage -eq $Stage)
+if ($selected.Count -ne 1) { throw "Checkpoint $Stage has not been published yet." }
+$source = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot $selected[0].source))
 $target = [IO.Path]::GetFullPath($Destination)
 $separator = [IO.Path]::DirectorySeparatorChar
 $sourcePrefix = $source.TrimEnd('\','/') + $separator
@@ -16,7 +17,7 @@ $repositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../..')).T
 $scratchPrefix = (Join-Path $repositoryRoot '.cache') + $separator
 $scratchTarget = $target.StartsWith($scratchPrefix,[StringComparison]::OrdinalIgnoreCase)
 if (($target -eq $repositoryRoot -or $target.StartsWith($repositoryRoot+$separator,[StringComparison]::OrdinalIgnoreCase)) -and -not $scratchTarget) { throw 'The learner directory must be outside repository source; only .cache test directories are allowed inside.' }
-if ($target -eq $source -or ($target.StartsWith($sourcePrefix,[StringComparison]::OrdinalIgnoreCase) -and -not ($Stage -eq 'z10' -and $scratchTarget)) -or $source.StartsWith($targetPrefix,[StringComparison]::OrdinalIgnoreCase)) { throw 'The learner directory and reference directory must be separate.' }
+if ($target -eq $source -or ($target.StartsWith($sourcePrefix,[StringComparison]::OrdinalIgnoreCase) -and -not ($source -eq $repositoryRoot -and $scratchTarget)) -or $source.StartsWith($targetPrefix,[StringComparison]::OrdinalIgnoreCase)) { throw 'The learner directory and reference directory must be separate.' }
 if (-not (Test-Path -LiteralPath (Join-Path $source 'go.mod'))) { throw "Checkpoint $Stage has not been published yet." }
 # A nonexistent leaf can still have a junction in its existing parent chain.
 foreach ($rootPath in @($source,$target)) {
@@ -57,7 +58,7 @@ $old=@{}
 if (Test-Path -LiteralPath $statePath) {
     $state=Get-Content -LiteralPath $statePath -Raw | ConvertFrom-Json
     if ($state.module -ne 'example.com/meshops-course') { throw 'Unrecognized checkpoint record.' }
-    if ($state.stage -notmatch '^z(0[1-9]|10)$') { throw 'Invalid checkpoint stage in record.' }
+    if ($state.stage -notmatch '^z(0[1-9]|1[0-3])$') { throw 'Invalid checkpoint stage in record.' }
     $oldStage=[int]$state.stage.Substring(1)
     $newStage=[int]$Stage.Substring(1)
     if ($newStage -ne $oldStage -and $newStage -ne $oldStage+1) { throw "Apply $($state.stage) again or its next stage; do not skip a stage." }

@@ -1,0 +1,56 @@
+name: MeshOps
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  reference:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v6
+      - name: Verify published course file hashes
+        run: python3 docs/learning/from-zero/verify-git-checkpoints.py
+      - uses: actions/setup-go@v7
+        with:
+          go-version: '1.25.10'
+          cache-dependency-path: go.sum
+      - name: Verify module, build and vet
+        run: |
+          go mod verify
+          go build ./...
+          go vet ./...
+      - name: Staticcheck handwritten packages
+        run: |
+          go install honnef.co/go/tools/cmd/staticcheck@v0.7.0
+          staticcheck $(go list ./... | grep -v '/gen/')
+      - name: Linux race checks
+        run: go test -race ./... -count=1 -timeout=10m
+      - name: Start isolated integration dependencies
+        run: docker compose -f docker-compose.yml -f compose.search.yml --profile verification --profile search up -d --wait --wait-timeout 180 mysql kafka redis redis-fault elasticsearch
+      - name: Full integration acceptance
+        env:
+          MESHOPS_TEST_MYSQL_DSN: 'root:course_local_root@tcp(127.0.0.1:13306)/meshops_course?parseTime=true&loc=UTC'
+          MESHOPS_TEST_MYSQL_ADMIN_DSN: 'root:course_local_root@tcp(127.0.0.1:13306)/meshops_course?parseTime=true&loc=UTC'
+          MESHOPS_TEST_REDIS_ADDR: '127.0.0.1:16379'
+          MESHOPS_TEST_REDIS_FAULT_ADDR: '127.0.0.1:16380'
+          MESHOPS_TEST_KAFKA_BROKERS: 'localhost:19092'
+          MESHOPS_TEST_KAFKA_DELETE_RECORDS: '1'
+          MESHOPS_TEST_ES_ENDPOINT: 'http://127.0.0.1:19200'
+        run: |
+          mkdir -p results
+          set -o pipefail
+          go test -race -tags integration ./... -json -count=1 -timeout=15m | tee results/integration-race.jsonl
+          python3 scripts/check-test-results.py results/integration-race.jsonl
+      - name: Upload acceptance output
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: reference-acceptance
+          path: results/
+      - name: Stop dedicated dependencies
+        if: always()
+        run: docker compose -f docker-compose.yml -f compose.search.yml --profile verification --profile search stop

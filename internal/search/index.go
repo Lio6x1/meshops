@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"example.com/meshops-course/internal/platform"
 	"fmt"
 	"io"
-	"net"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -22,16 +22,15 @@ type Index struct {
 	expectedUUID string
 }
 
-// NewIndex deliberately supports host-local development ES only. A caller's
+// NewIndex supports local ES or the explicitly opted-in private demo service. A caller's
 // client is copied so redirects cannot forward requests to another destination.
 func NewIndex(endpoint, name string, client *http.Client) (*Index, error) {
 	u, err := url.Parse(endpoint)
 	if err != nil || u.Scheme != "http" || u.User != nil || u.RawQuery != "" || u.Fragment != "" || (u.Path != "" && u.Path != "/") {
 		return nil, fmt.Errorf("ES endpoint must be a local HTTP origin")
 	}
-	ip := net.ParseIP(u.Hostname())
 	port, e := strconv.Atoi(u.Port())
-	if ip == nil || !ip.IsLoopback() || e != nil || port < 1 || port > 65535 {
+	if e != nil || !platform.AllowedESAuthority(u.Hostname(), port) {
 		return nil, fmt.Errorf("ES endpoint must use a loopback IP and port")
 	}
 	if !regexp.MustCompile(`^[a-z][a-z0-9_-]{0,63}$`).MatchString(name) {

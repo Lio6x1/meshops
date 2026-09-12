@@ -1,0 +1,13 @@
+Name: meshops.search.v1.rpc
+ListenOn: 0.0.0.0:50055
+Mode: dev
+Timeout: 5000
+Middlewares:
+  Stat: false
+MeshOps:
+  Manifest: /app/configs/simulation.yaml
+  KafkaBrokers: [localhost:19092]
+  CursorKeyEnv: MESHOPS_CURSOR_KEY
+  MetricsAddr: 127.0.0.1:18084
+  SearchESURL: http://elasticsearch:9200
+  SearchBootstrap: /state/search-bootstrap.json

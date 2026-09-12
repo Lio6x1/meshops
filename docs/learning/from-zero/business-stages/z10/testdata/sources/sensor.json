@@ -1,0 +1,9 @@
+{
+  "event_id": "sensor-observation-001",
+  "sensor_id": "sensor-001",
+  "version": 1,
+  "measured_at": "2026-09-05T00:00:00Z",
+  "measurement": {"value": 23.5, "unit": "celsius"},
+  "health": "ok",
+  "site": {"lat": 31.23, "lon": 121.47}
+}

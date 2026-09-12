@@ -1,0 +1,18 @@
+Name: meshops.task.v1.rpc
+ListenOn: 127.0.0.1:50053
+Mode: dev
+Timeout: 5000
+Middlewares:
+  Stat: false
+MeshOps:
+  Manifest: simulation.yaml
+  KafkaBrokers: [localhost:19092]
+  RedisAddr: localhost:16379
+  MySQLDSNEnv: MESHOPS_MYSQL_DSN
+  CursorKeyEnv: MESHOPS_CURSOR_KEY
+  ServiceTokenEnv: MESHOPS_TASK_TOKEN
+  EntityEndpoint: 127.0.0.1:50052
+  TaskEndpoint: 127.0.0.1:50053
+  DispatcherEndpoint: 127.0.0.1:50054
+  IngestEndpoint: 127.0.0.1:50051
+  MetricsAddr: 127.0.0.1:18082
