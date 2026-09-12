@@ -90,6 +90,7 @@ type Phase struct {
 	Scheduled             int              `json:"scheduled"`
 	QueueDrops            int              `json:"generatorQueueDrops"`
 	Accepted              int              `json:"accepted"`
+	AcceptedByType        map[string]int   `json:"acceptedByType"`
 	Errors                int              `json:"errors"`
 	ErrorExamples         []string         `json:"errorExamples"`
 	Elapsed               float64          `json:"elapsedIncludingDrainSeconds"`
@@ -111,7 +112,12 @@ type BenchmarkReport struct {
 	InitialIngest, InitialEntity                      Metrics
 	WarmupAccepted                                    int
 	WarmupSnapshots                                   int
-	Failure                                           string `json:"failure,omitempty"`
+	Profile                                           string         `json:"profile"`
+	EntityCountsByType                                map[string]int `json:"entityCountsByType"`
+	SourceCountsByType                                map[string]int `json:"sourceCountsByType"`
+	WarmupAcceptedByType                              map[string]int `json:"warmupAcceptedByType"`
+	WarmupSnapshotsByType                             map[string]int `json:"warmupSnapshotsByType"`
+	Failure                                           string         `json:"failure,omitempty"`
 	Phases                                            []Phase
 	EvidenceDirectory, Database, TopicPrefix          string
 }
@@ -125,32 +131,29 @@ type loadDriver struct {
 	environment *Environment
 	versions    []int64
 	cursor      int64
-	count       int
+	targets     []loadTarget
 }
 
 func (d *loadDriver) job(observe bool) (loadJob, error) {
-	n := int(d.cursor % int64(d.count))
+	index := int(d.cursor % int64(len(d.targets)))
 	d.cursor++
-	sources := len(d.environment.Sources)
-	s := n % sources
-	index := s*(d.count/sources) + n/sources
+	target := d.targets[index]
 	d.versions[index]++
-	id := fmt.Sprintf("person-%05d", index)
 	now := time.Now().UTC()
-	source := d.environment.Sources[s]
-	raw, err := state.GenerateRaw(source, id, d.versions[index], now)
+	source := d.environment.Sources[target.source]
+	raw, err := state.GenerateRaw(source, target.rawID, d.versions[index], now)
 	if err != nil {
 		return loadJob{}, err
 	}
 	event, err := state.Normalize(raw, source, now)
-	return loadJob{event, s, now, observe}, err
+	return loadJob{event, target.source, now, observe}, err
 }
 func (d *loadDriver) phase(ctx context.Context, rate, count int, warmup bool) (Phase, error) {
 	e := d.environment
 	ctx, cancel := context.WithTimeout(ctx, phaseBudget(rate, count, warmup))
 	defer cancel()
 	start := time.Now()
-	result := Phase{OfferedRate: rate}
+	result := Phase{OfferedRate: rate, AcceptedByType: map[string]int{}}
 	var mu sync.Mutex
 	var ack, visible, sizes []float64
 	var workers, observers sync.WaitGroup
@@ -254,6 +257,7 @@ func (d *loadDriver) phase(ctx context.Context, rate, count int, warmup bool) (P
 				confirmed = response.ConfirmedSequence
 				mu.Lock()
 				result.Accepted++
+				result.AcceptedByType[source.Adapter]++
 				ack = append(ack, float64(time.Since(began).Microseconds())/1000)
 				sizes = append(sizes, float64(proto.Size(request)))
 				if job.observe {
@@ -289,7 +293,7 @@ func (d *loadDriver) phase(ctx context.Context, rate, count int, warmup bool) (P
 			case <-tick.C:
 			}
 		}
-		job, err := d.job(!warmup && i%50 == 0)
+		job, err := d.job(!warmup && observeScheduled(i, len(e.Sources)))
 		if err != nil {
 			generationErr = err
 			break
@@ -353,16 +357,27 @@ func phaseBudget(rate, count int, warmup bool) time.Duration {
 	}
 	return budget
 }
-func Benchmark(ctx context.Context, root string, seconds int) (report BenchmarkReport, err error) {
+func Benchmark(ctx context.Context, root string, seconds int) (BenchmarkReport, error) {
+	return BenchmarkWithProfile(ctx, root, seconds, "mixed")
+}
+func BenchmarkWithProfile(ctx context.Context, root string, seconds int, profile string) (report BenchmarkReport, err error) {
 	if seconds < 5 || seconds > 300 {
 		return report, errors.New("duration must be 5..300 seconds")
 	}
-	env, err := NewEnvironment(ctx, root, 10000, 10)
+	env, err := newEnvironment(ctx, root, 10000, 10, profile)
 	if err != nil {
 		return report, err
 	}
 	defer env.Close()
-	report = BenchmarkReport{RunID: env.ID, StartedAt: time.Now().UTC().Format(time.RFC3339), Go: runtime.Version(), OS: runtime.GOOS, Arch: runtime.GOARCH, CPU: os.Getenv("PROCESSOR_IDENTIFIER"), LogicalCPUs: runtime.NumCPU(), Entities: 10000, Sources: 10, Partitions: 3, Batch: 1, Scope: "real standalone Ingest -> Kafka -> Entity -> Redis/MySQL; excludes gateway bbolt, task execution and subscription fanout", MemoryMeaning: "Go live heap per standalone service; not RSS or total machine RAM", ObservationMeaning: "every 50th scheduled event; independent polling observes same or higher entity version; latency includes polling delay", EvidenceDirectory: env.Dir, Database: env.DBName, TopicPrefix: env.Prefix}
+	report = BenchmarkReport{RunID: env.ID, StartedAt: time.Now().UTC().Format(time.RFC3339), Go: runtime.Version(), OS: runtime.GOOS, Arch: runtime.GOARCH, CPU: os.Getenv("PROCESSOR_IDENTIFIER"), LogicalCPUs: runtime.NumCPU(), Entities: 10000, Sources: 10, Partitions: 3, Batch: 1, Scope: "real standalone Ingest -> Kafka -> Entity -> Redis/MySQL; excludes gateway bbolt, task execution and subscription fanout", MemoryMeaning: "Go live heap per standalone service; not RSS or total machine RAM", ObservationMeaning: "one event per 50 scheduled, rotating observation across all sources; independent polling observes same or higher entity version; latency includes polling delay", EvidenceDirectory: env.Dir, Database: env.DBName, TopicPrefix: env.Prefix}
+	report.Profile = profile
+	report.EntityCountsByType = map[string]int{}
+	report.SourceCountsByType = map[string]int{}
+	report.WarmupSnapshotsByType = map[string]int{}
+	for _, source := range env.Sources {
+		report.EntityCountsByType[source.Adapter] += len(source.Entities)
+		report.SourceCountsByType[source.Adapter]++
+	}
 	defer func() {
 		if err != nil {
 			report.Failure = err.Error()
@@ -391,12 +406,16 @@ func Benchmark(ctx context.Context, root string, seconds int) (report BenchmarkR
 	if err != nil {
 		return report, err
 	}
-	driver := &loadDriver{environment: env, versions: make([]int64, 10000), count: 10000}
+	driver, err := newLoadDriver(env)
+	if err != nil {
+		return report, err
+	}
 	warmup, err := driver.phase(ctx, 0, 10000, true)
 	if err != nil {
 		return report, err
 	}
 	report.WarmupAccepted = warmup.Accepted
+	report.WarmupAcceptedByType = warmup.AcceptedByType
 	if warmup.Accepted != 10000 {
 		return report, fmt.Errorf("warmup accepted %d/10000; %v", warmup.Accepted, warmup.ErrorExamples)
 	}
@@ -420,7 +439,7 @@ func Benchmark(ctx context.Context, root string, seconds int) (report BenchmarkR
 	for start := 0; start < 10000; start += 100 {
 		ids := make([]string, 100)
 		for i := range ids {
-			ids[i] = fmt.Sprintf("person-%05d", start+i)
+			ids[i] = driver.targets[start+i].entityID
 		}
 		c, stop := context.WithTimeout(platform.Outgoing(ctx, env.Operator), 5*time.Second)
 		response, x := env.Entity.BatchGetSnapshots(c, &entityv1.BatchGetSnapshotsRequest{EntityIds: ids})
@@ -432,10 +451,11 @@ func Benchmark(ctx context.Context, root string, seconds int) (report BenchmarkR
 			return report, errors.New("warmup batch omitted entities")
 		}
 		for i, snapshot := range response.Snapshots {
-			if !snapshot.Found || snapshot.EntityId != ids[i] || snapshot.SourceGeneration != 1 || snapshot.Version != 1 {
+			if !snapshot.Found || snapshot.EntityId != ids[i] || snapshot.SourceGeneration != 1 || snapshot.Version != 1 || snapshot.GetSnapshot().GetEntityType() != env.Sources[driver.targets[start+i].source].Adapter {
 				return report, fmt.Errorf("warmup snapshot mismatch %s", ids[i])
 			}
 			report.WarmupSnapshots++
+			report.WarmupSnapshotsByType[snapshot.Snapshot.EntityType]++
 		}
 	}
 	for _, rate := range []int{100, 500} {

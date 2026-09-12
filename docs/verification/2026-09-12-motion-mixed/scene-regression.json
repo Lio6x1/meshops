@@ -1,0 +1,236 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "30 fresh snapshots across six real entity types",
+      "passed": true,
+      "details": [
+        {
+          "entityId": "drone-001",
+          "entityType": "drone",
+          "version": "21441"
+        },
+        {
+          "entityId": "drone-002",
+          "entityType": "drone",
+          "version": "684"
+        },
+        {
+          "entityId": "drone-003",
+          "entityType": "drone",
+          "version": "684"
+        },
+        {
+          "entityId": "drone-004",
+          "entityType": "drone",
+          "version": "684"
+        },
+        {
+          "entityId": "drone-005",
+          "entityType": "drone",
+          "version": "683"
+        },
+        {
+          "entityId": "facility-001",
+          "entityType": "facility",
+          "version": "21511"
+        },
+        {
+          "entityId": "facility-002",
+          "entityType": "facility",
+          "version": "679"
+        },
+        {
+          "entityId": "facility-003",
+          "entityType": "facility",
+          "version": "679"
+        },
+        {
+          "entityId": "facility-004",
+          "entityType": "facility",
+          "version": "678"
+        },
+        {
+          "entityId": "facility-005",
+          "entityType": "facility",
+          "version": "678"
+        },
+        {
+          "entityId": "person-001",
+          "entityType": "person",
+          "version": "21509"
+        },
+        {
+          "entityId": "person-002",
+          "entityType": "person",
+          "version": "678"
+        },
+        {
+          "entityId": "person-003",
+          "entityType": "person",
+          "version": "677"
+        },
+        {
+          "entityId": "person-004",
+          "entityType": "person",
+          "version": "676"
+        },
+        {
+          "entityId": "person-005",
+          "entityType": "person",
+          "version": "675"
+        },
+        {
+          "entityId": "robot-001",
+          "entityType": "robot",
+          "version": "21511"
+        },
+        {
+          "entityId": "robot-002",
+          "entityType": "robot",
+          "version": "677"
+        },
+        {
+          "entityId": "robot-003",
+          "entityType": "robot",
+          "version": "677"
+        },
+        {
+          "entityId": "robot-004",
+          "entityType": "robot",
+          "version": "676"
+        },
+        {
+          "entityId": "robot-005",
+          "entityType": "robot",
+          "version": "676"
+        },
+        {
+          "entityId": "sensor-001",
+          "entityType": "sensor",
+          "version": "21510"
+        },
+        {
+          "entityId": "sensor-002",
+          "entityType": "sensor",
+          "version": "676"
+        },
+        {
+          "entityId": "sensor-003",
+          "entityType": "sensor",
+          "version": "675"
+        },
+        {
+          "entityId": "sensor-004",
+          "entityType": "sensor",
+          "version": "675"
+        },
+        {
+          "entityId": "sensor-005",
+          "entityType": "sensor",
+          "version": "675"
+        },
+        {
+          "entityId": "vehicle-001",
+          "entityType": "vehicle",
+          "version": "21515"
+        },
+        {
+          "entityId": "vehicle-002",
+          "entityType": "vehicle",
+          "version": "676"
+        },
+        {
+          "entityId": "vehicle-003",
+          "entityType": "vehicle",
+          "version": "674"
+        },
+        {
+          "entityId": "vehicle-004",
+          "entityType": "vehicle",
+          "version": "674"
+        },
+        {
+          "entityId": "vehicle-005",
+          "entityType": "vehicle",
+          "version": "674"
+        }
+      ]
+    },
+    {
+      "name": "20 capable bindings and 10 observation-only bindings",
+      "passed": true,
+      "details": {
+        "executing": 20,
+        "observationOnly": 10
+      }
+    },
+    {
+      "name": "person-005 inspect succeeds",
+      "passed": true,
+      "details": {
+        "entityId": "person-005",
+        "taskId": "acb107d4-8e1d-41d9-8ce4-baab27d3764b",
+        "status": "TASK_STATUS_SUCCEEDED"
+      }
+    },
+    {
+      "name": "drone-005 inspect succeeds",
+      "passed": true,
+      "details": {
+        "entityId": "drone-005",
+        "taskId": "e3e62581-aa2b-4b39-b693-69538ca12e46",
+        "status": "TASK_STATUS_SUCCEEDED"
+      }
+    },
+    {
+      "name": "vehicle-005 inspect succeeds",
+      "passed": true,
+      "details": {
+        "entityId": "vehicle-005",
+        "taskId": "d21c12ed-b579-4e32-be86-e042b403797c",
+        "status": "TASK_STATUS_SUCCEEDED"
+      }
+    },
+    {
+      "name": "robot-005 inspect succeeds",
+      "passed": true,
+      "details": {
+        "entityId": "robot-005",
+        "taskId": "8fd4bbd3-2936-40ff-8f8f-d05ece21bef2",
+        "status": "TASK_STATUS_SUCCEEDED"
+      }
+    },
+    {
+      "name": "server rejects count above five",
+      "passed": true,
+      "details": {
+        "httpStatus": 400
+      }
+    },
+    {
+      "name": "shrink hides inactive IDs and retains snapshot/task",
+      "passed": true,
+      "details": {
+        "afterTwo": 27,
+        "afterZero": 25
+      }
+    },
+    {
+      "name": "all zero produces an empty active scene",
+      "passed": true,
+      "details": {
+        "entities": 0
+      }
+    }
+  ],
+  "scope": "30 real mixed entity projections, four new executor bindings, count bounds/shrink/zero and retained history. This is not a load benchmark.",
+  "restoredSources": [
+    "drone_sim",
+    "facility_sim",
+    "personnel_sim",
+    "robot_sim",
+    "sensor_sim",
+    "vehicle_sim"
+  ]
+}

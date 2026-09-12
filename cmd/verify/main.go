@@ -19,10 +19,9 @@ func main() { os.Exit(run()) }
 func run() int {
 	stat.DisableLog()
 	logx.DisableStat()
-	mode := flag.String("mode", "benchmark", "verification mode")
-	seconds := flag.Int("seconds", 30, "seconds at each offered load")
-	flag.Parse()
-	if flag.NArg() != 0 {
+	options, e := parseOptions(os.Args[1:], os.Stderr)
+	if e != nil {
+		fmt.Fprintln(os.Stderr, e)
 		return 2
 	}
 	root, e := os.Getwd()
@@ -33,15 +32,11 @@ func run() int {
 	defer stop()
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Minute)
 	defer cancel()
-	if *mode == "faults" {
+	if options.mode == "faults" {
 		report, e := verification.Faults(ctx, root)
 		return emitReport(os.Stdout, os.Stderr, report, e)
 	}
-	if *mode != "benchmark" {
-		fmt.Fprintln(os.Stderr, "unknown mode")
-		return 2
-	}
-	report, e := verification.Benchmark(ctx, root, *seconds)
+	report, e := verification.BenchmarkWithProfile(ctx, root, options.seconds, options.profile)
 	return emitReport(os.Stdout, os.Stderr, report, e)
 }
 func emitReport(out, diagnostics io.Writer, report any, err error) int {
@@ -54,4 +49,36 @@ func emitReport(out, diagnostics io.Writer, report any, err error) int {
 		return 1
 	}
 	return 0
+}
+
+// Parse and reject invalid options before starting processes or allocating a
+// temporary database. Fault probes retain their independent person fixture.
+type options struct {
+	mode, profile string
+	seconds       int
+}
+
+func parseOptions(args []string, diagnostics io.Writer) (options, error) {
+	var o options
+	fs := flag.NewFlagSet("verify", flag.ContinueOnError)
+	fs.SetOutput(diagnostics)
+	fs.StringVar(&o.mode, "mode", "benchmark", "verification mode: benchmark or faults")
+	fs.IntVar(&o.seconds, "seconds", 30, "seconds at each offered load")
+	fs.StringVar(&o.profile, "profile", "mixed", "benchmark entity profile: mixed or person (not used by faults)")
+	if err := fs.Parse(args); err != nil {
+		return o, err
+	}
+	if fs.NArg() != 0 {
+		return o, fmt.Errorf("unexpected positional arguments")
+	}
+	if o.mode != "benchmark" && o.mode != "faults" {
+		return o, fmt.Errorf("unknown mode")
+	}
+	if err := verification.ValidateBenchmarkProfile(o.profile); err != nil {
+		return o, err
+	}
+	if o.mode == "benchmark" && (o.seconds < 5 || o.seconds > 300) {
+		return o, fmt.Errorf("duration must be 5..300 seconds")
+	}
+	return o, nil
 }

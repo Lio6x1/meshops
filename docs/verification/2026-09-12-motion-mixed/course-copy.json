@@ -1,0 +1,139 @@
+{
+  "passed": true,
+  "learner": "D:\\job\\golang\\projects\\meshops\\.cache\\lesson-copy-3948cf7ebd614cb5a9e1b0636ba0bb97\\learner",
+  "source": "Markdown full-file blocks plus explicit generated/evidence links",
+  "normalized": "CRLF/LF and terminal newlines",
+  "stages": [
+    {
+      "stage": "z01",
+      "completeBlocks": 6,
+      "linkedGeneratedOrEvidence": 3,
+      "finalFiles": 9,
+      "sourceTextEqual": true,
+      "built": true,
+      "smoke": false,
+      "frontendBuilt": false
+    },
+    {
+      "stage": "z02",
+      "completeBlocks": 9,
+      "linkedGeneratedOrEvidence": 0,
+      "finalFiles": 16,
+      "sourceTextEqual": true,
+      "built": true,
+      "smoke": true,
+      "frontendBuilt": false
+    },
+    {
+      "stage": "z03",
+      "completeBlocks": 11,
+      "linkedGeneratedOrEvidence": 2,
+      "finalFiles": 19,
+      "sourceTextEqual": true,
+      "built": true,
+      "smoke": true,
+      "frontendBuilt": false
+    },
+    {
+      "stage": "z04",
+      "completeBlocks": 25,
+      "linkedGeneratedOrEvidence": 6,
+      "finalFiles": 31,
+      "sourceTextEqual": true,
+      "built": true,
+      "smoke": false,
+      "frontendBuilt": false
+    },
+    {
+      "stage": "z05",
+      "completeBlocks": 17,
+      "linkedGeneratedOrEvidence": 0,
+      "finalFiles": 41,
+      "sourceTextEqual": true,
+      "built": true,
+      "smoke": false,
+      "frontendBuilt": false
+    },
+    {
+      "stage": "z06",
+      "completeBlocks": 23,
+      "linkedGeneratedOrEvidence": 0,
+      "finalFiles": 55,
+      "sourceTextEqual": true,
+      "built": true,
+      "smoke": false,
+      "frontendBuilt": false
+    },
+    {
+      "stage": "z07",
+      "completeBlocks": 90,
+      "linkedGeneratedOrEvidence": 8,
+      "finalFiles": 142,
+      "sourceTextEqual": true,
+      "built": true,
+      "smoke": false,
+      "frontendBuilt": false
+    },
+    {
+      "stage": "z08",
+      "completeBlocks": 9,
+      "linkedGeneratedOrEvidence": 0,
+      "finalFiles": 145,
+      "sourceTextEqual": true,
+      "built": true,
+      "smoke": false,
+      "frontendBuilt": false
+    },
+    {
+      "stage": "z09",
+      "completeBlocks": 27,
+      "linkedGeneratedOrEvidence": 23,
+      "finalFiles": 182,
+      "sourceTextEqual": true,
+      "built": true,
+      "smoke": false,
+      "frontendBuilt": false
+    },
+    {
+      "stage": "z10",
+      "completeBlocks": 53,
+      "linkedGeneratedOrEvidence": 4,
+      "finalFiles": 225,
+      "sourceTextEqual": true,
+      "built": true,
+      "smoke": false,
+      "frontendBuilt": false
+    },
+    {
+      "stage": "z11",
+      "completeBlocks": 22,
+      "linkedGeneratedOrEvidence": 4,
+      "finalFiles": 246,
+      "sourceTextEqual": true,
+      "built": true,
+      "smoke": false,
+      "frontendBuilt": false
+    },
+    {
+      "stage": "z12",
+      "completeBlocks": 35,
+      "linkedGeneratedOrEvidence": 1,
+      "finalFiles": 282,
+      "sourceTextEqual": true,
+      "built": true,
+      "smoke": false,
+      "frontendBuilt": true
+    },
+    {
+      "stage": "z13",
+      "completeBlocks": 58,
+      "linkedGeneratedOrEvidence": 2,
+      "finalFiles": 321,
+      "sourceTextEqual": true,
+      "built": true,
+      "smoke": false,
+      "frontendBuilt": true
+    }
+  ],
+  "note": "No new Docker fault or performance run; stage source equivalence checked."
+}

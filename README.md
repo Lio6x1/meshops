@@ -150,10 +150,12 @@ Windows 的停止脚本采用强制进程退出，用于本地操作；服务收
 ```powershell
 ./scripts/stop.ps1
 ./scripts/faults.ps1
-./scripts/benchmark.ps1 -Seconds 30
+./scripts/benchmark.ps1 -Profile mixed -Seconds 30
 ```
 
 压测先核对 10000 个不同实体快照，再依次运行 100/500 events/s。报告给出实际吞吐、错误、客户端至 Kafka ACK 的延迟、抽样可见延迟、Lag 和进程 Go 堆内存。它不代表订阅扇出、网关落盘或任务执行的性能。每个计时阶段另有三分钟排空预算，整个命令上限十五分钟，超时会返回失败。
+
+完整工程压测默认使用六类混合实体：人员/无人机/车辆/机器人各 2000，传感器/设施各 1000，共 10 个来源。`-Profile person` 可运行全人员对照；网页每类最多 5 个的限制不适用于独立压测。当前混合实测与同环境对照见[混合压测与运动验收](docs/verification/2026-09-12-motion-mixed/README.md)。2026-09-10 的历史压测仍是全人员，不能改写成混合实体结果。
 
 安装 [锁定的协议工具](testdata/proto/README.md) 并加入 PATH 后，运行 `./scripts/verify-proto.ps1` 检查 lint、兼容性与生成一致性。独立模块相对原骨架的 Go import 和四个 optional 字段存在有意的源码接口差异，不能直接替换旧生成包。Linux 单元/竞态检查可用 `go test -race ./... -count=1`；需 C/C++ 编译器。[项目 CI](.github/workflows/ci.yml)直接验证根目录工程；本地检查不表示远端 Actions 已运行。
 

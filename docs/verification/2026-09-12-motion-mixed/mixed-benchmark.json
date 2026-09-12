@@ -1,0 +1,166 @@
+{
+  "RunID": "5c02744ff9e441529e6ca26396c3a643",
+  "StartedAt": "2026-09-12T15:27:13Z",
+  "Go": "go1.25.10",
+  "OS": "linux",
+  "Arch": "amd64",
+  "CPU": "",
+  "LogicalCPUs": 24,
+  "Entities": 10000,
+  "Sources": 10,
+  "Partitions": 3,
+  "Batch": 1,
+  "Scope": "real standalone Ingest -> Kafka -> Entity -> Redis/MySQL; excludes gateway bbolt, task execution and subscription fanout",
+  "MemoryMeaning": "Go live heap per standalone service; not RSS or total machine RAM",
+  "ObservationMeaning": "one event per 50 scheduled, rotating observation across all sources; independent polling observes same or higher entity version; latency includes polling delay",
+  "InitialIngest": {
+    "series": 65,
+    "goHeapBytes": 9698984,
+    "goroutines": 15
+  },
+  "InitialEntity": {
+    "series": 65,
+    "goHeapBytes": 8659232,
+    "goroutines": 28
+  },
+  "WarmupAccepted": 10000,
+  "WarmupSnapshots": 10000,
+  "profile": "mixed",
+  "entityCountsByType": {
+    "drone": 2000,
+    "facility": 1000,
+    "person": 2000,
+    "robot": 2000,
+    "sensor": 1000,
+    "vehicle": 2000
+  },
+  "sourceCountsByType": {
+    "drone": 2,
+    "facility": 1,
+    "person": 2,
+    "robot": 2,
+    "sensor": 1,
+    "vehicle": 2
+  },
+  "warmupAcceptedByType": {
+    "drone": 2000,
+    "facility": 1000,
+    "person": 2000,
+    "robot": 2000,
+    "sensor": 1000,
+    "vehicle": 2000
+  },
+  "warmupSnapshotsByType": {
+    "drone": 2000,
+    "facility": 1000,
+    "person": 2000,
+    "robot": 2000,
+    "sensor": 1000,
+    "vehicle": 2000
+  },
+  "Phases": [
+    {
+      "offeredEventsPerSecond": 100,
+      "scheduled": 3000,
+      "generatorQueueDrops": 0,
+      "accepted": 3000,
+      "acceptedByType": {
+        "drone": 600,
+        "facility": 300,
+        "person": 600,
+        "robot": 600,
+        "sensor": 300,
+        "vehicle": 600
+      },
+      "errors": 0,
+      "errorExamples": null,
+      "elapsedIncludingDrainSeconds": 30.0017429,
+      "acceptedEventsPerSecond": 99.99419067083599,
+      "clientToKafkaAck": {
+        "samples": 3000,
+        "p50Ms": 0.815,
+        "p99Ms": 1.391,
+        "maxMs": 3.095
+      },
+      "generatedToObserved": {
+        "samples": 60,
+        "p50Ms": 1.756,
+        "p99Ms": 2.96,
+        "maxMs": 3.498
+      },
+      "observationCandidates": 60,
+      "observationMisses": 0,
+      "projectorLag": 0,
+      "historyLag": 0,
+      "ingest": {
+        "series": 65,
+        "goHeapBytes": 13018392,
+        "goroutines": 19
+      },
+      "entity": {
+        "series": 67,
+        "goHeapBytes": 10134960,
+        "goroutines": 54
+      },
+      "messageBytesDistribution": {
+        "samples": 3000,
+        "p50Bytes": 288,
+        "p99Bytes": 310,
+        "maxBytes": 310
+      }
+    },
+    {
+      "offeredEventsPerSecond": 500,
+      "scheduled": 15000,
+      "generatorQueueDrops": 0,
+      "accepted": 15000,
+      "acceptedByType": {
+        "drone": 3000,
+        "facility": 1500,
+        "person": 3000,
+        "robot": 3000,
+        "sensor": 1500,
+        "vehicle": 3000
+      },
+      "errors": 0,
+      "errorExamples": null,
+      "elapsedIncludingDrainSeconds": 30.005762731,
+      "acceptedEventsPerSecond": 499.9039729292726,
+      "clientToKafkaAck": {
+        "samples": 15000,
+        "p50Ms": 0.654,
+        "p99Ms": 1.449,
+        "maxMs": 38.136
+      },
+      "generatedToObserved": {
+        "samples": 300,
+        "p50Ms": 1.6,
+        "p99Ms": 3.053,
+        "maxMs": 10.744
+      },
+      "observationCandidates": 300,
+      "observationMisses": 0,
+      "projectorLag": 0,
+      "historyLag": 0,
+      "ingest": {
+        "series": 65,
+        "goHeapBytes": 15574456,
+        "goroutines": 21
+      },
+      "entity": {
+        "series": 67,
+        "goHeapBytes": 9479528,
+        "goroutines": 54
+      },
+      "messageBytesDistribution": {
+        "samples": 15000,
+        "p50Bytes": 289,
+        "p99Bytes": 310,
+        "maxBytes": 310
+      }
+    }
+  ],
+  "EvidenceDirectory": "/work/.local/verification/5c02744ff9e441529e6ca26396c3a643",
+  "Database": "verify_5c02744ff9e441529e6ca26396c3a643",
+  "TopicPrefix": "verify_5c02744ff9e441529e6ca26396c3a643_"
+}

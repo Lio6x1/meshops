@@ -1,0 +1,20 @@
+{
+  "backendImage": "sha256:dd9212296ffc67a715289f3b1ada1fdfb22a40463d80fc54c71c9166bd89ebc0",
+  "dockerEngine": "29.7.2",
+  "dockerCPUs": 24,
+  "dockerMemoryBytes": 16559157248,
+  "runnerCPUQuota": 4,
+  "runnerMemoryBytes": 4294967296,
+  "GOMAXPROCS": 4,
+  "dependencies": "Existing demo MySQL/Redis/Kafka outside runner quota; demo source traffic approximately12events/s continued. No build/integration workload during benchmark.",
+  "profilesOrder": [
+    "mixed",
+    "person"
+  ],
+  "secondsPerPhase": 30,
+  "offeredRates": [
+    100,
+    500
+  ],
+  "scope": "Standalone Ingest and Entity processes launched by verifier. Excludes bbolt gateway, task execution, subscription fanout and browser 10000-marker rendering."
+}

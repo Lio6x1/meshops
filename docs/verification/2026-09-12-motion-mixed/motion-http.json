@@ -1,0 +1,224 @@
+{
+  "passed": true,
+  "scope": "30 real HTTP snapshots; visible displacement of four moving types and fixed coordinates for sensor/facility; not a load benchmark.",
+  "entities": [
+    {
+      "entityId": "drone-001",
+      "entityType": "drone",
+      "displacementMetres": 174.08,
+      "fromVersion": "21193",
+      "toVersion": "21195"
+    },
+    {
+      "entityId": "drone-002",
+      "entityType": "drone",
+      "displacementMetres": 127.72,
+      "fromVersion": "436",
+      "toVersion": "438"
+    },
+    {
+      "entityId": "drone-003",
+      "entityType": "drone",
+      "displacementMetres": 144.05,
+      "fromVersion": "436",
+      "toVersion": "438"
+    },
+    {
+      "entityId": "drone-004",
+      "entityType": "drone",
+      "displacementMetres": 163.54,
+      "fromVersion": "436",
+      "toVersion": "438"
+    },
+    {
+      "entityId": "drone-005",
+      "entityType": "drone",
+      "displacementMetres": 97.51,
+      "fromVersion": "435",
+      "toVersion": "437"
+    },
+    {
+      "entityId": "facility-001",
+      "entityType": "facility",
+      "displacementMetres": 0.0,
+      "fromVersion": "21263",
+      "toVersion": "21265"
+    },
+    {
+      "entityId": "facility-002",
+      "entityType": "facility",
+      "displacementMetres": 0.0,
+      "fromVersion": "431",
+      "toVersion": "433"
+    },
+    {
+      "entityId": "facility-003",
+      "entityType": "facility",
+      "displacementMetres": 0.0,
+      "fromVersion": "431",
+      "toVersion": "433"
+    },
+    {
+      "entityId": "facility-004",
+      "entityType": "facility",
+      "displacementMetres": 0.0,
+      "fromVersion": "430",
+      "toVersion": "432"
+    },
+    {
+      "entityId": "facility-005",
+      "entityType": "facility",
+      "displacementMetres": 0.0,
+      "fromVersion": "430",
+      "toVersion": "432"
+    },
+    {
+      "entityId": "person-001",
+      "entityType": "person",
+      "displacementMetres": 74.45,
+      "fromVersion": "21261",
+      "toVersion": "21263"
+    },
+    {
+      "entityId": "person-002",
+      "entityType": "person",
+      "displacementMetres": 72.94,
+      "fromVersion": "430",
+      "toVersion": "432"
+    },
+    {
+      "entityId": "person-003",
+      "entityType": "person",
+      "displacementMetres": 102.98,
+      "fromVersion": "429",
+      "toVersion": "431"
+    },
+    {
+      "entityId": "person-004",
+      "entityType": "person",
+      "displacementMetres": 103.0,
+      "fromVersion": "428",
+      "toVersion": "430"
+    },
+    {
+      "entityId": "person-005",
+      "entityType": "person",
+      "displacementMetres": 102.98,
+      "fromVersion": "427",
+      "toVersion": "429"
+    },
+    {
+      "entityId": "robot-001",
+      "entityType": "robot",
+      "displacementMetres": 77.5,
+      "fromVersion": "21263",
+      "toVersion": "21265"
+    },
+    {
+      "entityId": "robot-002",
+      "entityType": "robot",
+      "displacementMetres": 62.94,
+      "fromVersion": "429",
+      "toVersion": "431"
+    },
+    {
+      "entityId": "robot-003",
+      "entityType": "robot",
+      "displacementMetres": 57.84,
+      "fromVersion": "429",
+      "toVersion": "431"
+    },
+    {
+      "entityId": "robot-004",
+      "entityType": "robot",
+      "displacementMetres": 77.44,
+      "fromVersion": "428",
+      "toVersion": "430"
+    },
+    {
+      "entityId": "robot-005",
+      "entityType": "robot",
+      "displacementMetres": 116.23,
+      "fromVersion": "427",
+      "toVersion": "430"
+    },
+    {
+      "entityId": "sensor-001",
+      "entityType": "sensor",
+      "displacementMetres": 0.0,
+      "fromVersion": "21262",
+      "toVersion": "21264"
+    },
+    {
+      "entityId": "sensor-002",
+      "entityType": "sensor",
+      "displacementMetres": 0.0,
+      "fromVersion": "428",
+      "toVersion": "430"
+    },
+    {
+      "entityId": "sensor-003",
+      "entityType": "sensor",
+      "displacementMetres": 0.0,
+      "fromVersion": "427",
+      "toVersion": "429"
+    },
+    {
+      "entityId": "sensor-004",
+      "entityType": "sensor",
+      "displacementMetres": 0.0,
+      "fromVersion": "427",
+      "toVersion": "429"
+    },
+    {
+      "entityId": "sensor-005",
+      "entityType": "sensor",
+      "displacementMetres": 0.0,
+      "fromVersion": "426",
+      "toVersion": "429"
+    },
+    {
+      "entityId": "vehicle-001",
+      "entityType": "vehicle",
+      "displacementMetres": 113.82,
+      "fromVersion": "21267",
+      "toVersion": "21269"
+    },
+    {
+      "entityId": "vehicle-002",
+      "entityType": "vehicle",
+      "displacementMetres": 95.63,
+      "fromVersion": "428",
+      "toVersion": "430"
+    },
+    {
+      "entityId": "vehicle-003",
+      "entityType": "vehicle",
+      "displacementMetres": 85.75,
+      "fromVersion": "426",
+      "toVersion": "428"
+    },
+    {
+      "entityId": "vehicle-004",
+      "entityType": "vehicle",
+      "displacementMetres": 113.85,
+      "fromVersion": "426",
+      "toVersion": "428"
+    },
+    {
+      "entityId": "vehicle-005",
+      "entityType": "vehicle",
+      "displacementMetres": 113.89,
+      "fromVersion": "426",
+      "toVersion": "428"
+    }
+  ],
+  "restoredSources": [
+    "drone_sim",
+    "facility_sim",
+    "personnel_sim",
+    "robot_sim",
+    "sensor_sim",
+    "vehicle_sim"
+  ]
+}

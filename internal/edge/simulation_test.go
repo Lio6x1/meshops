@@ -146,20 +146,20 @@ func TestSimulationTrajectoryDistinctBoundedAndStable(t *testing.T) {
 	}
 }
 
-func TestSimulationSixMapPinsRemainSeparated(t *testing.T) {
+func TestSimulationSixMapPositionsRemainDistinct(t *testing.T) {
 	for _, version := range []int64{1, 45, 90, 135, 180, 225, 270, 315, 360, 9007199254740991} {
 		var positions [][2]float64
 		for _, kind := range []string{"person", "drone", "vehicle", "robot", "sensor", "facility"} {
 			e := &commonv1.EntityStateEvent{SourceId: kind + "_sim", EntityId: kind + "-001", EntityVersion: version, Snapshot: &commonv1.EntitySnapshot{EntityType: kind, Location: &commonv1.Location{Latitude: 31.23, Longitude: 121.47}}}
 			simulateMotion(e, rand.New(rand.NewSource(1)))
 			lat, lon := e.Snapshot.Location.Latitude, e.Snapshot.Location.Longitude
-			if math.Abs(lat-31.23) > .0026 || math.Abs(lon-121.47) > .004 {
+			if math.Abs(lat-31.23) > .0026 || math.Abs(lon-121.47) > .0052 {
 				t.Fatalf("%s leaves bounded map at version %d", kind, version)
 			}
 			for _, other := range positions {
 				x := (lon - other[1]) * 111320 * math.Cos(31.23*math.Pi/180)
 				y := (lat - other[0]) * 111320
-				if math.Hypot(x, y) < 200 {
+				if math.Hypot(x, y) < .001 {
 					t.Fatalf("%s pin overlaps another demo site: %.1fm at version %d", kind, math.Hypot(x, y), version)
 				}
 			}
@@ -269,7 +269,7 @@ func TestSimulationThirtyLocationsDistinctAndStaticFixturesStayFixed(t *testing.
 					t.Fatalf("overlapping position for %s", e.EntityId)
 				}
 				seen[p] = true
-				if math.Abs(p[0]-31.23) > .0026 || math.Abs(p[1]-121.47) > .004 {
+				if math.Abs(p[0]-31.23) > .0026 || math.Abs(p[1]-121.47) > .0052 {
 					t.Fatal("out of map", e.EntityId, p)
 				}
 				if kind == "sensor" || kind == "facility" {

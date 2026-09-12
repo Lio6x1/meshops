@@ -1,0 +1,136 @@
+{
+  "RunID": "98263ce7798f41009215cc7a3c4cc5f5",
+  "StartedAt": "2026-09-12T15:28:55Z",
+  "Go": "go1.25.10",
+  "OS": "linux",
+  "Arch": "amd64",
+  "CPU": "",
+  "LogicalCPUs": 24,
+  "Entities": 10000,
+  "Sources": 10,
+  "Partitions": 3,
+  "Batch": 1,
+  "Scope": "real standalone Ingest -> Kafka -> Entity -> Redis/MySQL; excludes gateway bbolt, task execution and subscription fanout",
+  "MemoryMeaning": "Go live heap per standalone service; not RSS or total machine RAM",
+  "ObservationMeaning": "one event per 50 scheduled, rotating observation across all sources; independent polling observes same or higher entity version; latency includes polling delay",
+  "InitialIngest": {
+    "series": 65,
+    "goHeapBytes": 10043360,
+    "goroutines": 15
+  },
+  "InitialEntity": {
+    "series": 65,
+    "goHeapBytes": 8303752,
+    "goroutines": 28
+  },
+  "WarmupAccepted": 10000,
+  "WarmupSnapshots": 10000,
+  "profile": "person",
+  "entityCountsByType": {
+    "person": 10000
+  },
+  "sourceCountsByType": {
+    "person": 10
+  },
+  "warmupAcceptedByType": {
+    "person": 10000
+  },
+  "warmupSnapshotsByType": {
+    "person": 10000
+  },
+  "Phases": [
+    {
+      "offeredEventsPerSecond": 100,
+      "scheduled": 3000,
+      "generatorQueueDrops": 0,
+      "accepted": 3000,
+      "acceptedByType": {
+        "person": 3000
+      },
+      "errors": 0,
+      "errorExamples": null,
+      "elapsedIncludingDrainSeconds": 30.001575044,
+      "acceptedEventsPerSecond": 99.99475012895927,
+      "clientToKafkaAck": {
+        "samples": 3000,
+        "p50Ms": 0.91,
+        "p99Ms": 1.613,
+        "maxMs": 15.08
+      },
+      "generatedToObserved": {
+        "samples": 60,
+        "p50Ms": 2.073,
+        "p99Ms": 3.043,
+        "maxMs": 3.191
+      },
+      "observationCandidates": 60,
+      "observationMisses": 0,
+      "projectorLag": 0,
+      "historyLag": 0,
+      "ingest": {
+        "series": 65,
+        "goHeapBytes": 12544600,
+        "goroutines": 20
+      },
+      "entity": {
+        "series": 67,
+        "goHeapBytes": 9409376,
+        "goroutines": 54
+      },
+      "messageBytesDistribution": {
+        "samples": 3000,
+        "p50Bytes": 288,
+        "p99Bytes": 289,
+        "maxBytes": 289
+      }
+    },
+    {
+      "offeredEventsPerSecond": 500,
+      "scheduled": 15000,
+      "generatorQueueDrops": 0,
+      "accepted": 15000,
+      "acceptedByType": {
+        "person": 15000
+      },
+      "errors": 0,
+      "errorExamples": null,
+      "elapsedIncludingDrainSeconds": 30.004268592,
+      "acceptedEventsPerSecond": 499.92886692126973,
+      "clientToKafkaAck": {
+        "samples": 15000,
+        "p50Ms": 0.808,
+        "p99Ms": 1.612,
+        "maxMs": 5.976
+      },
+      "generatedToObserved": {
+        "samples": 300,
+        "p50Ms": 2.008,
+        "p99Ms": 3.529,
+        "maxMs": 10.556
+      },
+      "observationCandidates": 300,
+      "observationMisses": 0,
+      "projectorLag": 0,
+      "historyLag": 0,
+      "ingest": {
+        "series": 65,
+        "goHeapBytes": 8622336,
+        "goroutines": 20
+      },
+      "entity": {
+        "series": 67,
+        "goHeapBytes": 13966224,
+        "goroutines": 54
+      },
+      "messageBytesDistribution": {
+        "samples": 15000,
+        "p50Bytes": 289,
+        "p99Bytes": 289,
+        "maxBytes": 289
+      }
+    }
+  ],
+  "EvidenceDirectory": "/work/.local/verification/98263ce7798f41009215cc7a3c4cc5f5",
+  "Database": "verify_98263ce7798f41009215cc7a3c4cc5f5",
+  "TopicPrefix": "verify_98263ce7798f41009215cc7a3c4cc5f5_"
+}

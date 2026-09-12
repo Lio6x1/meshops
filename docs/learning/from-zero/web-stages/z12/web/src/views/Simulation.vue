@@ -63,7 +63,7 @@ onMounted(poll)
 onUnmounted(() => { disposed = true; clearTimeout(timer); controller.abort() })
 </script>
 <template>
-  <section class="page-heading"><div><span class="eyebrow">SIMULATION CONTROL</span><h1>模拟演示</h1><p>控制真实模拟数据源，观察地图更新、数据过期与断线补传。</p></div><RouterLink to="/"><el-button>查看实体地图</el-button></RouterLink></section>
+  <section class="page-heading"><div><span class="eyebrow">SIMULATION CONTROL</span><h1>模拟演示</h1><p>控制真实模拟数据源，观察地图更新、数据过期与断线补传。移动实体沿加速演示路线运行，固定传感器和设施保持原位。</p></div><RouterLink to="/"><el-button>查看实体地图</el-button></RouterLink></section>
   <el-alert title="这里配置六类模拟实体的数量和上报模式。任务执行器独立运行，不会随这些开关停止。" type="info" :closable="false" />
   <section class="panel scene-summary"><div><h2>混合实体场景</h2><p>每类 0—5 个，共最多 30 个。数量设为 0 会停用该类的新数据生成，历史与已有任务保留。</p></div><div class="scene-total"><strong>{{ total }} / 30</strong><span>目标实体 · 实际启用 {{ actualTotal }}</span></div></section>
   <div class="simulation-toolbar"><el-button type="primary" :disabled="!sources.length || !!error || busy" @click="change(sources, 'running')">全部开始上报</el-button><el-button :disabled="!sources.length || !!error || busy" @click="change(sources, 'paused')">全部暂停采集</el-button><span class="muted small">状态每 1.5 秒刷新；批量操作逐个生效</span></div>

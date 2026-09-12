@@ -5973,7 +5973,7 @@
         },
         {
           "path": "web/src/components/EntityMap.vue",
-          "sha256": "a3c236721871f793a4f3370b3be9e94f3507cb0dc7fb41940bd6f7e596e7a848"
+          "sha256": "f728deb5631784b5ca528a999c1e1989bf9d5a6142ce7172a9e889c68c7d1862"
         },
         {
           "path": "web/src/components/SnapshotDetails.vue",
@@ -6012,6 +6012,10 @@
           "sha256": "99c9decb46f401eaf351c0cc9ec6374cc99059e9156bc0addad56ea3e6cfd266"
         },
         {
+          "path": "web/src/trails.ts",
+          "sha256": "0b338503a1e5e9b27eef499d483fbd98ed6b8caf563db1fb1ce6cca62bcf7cfe"
+        },
+        {
           "path": "web/src/transport.ts",
           "sha256": "60b7127b1162344e49e5e3b04e26e597840cb8e37db0cbfae9000967236d02f2"
         },
@@ -6033,7 +6037,7 @@
         },
         {
           "path": "web/src/views/Simulation.vue",
-          "sha256": "3bf69090e5419db487cfebe77aeb38187feacc6643e4fa5ea5080237ee362d25"
+          "sha256": "cc07389fb96afef2efbf0cfc2ae4500a653dc8660a2efb38d9f91ddcd4d4a116"
         },
         {
           "path": "web/src/views/Status.vue",
@@ -6068,6 +6072,10 @@
           "sha256": "3a9fd9c0245a04b1b1a62a56c06185c74de6c0ba8b4351e8d023d0c41af58bf7"
         },
         {
+          "path": "web/tests/trails.test.ts",
+          "sha256": "d14613adeb9b415feab60945c84679d74b4d8b4ce152afa988dd40f50340d901"
+        },
+        {
           "path": "web/tsconfig.json",
           "sha256": "a81e05b4b778ee6cf916f9153901d020b282c223b138c7d8f6a1e631fb4b6570"
         },
@@ -6096,6 +6104,7 @@
           "web/src/requests.ts",
           "web/src/scene.ts",
           "web/src/style.css",
+          "web/src/trails.ts",
           "web/src/transport.ts",
           "web/src/types.ts",
           "web/src/views/Dispatch.vue",
@@ -6110,6 +6119,7 @@
           "web/tests/map.test.ts",
           "web/tests/requests.test.ts",
           "web/tests/scene.test.ts",
+          "web/tests/trails.test.ts",
           "web/tsconfig.json",
           "web/vite.config.ts"
         ],
@@ -6143,7 +6153,7 @@
         },
         {
           "path": "README.md",
-          "sha256": "932f89d044c7c93b4d3d1b7ed28782aeee67c1dcefa567244d03192ed9859c7b"
+          "sha256": "a618ff2148766c47c76629e607aa33f8885ca402e62af4e74c10d83d8b5c15f2"
         },
         {
           "path": "cmd/demo-init/deployment_test.go",
@@ -6223,11 +6233,11 @@
         },
         {
           "path": "cmd/verify/main.go",
-          "sha256": "4dc7697eb55aadc051771daca584b2265eb4034e8a76cfe7f25774787724d3a4"
+          "sha256": "fa81c05ceaa4833a9a44a226473094b22a2bc64a2e6a0a4a8968a72a08e80cf5"
         },
         {
           "path": "cmd/verify/main_test.go",
-          "sha256": "e23a10fee86437e390b7e7fdd1d8eff5fd934ef9b33ad2ab73b6f8397145e9ca"
+          "sha256": "eb7ac1336cc27047cdd480031703fd033977ef03f688b59316c486081bb5aadb"
         },
         {
           "path": "cmd/web-gateway/main.go",
@@ -6474,6 +6484,14 @@
           "sha256": "5db6fdb8b25c0f0d9b68bfdc1c879030b6456c89ddb518a0f628f8c0bf9669f8"
         },
         {
+          "path": "internal/edge/motion.go",
+          "sha256": "85f86192520f6f8e071d139ea633248f50d8e88eeff01afdd9a4574b9ad5e1a5"
+        },
+        {
+          "path": "internal/edge/motion_test.go",
+          "sha256": "7579011f601493ff72a0797fc335fb731d2138a5dc0de4cbe580744b861caf5e"
+        },
+        {
           "path": "internal/edge/pending_benchmark_test.go",
           "sha256": "720b04399093cc59bd15e96f1b84a15ac98ffc987c248e9be238389b6fc6f75e"
         },
@@ -6507,11 +6525,11 @@
         },
         {
           "path": "internal/edge/simulation.go",
-          "sha256": "73f40cadf764b398d7bdfd662a9bfb11616716bd39d8bc5e4e2f8f48f6cafc85"
+          "sha256": "9aea1fe622b62fc6964e3b842e2319dc295e8ab49d93e39cd88b9b491a23dea1"
         },
         {
           "path": "internal/edge/simulation_test.go",
-          "sha256": "70b7460d3fa9e2b1f03c69debfc881aa6bad6adc02099405395c348d01e9d860"
+          "sha256": "55a49551b4a3d23e1e543bf8c1a368293c9603e482edc53a6d3d294c03d39740"
         },
         {
           "path": "internal/edge/terminal_recovery_test.go",
@@ -6867,11 +6885,11 @@
         },
         {
           "path": "internal/verification/benchmark.go",
-          "sha256": "a39865daebb8be91929a09aaf0eb1104947d841f6abd1ba958d80cdd287482a5"
+          "sha256": "1ddbc2c4676a0d29785d3a0af3420d0a8098c7953d4f69e87e8266ae44074fde"
         },
         {
           "path": "internal/verification/environment.go",
-          "sha256": "2913796e5ab9464e9c41ebf8d12aae565ab8a167fa31ca876f84fb11f96dfb3f"
+          "sha256": "a7b27bce2668cc57eb92a4fb1cfbb45a4bab7248f28380f46b6f38643b6ad87f"
         },
         {
           "path": "internal/verification/faults.go",
@@ -6884,6 +6902,14 @@
         {
           "path": "internal/verification/process_windows.go",
           "sha256": "cf0dda736d5aff944740578ddeef656c1f52fd42168f42ecd99f69e864130c29"
+        },
+        {
+          "path": "internal/verification/profile.go",
+          "sha256": "02fb53c6e1a8ccc44ba27ed34f204e0c1253b6369c1e5eff45e0fd63101d85d1"
+        },
+        {
+          "path": "internal/verification/profile_test.go",
+          "sha256": "2a4e259117ec929eba419564ee3a046c5241f49cb95ef44f893f99c277b908b8"
         },
         {
           "path": "internal/verification/recovery_test.go",
@@ -6979,7 +7005,7 @@
         },
         {
           "path": "scripts/benchmark.ps1",
-          "sha256": "68f9dabf92c1d1ef286513055796325c370a87e27cbd92a3e1e87dd80a90e06a"
+          "sha256": "118a7d29a52d49fce840336c5cef40c4f4586102a38b31685dad9367720cfaf0"
         },
         {
           "path": "scripts/build.ps1",
@@ -7080,6 +7106,10 @@
         {
           "path": "scripts/test-fullstack.ps1",
           "sha256": "d2cdc3c37e0a9fbf526d587cb1556870506929c73595464425514f8ab9eafe48"
+        },
+        {
+          "path": "scripts/test-motion.py",
+          "sha256": "8a7d521fb23be55a7f68cfd2427b2d566d475c3e5fb8a0334991d759272b6a8e"
         },
         {
           "path": "scripts/test-scene-counts.py",
@@ -7275,7 +7305,7 @@
         },
         {
           "path": "web/src/components/EntityMap.vue",
-          "sha256": "a3c236721871f793a4f3370b3be9e94f3507cb0dc7fb41940bd6f7e596e7a848"
+          "sha256": "f728deb5631784b5ca528a999c1e1989bf9d5a6142ce7172a9e889c68c7d1862"
         },
         {
           "path": "web/src/components/SnapshotDetails.vue",
@@ -7314,6 +7344,10 @@
           "sha256": "99c9decb46f401eaf351c0cc9ec6374cc99059e9156bc0addad56ea3e6cfd266"
         },
         {
+          "path": "web/src/trails.ts",
+          "sha256": "0b338503a1e5e9b27eef499d483fbd98ed6b8caf563db1fb1ce6cca62bcf7cfe"
+        },
+        {
           "path": "web/src/transport.ts",
           "sha256": "60b7127b1162344e49e5e3b04e26e597840cb8e37db0cbfae9000967236d02f2"
         },
@@ -7335,7 +7369,7 @@
         },
         {
           "path": "web/src/views/Simulation.vue",
-          "sha256": "3bf69090e5419db487cfebe77aeb38187feacc6643e4fa5ea5080237ee362d25"
+          "sha256": "cc07389fb96afef2efbf0cfc2ae4500a653dc8660a2efb38d9f91ddcd4d4a116"
         },
         {
           "path": "web/src/views/Status.vue",
@@ -7370,6 +7404,10 @@
           "sha256": "3a9fd9c0245a04b1b1a62a56c06185c74de6c0ba8b4351e8d023d0c41af58bf7"
         },
         {
+          "path": "web/tests/trails.test.ts",
+          "sha256": "d14613adeb9b415feab60945c84679d74b4d8b4ce152afa988dd40f50340d901"
+        },
+        {
           "path": "web/tsconfig.json",
           "sha256": "a81e05b4b778ee6cf916f9153901d020b282c223b138c7d8f6a1e631fb4b6570"
         },
@@ -7399,6 +7437,8 @@
           "deploy/demo/configs/search.yaml",
           "deploy/demo/configs/task.yaml",
           "deploy/demo/nginx.conf",
+          "internal/edge/motion.go",
+          "internal/edge/motion_test.go",
           "internal/edge/pending_benchmark_test.go",
           "internal/edge/pending_scheduler_test.go",
           "internal/edge/simulation_test.go",
@@ -7407,11 +7447,14 @@
           "internal/search/network_test.go",
           "internal/tasks/binding_expansion_integration_test.go",
           "internal/tasks/binding_expansion_test.go",
+          "internal/verification/profile.go",
+          "internal/verification/profile_test.go",
           "scripts/demo-stack.ps1",
           "scripts/demo-stack.test.ps1",
           "scripts/test-fullstack.md",
           "scripts/test-fullstack.parameters.test.ps1",
           "scripts/test-fullstack.ps1",
+          "scripts/test-motion.py",
           "scripts/test-scene-counts.py",
           "scripts/test-simulation.py"
         ],
@@ -7419,6 +7462,8 @@
         "replaced": [
           ".github/workflows/ci.yml",
           "README.md",
+          "cmd/verify/main.go",
+          "cmd/verify/main_test.go",
           "configs/simulation.yaml",
           "internal/cli/opctl.go",
           "internal/edge/cli.go",
@@ -7430,6 +7475,9 @@
           "internal/search/index.go",
           "internal/state/six_rpc_integration_test.go",
           "internal/tasks/migrations.go",
+          "internal/verification/benchmark.go",
+          "internal/verification/environment.go",
+          "scripts/benchmark.ps1",
           "scripts/start.ps1",
           "verification/2026-09-10/acceptance.md",
           "verification/2026-09-10/summary.md"

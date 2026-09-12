@@ -2037,6 +2037,11 @@
         "sha256": "6a01dda521f57ce1830d58f4d82f9dffed273203ff3d9084940fb0eb7dc01484"
       },
       {
+        "path": "web/src/trails.ts",
+        "source": "web-stages/z12/web/src/trails.ts",
+        "sha256": "0b338503a1e5e9b27eef499d483fbd98ed6b8caf563db1fb1ce6cca62bcf7cfe"
+      },
+      {
         "path": "web/src/transport.ts",
         "source": "web-stages/z12/web/src/transport.ts",
         "sha256": "60b7127b1162344e49e5e3b04e26e597840cb8e37db0cbfae9000967236d02f2"
@@ -2070,6 +2075,11 @@
         "path": "web/tests/scene.test.ts",
         "source": "web-stages/z12/web/tests/scene.test.ts",
         "sha256": "3a9fd9c0245a04b1b1a62a56c06185c74de6c0ba8b4351e8d023d0c41af58bf7"
+      },
+      {
+        "path": "web/tests/trails.test.ts",
+        "source": "web-stages/z12/web/tests/trails.test.ts",
+        "sha256": "d14613adeb9b415feab60945c84679d74b4d8b4ce152afa988dd40f50340d901"
       },
       {
         "path": "web/tsconfig.json",
@@ -2125,7 +2135,7 @@
       {
         "path": "web/src/components/EntityMap.vue",
         "source": "web-stages/z12/web/src/components/EntityMap.vue",
-        "sha256": "a3c236721871f793a4f3370b3be9e94f3507cb0dc7fb41940bd6f7e596e7a848"
+        "sha256": "f728deb5631784b5ca528a999c1e1989bf9d5a6142ce7172a9e889c68c7d1862"
       },
       {
         "path": "web/src/components/SnapshotDetails.vue",
@@ -2170,7 +2180,7 @@
       {
         "path": "web/src/views/Simulation.vue",
         "source": "web-stages/z12/web/src/views/Simulation.vue",
-        "sha256": "3bf69090e5419db487cfebe77aeb38187feacc6643e4fa5ea5080237ee362d25"
+        "sha256": "cc07389fb96afef2efbf0cfc2ae4500a653dc8660a2efb38d9f91ddcd4d4a116"
       },
       {
         "path": "web/src/views/Status.vue",
@@ -2294,6 +2304,16 @@
         "sha256": "15d0dd9c52613ae78be94fe816845b2fdd0cc706a6f19c3165f4e38e290c1f77"
       },
       {
+        "path": "internal/edge/motion.go",
+        "source": "../../../internal/edge/motion.go",
+        "sha256": "85f86192520f6f8e071d139ea633248f50d8e88eeff01afdd9a4574b9ad5e1a5"
+      },
+      {
+        "path": "internal/edge/motion_test.go",
+        "source": "../../../internal/edge/motion_test.go",
+        "sha256": "7579011f601493ff72a0797fc335fb731d2138a5dc0de4cbe580744b861caf5e"
+      },
+      {
         "path": "internal/edge/pending_benchmark_test.go",
         "source": "../../../internal/edge/pending_benchmark_test.go",
         "sha256": "720b04399093cc59bd15e96f1b84a15ac98ffc987c248e9be238389b6fc6f75e"
@@ -2306,7 +2326,7 @@
       {
         "path": "internal/edge/simulation_test.go",
         "source": "../../../internal/edge/simulation_test.go",
-        "sha256": "70b7460d3fa9e2b1f03c69debfc881aa6bad6adc02099405395c348d01e9d860"
+        "sha256": "55a49551b4a3d23e1e543bf8c1a368293c9603e482edc53a6d3d294c03d39740"
       },
       {
         "path": "internal/platform/network.go",
@@ -2334,6 +2354,16 @@
         "sha256": "7ac4faaee4175b6287e1772942e142363f53bda6aa79c402798f42e2d5519753"
       },
       {
+        "path": "internal/verification/profile.go",
+        "source": "../../../internal/verification/profile.go",
+        "sha256": "02fb53c6e1a8ccc44ba27ed34f204e0c1253b6369c1e5eff45e0fd63101d85d1"
+      },
+      {
+        "path": "internal/verification/profile_test.go",
+        "source": "../../../internal/verification/profile_test.go",
+        "sha256": "2a4e259117ec929eba419564ee3a046c5241f49cb95ef44f893f99c277b908b8"
+      },
+      {
         "path": "scripts/demo-stack.ps1",
         "source": "../../../scripts/demo-stack.ps1",
         "sha256": "347f22fe9f354a324f76c822a9e9c5b9deb817db883d888101a5b667f3515d3b"
@@ -2359,6 +2389,11 @@
         "sha256": "d2cdc3c37e0a9fbf526d587cb1556870506929c73595464425514f8ab9eafe48"
       },
       {
+        "path": "scripts/test-motion.py",
+        "source": "../../../scripts/test-motion.py",
+        "sha256": "8a7d521fb23be55a7f68cfd2427b2d566d475c3e5fb8a0334991d759272b6a8e"
+      },
+      {
         "path": "scripts/test-scene-counts.py",
         "source": "../../../scripts/test-scene-counts.py",
         "sha256": "d0f08e24607cfa824aba5e25f5a6fd670fe17ae476a78d2a5a246878b45f641b"
@@ -2376,7 +2411,17 @@
       {
         "path": "README.md",
         "source": "../../../README.md",
-        "sha256": "932f89d044c7c93b4d3d1b7ed28782aeee67c1dcefa567244d03192ed9859c7b"
+        "sha256": "a618ff2148766c47c76629e607aa33f8885ca402e62af4e74c10d83d8b5c15f2"
+      },
+      {
+        "path": "cmd/verify/main.go",
+        "source": "../../../cmd/verify/main.go",
+        "sha256": "fa81c05ceaa4833a9a44a226473094b22a2bc64a2e6a0a4a8968a72a08e80cf5"
+      },
+      {
+        "path": "cmd/verify/main_test.go",
+        "source": "../../../cmd/verify/main_test.go",
+        "sha256": "eb7ac1336cc27047cdd480031703fd033977ef03f688b59316c486081bb5aadb"
       },
       {
         "path": "configs/simulation.yaml",
@@ -2411,7 +2456,7 @@
       {
         "path": "internal/edge/simulation.go",
         "source": "../../../internal/edge/simulation.go",
-        "sha256": "73f40cadf764b398d7bdfd662a9bfb11616716bd39d8bc5e4e2f8f48f6cafc85"
+        "sha256": "9aea1fe622b62fc6964e3b842e2319dc295e8ab49d93e39cd88b9b491a23dea1"
       },
       {
         "path": "internal/platform/config.go",
@@ -2432,6 +2477,21 @@
         "path": "internal/tasks/migrations.go",
         "source": "../../../internal/tasks/migrations.go",
         "sha256": "50affca76548637d5b5089e0f8a7107b55ddb6bf1cc14388a42588f035d50c13"
+      },
+      {
+        "path": "internal/verification/benchmark.go",
+        "source": "../../../internal/verification/benchmark.go",
+        "sha256": "1ddbc2c4676a0d29785d3a0af3420d0a8098c7953d4f69e87e8266ae44074fde"
+      },
+      {
+        "path": "internal/verification/environment.go",
+        "source": "../../../internal/verification/environment.go",
+        "sha256": "a7b27bce2668cc57eb92a4fb1cfbb45a4bab7248f28380f46b6f38643b6ad87f"
+      },
+      {
+        "path": "scripts/benchmark.ps1",
+        "source": "../../../scripts/benchmark.ps1",
+        "sha256": "118a7d29a52d49fce840336c5cef40c4f4586102a38b31685dad9367720cfaf0"
       },
       {
         "path": "scripts/start.ps1",

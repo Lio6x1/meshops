@@ -67,9 +67,15 @@ func address() (net.Listener, error) {
 	}
 	return l, nil
 }
-func NewEnvironment(ctx context.Context, root string, entities, sourceCount int) (env *Environment, err error) {
-	if entities < 1 || sourceCount < 1 || entities%sourceCount != 0 {
-		return nil, errors.New("entities must be a positive multiple of sources")
+
+// NewEnvironment keeps the historical single-type fixture used by fault probes.
+func NewEnvironment(ctx context.Context, root string, entities, sourceCount int) (*Environment, error) {
+	return newEnvironment(ctx, root, entities, sourceCount, "person")
+}
+func newEnvironment(ctx context.Context, root string, entities, sourceCount int, profile string) (env *Environment, err error) {
+	plan, err := benchmarkSources(profile, entities, sourceCount)
+	if err != nil {
+		return nil, err
 	}
 	id := strings.ReplaceAll(platform.NewID(), "-", "")
 	env = &Environment{Root: root, ID: id, Tenant: "verify_" + id, Prefix: "verify_" + id + "_", DBName: "verify_" + id, Processes: map[string]*Process{}, env: map[string]string{}}
@@ -91,7 +97,7 @@ func NewEnvironment(ctx context.Context, root string, entities, sourceCount int)
 		env.env[name] = os.Getenv(name)
 	}
 	sources, executors, actors := []any{}, []any{}, []any{}
-	for s := 0; s < sourceCount; s++ {
+	for s, spec := range plan {
 		sourceID := fmt.Sprintf("src_%s_%d", id, s)
 		sourceEnv := fmt.Sprintf("VERIFY_SOURCE_%d", s)
 		executorEnv := fmt.Sprintf("VERIFY_EXECUTOR_%d", s)
@@ -99,13 +105,14 @@ func NewEnvironment(ctx context.Context, root string, entities, sourceCount int)
 		env.env[executorEnv] = secret()
 		ids := map[string]string{}
 		list := []string{}
-		for i := s * entities / sourceCount; i < (s+1)*entities/sourceCount; i++ {
-			eid := fmt.Sprintf("person-%05d", i)
+		for _, eid := range spec.IDs {
 			ids[eid] = eid
 			list = append(list, eid)
 		}
-		sources = append(sources, map[string]any{"source_id": sourceID, "adapter": "person", "source_generation": 1, "credential_env": sourceEnv, "fixture": filepath.Join(root, "testdata", "sources", "person.json"), "stale_after": "30s", "rate_limit_per_second": 2000, "entities": ids})
-		executors = append(executors, map[string]any{"executor_id": fmt.Sprintf("executor_%d", s), "credential_env": executorEnv, "entity_ids": list, "supported_tasks": []string{"inspect"}})
+		sources = append(sources, map[string]any{"source_id": sourceID, "adapter": spec.Adapter, "source_generation": 1, "credential_env": sourceEnv, "fixture": filepath.Join(root, "testdata", "sources", spec.Adapter+".json"), "stale_after": "30s", "rate_limit_per_second": 2000, "entities": ids})
+		if spec.Executable {
+			executors = append(executors, map[string]any{"executor_id": fmt.Sprintf("executor_%d", s), "credential_env": executorEnv, "entity_ids": list, "supported_tasks": []string{"inspect"}})
+		}
 	}
 	for _, role := range []string{"operator", "admin", "task_service", "dispatcher_service"} {
 		key := "VERIFY_" + strings.ToUpper(role)
@@ -274,7 +281,8 @@ func (e *Environment) Connect() error {
 	// Kafka lag during a Redis outage, when resolving the namespace would fail.
 	ctx, cancel := context.WithTimeout(platform.Outgoing(context.Background(), e.Operator), 5*time.Second)
 	defer cancel()
-	snapshot, err := e.Entity.GetSnapshot(ctx, &entityv1.GetSnapshotRequest{EntityId: "person-00000"})
+	ids := sourceRawIDs(e.Sources[0])
+	snapshot, err := e.Entity.GetSnapshot(ctx, &entityv1.GetSnapshotRequest{EntityId: e.Sources[0].Entities[ids[0]]})
 	if err != nil {
 		return err
 	}

@@ -27,7 +27,7 @@ func simulateMotion(event *commonv1.EntityStateEvent, rng *rand.Rand) {
 	s := event.Snapshot
 	if s.Location != nil {
 		// Separate fixture positions without changing their source coordinate system.
-		// The version survives restarts in bbolt, so motion continues deterministically.
+		// Static equipment keeps a stable anchor; moving types use event time.
 		h := fnv.New32a()
 		_, _ = h.Write([]byte(event.SourceId + ":" + event.EntityId))
 		bearing := float64(h.Sum32()%360) * math.Pi / 180
@@ -60,9 +60,24 @@ func simulateMotion(event *commonv1.EntityStateEvent, rng *rand.Rand) {
 			}
 		}
 		if s.EntityType != "sensor" && s.EntityType != "facility" {
-			phase := float64(event.EntityVersion%360)*math.Pi/180 + bearing
-			lat += .00015 * math.Sin(phase)
-			lon += .00015 * math.Cos(phase)
+			seconds := float64(event.EntityVersion%120000) / 2 // deterministic fallback for timeless unit fixtures
+			if event.OccurredAt != nil && event.OccurredAt.CheckValid() == nil {
+				seconds = float64(event.OccurredAt.AsTime().UnixMilli()) / 1000
+			}
+			offset := float64(h.Sum32()%1000) / 1000
+			if suffix := strings.LastIndexByte(event.EntityId, '-'); suffix >= 0 {
+				if n, err := strconv.Atoi(event.EntityId[suffix+1:]); err == nil && n >= 1 && n <= simulation.MaxEntitiesPerSource {
+					offset = float64(n-1) / simulation.MaxEntitiesPerSource
+				}
+			}
+			x, y := demoRoute(s.EntityType, seconds, offset)
+			lat, lon = (320-y)/111320, (x-500)/(111320*math.Cos(s.Location.Latitude*math.Pi/180))
+			if s.Velocity != nil {
+				nx, ny := demoRoute(s.EntityType, seconds+.01, offset)
+				s.Velocity.Speed = math.Hypot(nx-x, ny-y) / .01
+				heading := math.Mod(math.Atan2(nx-x, y-ny)*180/math.Pi+360, 360)
+				s.Velocity.Heading = &heading
+			}
 		}
 		s.Location.Latitude = math.Max(-90, math.Min(90, s.Location.Latitude+lat))
 		s.Location.Longitude = math.Max(-180, math.Min(180, s.Location.Longitude+lon))
