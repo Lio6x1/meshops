@@ -1,7 +1,7 @@
 {
-  "sha": "31fda577d2269f319f2d51deabf454e8f2aa3b36",
-  "url": "https://github.com/Lio6x1/meshops/actions/runs/34680625332",
-  "runId": 34680625332,
+  "sha": "a30432ab78111a852e6782d3c91a850a88bf9fb5",
+  "url": "https://github.com/Lio6x1/meshops/actions/runs/34685426074",
+  "runId": 34685426074,
   "jobs": [
     {
       "name": "reference",
@@ -26,5 +26,35 @@
         "Complete job"
       ]
     }
-  ]
+  ],
+  "previousVerifiedRun": {
+    "sha": "31fda577d2269f319f2d51deabf454e8f2aa3b36",
+    "url": "https://github.com/Lio6x1/meshops/actions/runs/34680625332",
+    "runId": 34680625332,
+    "jobs": [
+      {
+        "name": "reference",
+        "status": "completed",
+        "conclusion": "success",
+        "active": [],
+        "failed": [],
+        "passed": [
+          "Set up job",
+          "Run actions/checkout@v6",
+          "Verify published course file hashes",
+          "Run actions/setup-go@v7",
+          "Verify module, build and vet",
+          "Staticcheck handwritten packages",
+          "Linux race checks",
+          "Start isolated integration dependencies",
+          "Full integration acceptance",
+          "Upload acceptance output",
+          "Stop dedicated dependencies",
+          "Post Run actions/setup-go@v7",
+          "Post Run actions/checkout@v6",
+          "Complete job"
+        ]
+      }
+    ]
+  }
 }

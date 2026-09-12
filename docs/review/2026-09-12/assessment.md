@@ -59,7 +59,7 @@
 | 独立课程运行 | `.cache/search-course-a8f6e9746a7e42eaa9e8f8c71926ddde/result.json` passed=true、cleanupErrors=[]：新 Z09 六类实体/四任务，Z10 保留凭证、导入四旧任务并同步新 CDC；缺索引/不完整引导重建保留 11 表校验和，重建后新 CDC 收敛。实际发布的 scripts/test.ps1 -Integration 与 19 项门禁通过，学习源文件摘要不变。 |
 | 故障恢复 | `.cache/review/faults-final.json` Passed=true：Kafka、Redis、MySQL、Entity 进程四项故障均被观察且恢复。只证明该本地单实例演练，不扩展为集群容灾。 |
 | 状态链路压力 | `.cache/review/benchmark-final.json`：10,000 实体、10 来源、3 分区，100/500 events/s 各 30 秒。500 档实际 499.9546458 events/s，ACK p99 2.925ms（15,000 样本），可见 p99 22.221ms（300 次抽样）；错误/发生器丢弃/观测遗漏均 0，最终 projector/history lag 均 0。不覆盖网关 bbolt、任务执行、订阅扇出。 |
-| 发布 | `31fda57` 已推送，主目录普通测试与 865 条指纹再次通过；[本轮 CI](https://github.com/Lio6x1/meshops/actions/runs/34680625332) 全部步骤成功。此后的收尾提交只更新验收文档。 |
+| 发布 | `31fda57`、文档提交 `cfcae97` 及追加 N10 修复 `a30432a` 均已推送且 CI 成功；[追加修复 CI](https://github.com/Lio6x1/meshops/actions/runs/34685426074) 包含真实依赖 race 和门禁。主目录重建、现有配置启动及 865 条指纹复验通过。 |
 
 ## 不作为 bug 扩大实现范围
 
@@ -76,4 +76,4 @@
 
 已修复基线就存在的 P2：基础 Compose 的 `up` 会重新收敛带搜索覆盖参数的 MySQL，造成容器替换。新增身份门禁在旧实现上实际退出 1，尽管四项恢复探针都成功；改为 `start --wait` 后四项恢复和三个依赖的身份门禁通过，MySQL Config.Cmd 前后一致。缺失容器的负例明确退出 1，没有新建容器。详见 [排错过程](../../troubleshooting/09-projection-recovery.md#故障演练恢复成功但容器被换了) 和 [脱敏结果](runtime-results.json)。
 
-此项是先前最终复审之外、主目录运行补查中新发现的已有缺陷。因此上文“此后的收尾提交只更新文档”仅描述当时的 `cfcae97`；N10 后续提交确实修改故障工具，需以该提交的 CI 结果为准。既有业务全包与压力结果保留其原始覆盖范围。
+此项是先前最终复审之外、主目录运行补查中新发现的已有缺陷；`a30432a` 确实修改故障工具并已独立完成 CI。十阶段复制构建与独立只读复审也已补验通过。既有业务全包与压力结果保留其原始覆盖范围。
