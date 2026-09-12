@@ -9,6 +9,7 @@ const initializing = ref(true),
 const nav = [
   ['/', '◈', '实体总览'],
   ['/entities', '▦', '实体资源'],
+  ['/simulation', '▷', '模拟演示'],
   ['/tasks', '◎', '任务中心'],
   ['/search', '⌕', '任务检索'],
   ['/dispatch', '⇄', '可靠分发'],

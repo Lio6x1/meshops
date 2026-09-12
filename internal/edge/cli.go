@@ -9,9 +9,11 @@ import (
 	ingestv1 "example.com/meshops-course/gen/ingest/v1"
 	taskv1 "example.com/meshops-course/gen/task/v1"
 	"example.com/meshops-course/internal/platform"
+	"example.com/meshops-course/internal/simulation"
 	"example.com/meshops-course/internal/state"
 	"flag"
 	"fmt"
+	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"io"
@@ -20,6 +22,7 @@ import (
 	"regexp"
 	"runtime"
 	"sort"
+	"strconv"
 	"strings"
 	"sync/atomic"
 	"syscall"
@@ -187,9 +190,6 @@ func GatewayCLI(ctx context.Context, args []string, out, diagnostic io.Writer) i
 	runCtx, cancel := context.WithCancel(platform.Outgoing(ctx, token))
 	defer cancel()
 	uploadResult := make(chan error, 1)
-	if !*offline {
-		go func() { uploadResult <- Upload(runCtx, q, client, *batch, *recovery, false, &stats) }()
-	}
 	genCtx, stop := context.WithTimeout(ctx, *duration)
 	defer stop()
 	ticker := time.NewTicker(time.Second / time.Duration(*rate))
@@ -202,6 +202,68 @@ func GatewayCLI(ctx context.Context, args []string, out, diagnostic io.Writer) i
 	}
 	sort.Strings(ids)
 	rng := rand.New(rand.NewSource(*seed))
+	generate := func() error {
+		rawID := ids[rng.Intn(len(ids))]
+		var original *commonv1.EntityStateEvent
+		_, err := q.Generate(platform.Key(source.TenantID, source.Entities[rawID]), func(version int64) (*commonv1.EntityStateEvent, error) {
+			now := time.Now().UTC()
+			raw, err := state.GenerateRaw(source, rawID, version, now)
+			if err != nil {
+				return nil, err
+			}
+			original, err = state.Normalize(raw, source, now)
+			if err == nil {
+				simulateMotion(original, rng)
+			}
+			return original, err
+		})
+		if err != nil {
+			return err
+		}
+		n := generated.Add(1)
+		if *duplicate > 0 && n%*duplicate == 0 {
+			_, err = q.Enqueue(original)
+		}
+		return err
+	}
+	// Browser controls are an explicit demo opt-in. Offline/drain/compact CLI
+	// exercises keep their original semantics and never consult this control plane.
+	if os.Getenv("MESHOPS_SIMULATION_CONTROL") == "1" && !*offline {
+		cache := redis.NewClient(&redis.Options{Addr: endpoint("MESHOPS_REDIS_ADDR", "127.0.0.1:16379"), DialTimeout: time.Second, ReadTimeout: time.Second, WriteTimeout: time.Second, MaxRetries: -1, ContextTimeoutEnabled: true})
+		defer cache.Close()
+		controlledCtx, controlledCancel := context.WithCancel(platform.Outgoing(genCtx, token))
+		defer controlledCancel()
+		err := runControlledSimulation(controlledCtx, simulation.NewStore(cache), source.TenantID, source.ID, 500*time.Millisecond, time.Second/time.Duration(*rate), func() error {
+			// A ready generation tick may win select after cancellation. Preserve
+			// the CLI's exact count contract even at very high configured rates.
+			if *count > 0 && generated.Load() >= *count {
+				return nil
+			}
+			if err := generate(); err != nil {
+				return err
+			}
+			if *count > 0 && generated.Load() >= *count {
+				controlledCancel()
+			}
+			return nil
+		}, func(ctx context.Context) error { return Upload(ctx, q, client, *batch, *recovery, false, &stats) }, func() simulation.Observation {
+			s, err := q.Stats()
+			if err != nil {
+				fmt.Fprintln(diagnostic, err)
+			}
+			return simulation.Observation{Generated: strconv.FormatInt(generated.Load(), 10), Sent: strconv.FormatInt(stats.Sent.Load(), 10), Pending: strconv.Itoa(s.Pending)}
+		}, diagnostic)
+		if err != nil {
+			return cliError(out, err)
+		}
+		if *count > 0 && generated.Load() < *count && ctx.Err() == nil {
+			return cliError(out, status.Error(codes.DeadlineExceeded, "duration elapsed before requested count"))
+		}
+		return 0
+	}
+	if !*offline {
+		go func() { uploadResult <- Upload(runCtx, q, client, *batch, *recovery, false, &stats) }()
+	}
 	var runErr error
 	uploadConsumed := false
 generation:
@@ -217,32 +279,11 @@ generation:
 		case <-periodic.C:
 			printStats()
 		case <-ticker.C:
-			rawID := ids[rng.Intn(len(ids))]
-			var original *commonv1.EntityStateEvent
-			_, err := q.Generate(platform.Key(source.TenantID, source.Entities[rawID]), func(version int64) (*commonv1.EntityStateEvent, error) {
-				now := time.Now().UTC()
-				raw, e := state.GenerateRaw(source, rawID, version, now)
-				if e != nil {
-					return nil, e
-				}
-				original, e = state.Normalize(raw, source, now)
-				if e == nil {
-					simulateMotion(original, rng)
-				}
-				return original, e
-			})
-			if err != nil {
+			if err := generate(); err != nil {
 				runErr = err
 				break generation
 			}
-			n := generated.Add(1)
-			if *duplicate > 0 && n%*duplicate == 0 {
-				if _, err = q.Enqueue(original); err != nil {
-					runErr = err
-					break generation
-				}
-			}
-			if *count > 0 && n >= *count {
+			if *count > 0 && generated.Load() >= *count {
 				break generation
 			}
 		}

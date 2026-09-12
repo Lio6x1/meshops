@@ -295,3 +295,7 @@ Get-Content './.local/logs/task.err.log' -Tail 80 -Wait
 本轮已实际运行 Docker 首次启动、真实浏览器登录/订阅/任务/搜索、四类任务与取消的 HTTP 验收、搜索重建及重启保留检查，证据见[全栈验收归档](verification/2026-09-12-fullstack/README.md)。你自己的电脑仍需实际执行上面的检查；旧课程记录与当前验证范围分开阅读。已有后端复核入口见 [复核资料](review/2026-09-12/acceptance.md)，教材复制检查见 [课程工作记录](learning/from-zero/BUILD-LEDGER.md)。
 
 可使用[HTTP 全流程验收脚本说明](../scripts/test-fullstack.md)重复验证当前环境。Search 刚恢复时，gRPC 连接可能仍在退避重连；页面出现暂时不可用后，可稍后再次查询。部分错误提示保留英文诊断，处理方法见本文日志与搜索恢复步骤。
+
+## 模拟器开关与二维地图
+
+完成版已内置实体地图与模拟演示页面。更新源码后重新执行 `./scripts/demo-stack.ps1 -Action Up`，刷新浏览器并重新登录。可逐来源切换正常上报、暂停采集、断网缓存；任务执行器保持独立。详见[操作步骤和实现说明](simulation-map.md)。

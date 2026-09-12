@@ -18,7 +18,9 @@ import (
 	searchv1 "example.com/meshops-course/gen/search/v1"
 	taskv1 "example.com/meshops-course/gen/task/v1"
 	"example.com/meshops-course/internal/platform"
+	"example.com/meshops-course/internal/simulation"
 	"example.com/meshops-course/internal/web"
+	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
 )
 
@@ -60,7 +62,13 @@ func run() error {
 		}
 		conns = append(conns, c)
 	}
-	app, err := web.New(web.Config{Registry: reg, TenantID: env("MESHOPS_WEB_TENANT", "demo_tenant"), Entity: entityv1.NewEntityServiceClient(conns[0]), Task: taskv1.NewTaskServiceClient(conns[1]), Dispatcher: dispatcherv1.NewDispatcherServiceClient(conns[2]), Search: searchv1.NewSearchServiceClient(conns[3]), AccessCodes: map[string]string{"operator": os.Getenv("MESHOPS_WEB_OPERATOR_CODE"), "admin": os.Getenv("MESHOPS_WEB_ADMIN_CODE")}, AllowedOrigins: strings.Split(env("MESHOPS_WEB_ORIGINS", "http://localhost:18090,http://127.0.0.1:18090,http://localhost:5173,http://127.0.0.1:5173"), ",")})
+	var control web.SimulationControl
+	if os.Getenv("MESHOPS_SIMULATION_CONTROL") == "1" {
+		client := redis.NewClient(&redis.Options{Addr: env("MESHOPS_REDIS_ADDR", "127.0.0.1:16379"), DialTimeout: time.Second, ReadTimeout: time.Second, WriteTimeout: time.Second, MaxRetries: 0})
+		defer client.Close()
+		control = simulation.NewStore(client)
+	}
+	app, err := web.New(web.Config{Simulation: control, Registry: reg, TenantID: env("MESHOPS_WEB_TENANT", "demo_tenant"), Entity: entityv1.NewEntityServiceClient(conns[0]), Task: taskv1.NewTaskServiceClient(conns[1]), Dispatcher: dispatcherv1.NewDispatcherServiceClient(conns[2]), Search: searchv1.NewSearchServiceClient(conns[3]), AccessCodes: map[string]string{"operator": os.Getenv("MESHOPS_WEB_OPERATOR_CODE"), "admin": os.Getenv("MESHOPS_WEB_ADMIN_CODE")}, AllowedOrigins: strings.Split(env("MESHOPS_WEB_ORIGINS", "http://localhost:18090,http://127.0.0.1:18090,http://localhost:5173,http://127.0.0.1:5173"), ",")})
 	if err != nil {
 		return err
 	}

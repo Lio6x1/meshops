@@ -19,6 +19,7 @@ const router = createRouter({
     { path: '/search', component: () => import('./views/Search.vue') },
     { path: '/dispatch', component: () => import('./views/Dispatch.vue') },
     { path: '/status', component: () => import('./views/Status.vue') },
+    { path: '/simulation', component: () => import('./views/Simulation.vue') },
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 })

@@ -45,6 +45,7 @@ try {
         if (-not $ok) { throw "Service at metrics port $port is not ready; see .local/logs" }
     }
     if ($Simulators) {
+        $env:MESHOPS_SIMULATION_CONTROL = "1"
         foreach ($source in @('personnel_sim','drone_sim','vehicle_sim','robot_sim','sensor_sim','facility_sim')) {
             Start-CourseProcess $source 'gateway-simulator' @('--manifest','configs/simulation.yaml','--source',$source,'--db',"data/$source.db",'--rate','2','--duration','30m')
         }

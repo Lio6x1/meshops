@@ -40,7 +40,7 @@ def main():
     if missing:
         raise ValueError(f'Incomplete runtime: {missing}')
     browser = {p for p in runtime if p.startswith('web/')} | {'scripts/frontend.ps1'}
-    gateway = {p for p in runtime if p.startswith(('internal/web/', 'cmd/web-gateway/')) or p.endswith('.pb.gw.go')}
+    gateway = {p for p in runtime if p.startswith(('internal/web/', 'cmd/web-gateway/', 'internal/simulation/')) or p.endswith('.pb.gw.go')}
     gateway |= {'go.mod', 'go.sum', '.gitignore', 'proto/http.yaml', 'scripts/build.ps1', 'scripts/generate-http.ps1', 'scripts/verify-proto.ps1', 'scripts/web-env.ps1', 'scripts/start-web.ps1', 'scripts/stop-web.ps1'}
     previous = {f['path']: f['sha256'] for f in baseline['files']}
     for stage_id, additions in (('z11', gateway), ('z12', browser), ('z13', runtime)):

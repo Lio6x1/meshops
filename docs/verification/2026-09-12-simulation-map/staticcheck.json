@@ -1,0 +1,12 @@
+{
+  "tool": "staticcheck v0.7.0",
+  "exitCode": 0,
+  "packages": [
+    "./internal/web",
+    "./internal/simulation",
+    "./internal/edge",
+    "./cmd/web-gateway"
+  ],
+  "diagnosticBytes": 0,
+  "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

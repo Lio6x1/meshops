@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { onBeforeRouteLeave, useRouter } from 'vue-router'
+import { onBeforeRouteLeave, useRouter, useRoute } from 'vue-router'
 import { api, errorText, query, clockOffset } from '../api'
 import { useEntities } from '../entities'
 import { canInspect, makeDraft, statuses } from '../domain'
@@ -11,13 +11,13 @@ const router = useRouter(),
   busy = ref(false),
   error = ref(''),
   status = ref(''),
-  entity = ref(''),
+  entity = ref(typeof useRoute().query.entity === 'string' ? String(useRoute().query.entity) : ''),
   next = ref(''),
   token = ref(''),
   total = ref<number>(),
   show = ref(false),
   submitting = ref(false)
-const draftEntity = ref(''),
+const draftEntity = ref(entity.value),
   duration = ref(5),
   note = ref(''),
   deadline = ref(new Date(Date.now() + 3600000).toISOString()),

@@ -64,8 +64,8 @@ foreach ($stageID in @('z04','z05','z06','z07','z08','z09','z10','z11','z12','z1
         )
     } elseif ($stageID -eq 'z12') {
         $definitions = @(
-            @{id='z12-01'; title='前端领域类型、状态规则与依赖'; paths=@($pending | Where-Object {$_ -match '^web/(package.*\.json|tsconfig.*\.json|vite.config.ts|tests/|src/(domain|types|transport|requests)\.ts$)'}); remove=@(); packages=@(); tests=@()},
-            @{id='z12-02'; title='会话、六个页面与真实接口联调'; paths=@('*'); remove=@($stage.changes.removed); packages=@(); tests=@()}
+            @{id='z12-01'; title='前端领域类型、状态规则与依赖'; paths=@($pending | Where-Object {$_ -match '^web/(package.*\.json|tsconfig.*\.json|vite.config.ts|tests/|src/(domain|types|transport|requests|map)\.ts$)'}); remove=@(); packages=@(); tests=@()},
+            @{id='z12-02'; title='会话、实体地图与模拟控制页面'; paths=@('*'); remove=@($stage.changes.removed); packages=@(); tests=@()}
         )
     } elseif ($stageID -eq 'z13') {
         $definitions = @(

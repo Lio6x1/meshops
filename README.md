@@ -199,3 +199,7 @@ Windows 的停止脚本采用强制进程退出，用于本地操作；服务收
 - [当前工程验证边界](docs/production-readiness-checklist.md)：机器令牌不是用户密码体系，单实例和有限压测不作为生产容量保证。
 
 完整集成验收需 Python 3：`./scripts/test.ps1 -Integration` 会启动 ES 与专用故障 Redis、保存 JSON 结果，并拒绝关键测试缺失或业务测试跳过。在支持 CGO 的平台加 `-Race`；云端 CI 在依赖启动后运行全包 race。PowerShell 点调用与执行策略说明见 [课程导航](docs/learning/from-zero/README.md)。
+
+### 实体地图与模拟器控制
+
+控制台内置六类实体二维园区示意图，实时坐标来自 SSE；支持点击详情与任务联动。模拟演示页提供正常上报、暂停采集、断网缓存，展示实际心跳与待补传数量。操作方法、接口边界和验收脚本见[模拟器控制与地图](docs/simulation-map.md)。

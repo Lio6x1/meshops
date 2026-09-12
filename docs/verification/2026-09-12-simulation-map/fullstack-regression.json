@@ -1,0 +1,445 @@
+{
+  "schemaVersion": 1,
+  "runId": "af583acac0ba493db9cd7c38370bd2f0",
+  "baseURL": "http://127.0.0.1:18090",
+  "startedAt": "2026-09-12T13:50:30.1374506+00:00",
+  "passed": true,
+  "checks": [
+    {
+      "name": "operator-and-admin-sessions",
+      "passed": true,
+      "checkedAt": "2026-09-12T13:50:30.2348500+00:00",
+      "detail": {
+        "roles": [
+          "operator",
+          "admin"
+        ]
+      }
+    },
+    {
+      "name": "operator-403-admin-200",
+      "passed": true,
+      "checkedAt": "2026-09-12T13:50:30.2584196+00:00",
+      "detail": {
+        "consumerLag": "0",
+        "adminHTTP": 200,
+        "dlqCount": "0",
+        "operatorHTTP": 403,
+        "activeTasks": 0,
+        "asOf": "2026-09-12T13:50:30.249547548Z"
+      }
+    },
+    {
+      "name": "six-real-snapshots",
+      "passed": true,
+      "checkedAt": "2026-09-12T13:50:30.3200725+00:00",
+      "detail": {
+        "count": 6
+      }
+    },
+    {
+      "name": "inspect-person-succeeded",
+      "passed": true,
+      "checkedAt": "2026-09-12T13:50:32.2107779+00:00",
+      "detail": {
+        "taskId": "92c86da0-5ef9-43f8-a73f-768cd3ed2802",
+        "effectCount": 1
+      }
+    },
+    {
+      "name": "inspect-drone-succeeded",
+      "passed": true,
+      "checkedAt": "2026-09-12T13:50:34.0618993+00:00",
+      "detail": {
+        "taskId": "5262ed54-c930-465f-819c-cfa10a67e73a",
+        "effectCount": 1
+      }
+    },
+    {
+      "name": "inspect-vehicle-succeeded",
+      "passed": true,
+      "checkedAt": "2026-09-12T13:50:35.9535101+00:00",
+      "detail": {
+        "taskId": "0db7c3a2-3b29-47fe-ba84-6418ac153c16",
+        "effectCount": 1
+      }
+    },
+    {
+      "name": "inspect-robot-succeeded",
+      "passed": true,
+      "checkedAt": "2026-09-12T13:50:37.8337827+00:00",
+      "detail": {
+        "taskId": "069834f4-a71d-42bd-8f70-a69630250ef0",
+        "effectCount": 1
+      }
+    },
+    {
+      "name": "executing-cancellation-confirmed",
+      "passed": true,
+      "checkedAt": "2026-09-12T13:50:39.4013849+00:00",
+      "detail": {
+        "taskId": "ffb3673b-34e5-4142-aaf2-f61fd44e201a",
+        "status": "TASK_STATUS_CANCELLED"
+      }
+    },
+    {
+      "name": "four-task-cdc-convergence",
+      "passed": true,
+      "checkedAt": "2026-09-12T13:50:39.6049297+00:00",
+      "detail": {
+        "count": 4
+      }
+    },
+    {
+      "name": "both-sessions-revoked",
+      "passed": true,
+      "checkedAt": "2026-09-12T13:50:39.6166440+00:00",
+      "detail": {
+        "roles": [
+          "operator",
+          "admin"
+        ]
+      }
+    }
+  ],
+  "snapshots": [
+    {
+      "entityId": "person-001",
+      "entityType": "person",
+      "version": "12411",
+      "sourceId": "personnel_sim",
+      "sourceGeneration": "1",
+      "expiresAt": "2026-09-12T13:50:59.884880847Z",
+      "viewGeneration": "00cb6143-9bb0-45d3-94e6-209a36ce2265"
+    },
+    {
+      "entityId": "drone-001",
+      "entityType": "drone",
+      "version": "12377",
+      "sourceId": "drone_sim",
+      "sourceGeneration": "1",
+      "expiresAt": "2026-09-12T13:51:00.253Z",
+      "viewGeneration": "00cb6143-9bb0-45d3-94e6-209a36ce2265"
+    },
+    {
+      "entityId": "vehicle-001",
+      "entityType": "vehicle",
+      "version": "12409",
+      "sourceId": "vehicle_sim",
+      "sourceGeneration": "1",
+      "expiresAt": "2026-09-12T13:50:59.792642491Z",
+      "viewGeneration": "00cb6143-9bb0-45d3-94e6-209a36ce2265"
+    },
+    {
+      "entityId": "robot-001",
+      "entityType": "robot",
+      "version": "12412",
+      "sourceId": "robot_sim",
+      "sourceGeneration": "1",
+      "expiresAt": "2026-09-12T13:51:00.199466610Z",
+      "viewGeneration": "00cb6143-9bb0-45d3-94e6-209a36ce2265"
+    },
+    {
+      "entityId": "sensor-001",
+      "entityType": "sensor",
+      "version": "12403",
+      "sourceId": "sensor_sim",
+      "sourceGeneration": "1",
+      "expiresAt": "2026-09-12T13:51:00.036792456Z",
+      "viewGeneration": "00cb6143-9bb0-45d3-94e6-209a36ce2265"
+    },
+    {
+      "entityId": "facility-001",
+      "entityType": "facility",
+      "version": "12418",
+      "sourceId": "facility_sim",
+      "sourceGeneration": "1",
+      "expiresAt": "2026-09-12T13:51:00.229656470Z",
+      "viewGeneration": "00cb6143-9bb0-45d3-94e6-209a36ce2265"
+    }
+  ],
+  "tasks": [
+    {
+      "taskId": "92c86da0-5ef9-43f8-a73f-768cd3ed2802",
+      "entityId": "person-001",
+      "status": "TASK_STATUS_SUCCEEDED",
+      "statusVersion": 5,
+      "executionKey": "92c86da0-5ef9-43f8-a73f-768cd3ed2802",
+      "executorId": "simulated_personnel",
+      "historyCount": 6,
+      "history": [
+        {
+          "from": "TASK_STATUS_UNSPECIFIED",
+          "to": "TASK_STATUS_CREATED",
+          "version": 0,
+          "at": "2026-09-12T13:50:30.340355Z"
+        },
+        {
+          "from": "TASK_STATUS_CREATED",
+          "to": "TASK_STATUS_DISPATCH_PENDING",
+          "version": 1,
+          "at": "2026-09-12T13:50:30.340355Z"
+        },
+        {
+          "from": "TASK_STATUS_DISPATCH_PENDING",
+          "to": "TASK_STATUS_DISPATCHED",
+          "version": 2,
+          "at": "2026-09-12T13:50:30.819807Z"
+        },
+        {
+          "from": "TASK_STATUS_DISPATCHED",
+          "to": "TASK_STATUS_ACKED",
+          "version": 3,
+          "at": "2026-09-12T13:50:30.844014Z"
+        },
+        {
+          "from": "TASK_STATUS_ACKED",
+          "to": "TASK_STATUS_EXECUTING",
+          "version": 4,
+          "at": "2026-09-12T13:50:30.86511Z"
+        },
+        {
+          "from": "TASK_STATUS_EXECUTING",
+          "to": "TASK_STATUS_SUCCEEDED",
+          "version": 5,
+          "at": "2026-09-12T13:50:31.896753Z"
+        }
+      ],
+      "dispatchId": "92c86da0-5ef9-43f8-a73f-768cd3ed2802-execute-1",
+      "attempt": 1,
+      "commandKind": "execute",
+      "deliveryStatus": "succeeded",
+      "effectCount": 1,
+      "keyword": "httpproofaf583acac0ba493db9cd7c38370bd2f0person",
+      "searchStatus": "TASK_STATUS_SUCCEEDED",
+      "searchVersion": 5
+    },
+    {
+      "taskId": "5262ed54-c930-465f-819c-cfa10a67e73a",
+      "entityId": "drone-001",
+      "status": "TASK_STATUS_SUCCEEDED",
+      "statusVersion": 5,
+      "executionKey": "5262ed54-c930-465f-819c-cfa10a67e73a",
+      "executorId": "simulated_aircraft",
+      "historyCount": 6,
+      "history": [
+        {
+          "from": "TASK_STATUS_UNSPECIFIED",
+          "to": "TASK_STATUS_CREATED",
+          "version": 0,
+          "at": "2026-09-12T13:50:32.218501Z"
+        },
+        {
+          "from": "TASK_STATUS_CREATED",
+          "to": "TASK_STATUS_DISPATCH_PENDING",
+          "version": 1,
+          "at": "2026-09-12T13:50:32.218501Z"
+        },
+        {
+          "from": "TASK_STATUS_DISPATCH_PENDING",
+          "to": "TASK_STATUS_DISPATCHED",
+          "version": 2,
+          "at": "2026-09-12T13:50:32.815913Z"
+        },
+        {
+          "from": "TASK_STATUS_DISPATCHED",
+          "to": "TASK_STATUS_ACKED",
+          "version": 3,
+          "at": "2026-09-12T13:50:32.839698Z"
+        },
+        {
+          "from": "TASK_STATUS_ACKED",
+          "to": "TASK_STATUS_EXECUTING",
+          "version": 4,
+          "at": "2026-09-12T13:50:32.86156Z"
+        },
+        {
+          "from": "TASK_STATUS_EXECUTING",
+          "to": "TASK_STATUS_SUCCEEDED",
+          "version": 5,
+          "at": "2026-09-12T13:50:33.90101Z"
+        }
+      ],
+      "dispatchId": "5262ed54-c930-465f-819c-cfa10a67e73a-execute-1",
+      "attempt": 1,
+      "commandKind": "execute",
+      "deliveryStatus": "executing",
+      "effectCount": 1,
+      "keyword": "httpproofaf583acac0ba493db9cd7c38370bd2f0drone",
+      "searchStatus": "TASK_STATUS_SUCCEEDED",
+      "searchVersion": 5
+    },
+    {
+      "taskId": "0db7c3a2-3b29-47fe-ba84-6418ac153c16",
+      "entityId": "vehicle-001",
+      "status": "TASK_STATUS_SUCCEEDED",
+      "statusVersion": 5,
+      "executionKey": "0db7c3a2-3b29-47fe-ba84-6418ac153c16",
+      "executorId": "simulated_vehicle",
+      "historyCount": 6,
+      "history": [
+        {
+          "from": "TASK_STATUS_UNSPECIFIED",
+          "to": "TASK_STATUS_CREATED",
+          "version": 0,
+          "at": "2026-09-12T13:50:34.072061Z"
+        },
+        {
+          "from": "TASK_STATUS_CREATED",
+          "to": "TASK_STATUS_DISPATCH_PENDING",
+          "version": 1,
+          "at": "2026-09-12T13:50:34.072061Z"
+        },
+        {
+          "from": "TASK_STATUS_DISPATCH_PENDING",
+          "to": "TASK_STATUS_DISPATCHED",
+          "version": 2,
+          "at": "2026-09-12T13:50:34.817414Z"
+        },
+        {
+          "from": "TASK_STATUS_DISPATCHED",
+          "to": "TASK_STATUS_ACKED",
+          "version": 3,
+          "at": "2026-09-12T13:50:34.846909Z"
+        },
+        {
+          "from": "TASK_STATUS_ACKED",
+          "to": "TASK_STATUS_EXECUTING",
+          "version": 4,
+          "at": "2026-09-12T13:50:34.876858Z"
+        },
+        {
+          "from": "TASK_STATUS_EXECUTING",
+          "to": "TASK_STATUS_SUCCEEDED",
+          "version": 5,
+          "at": "2026-09-12T13:50:35.912249Z"
+        }
+      ],
+      "dispatchId": "0db7c3a2-3b29-47fe-ba84-6418ac153c16-execute-1",
+      "attempt": 1,
+      "commandKind": "execute",
+      "deliveryStatus": "executing",
+      "effectCount": 1,
+      "keyword": "httpproofaf583acac0ba493db9cd7c38370bd2f0vehicle",
+      "searchStatus": "TASK_STATUS_SUCCEEDED",
+      "searchVersion": 5
+    },
+    {
+      "taskId": "069834f4-a71d-42bd-8f70-a69630250ef0",
+      "entityId": "robot-001",
+      "status": "TASK_STATUS_SUCCEEDED",
+      "statusVersion": 5,
+      "executionKey": "069834f4-a71d-42bd-8f70-a69630250ef0",
+      "executorId": "simulated_robot",
+      "historyCount": 6,
+      "history": [
+        {
+          "from": "TASK_STATUS_UNSPECIFIED",
+          "to": "TASK_STATUS_CREATED",
+          "version": 0,
+          "at": "2026-09-12T13:50:35.95937Z"
+        },
+        {
+          "from": "TASK_STATUS_CREATED",
+          "to": "TASK_STATUS_DISPATCH_PENDING",
+          "version": 1,
+          "at": "2026-09-12T13:50:35.95937Z"
+        },
+        {
+          "from": "TASK_STATUS_DISPATCH_PENDING",
+          "to": "TASK_STATUS_DISPATCHED",
+          "version": 2,
+          "at": "2026-09-12T13:50:36.327655Z"
+        },
+        {
+          "from": "TASK_STATUS_DISPATCHED",
+          "to": "TASK_STATUS_ACKED",
+          "version": 3,
+          "at": "2026-09-12T13:50:36.36843Z"
+        },
+        {
+          "from": "TASK_STATUS_ACKED",
+          "to": "TASK_STATUS_EXECUTING",
+          "version": 4,
+          "at": "2026-09-12T13:50:36.418907Z"
+        },
+        {
+          "from": "TASK_STATUS_EXECUTING",
+          "to": "TASK_STATUS_SUCCEEDED",
+          "version": 5,
+          "at": "2026-09-12T13:50:37.476024Z"
+        }
+      ],
+      "dispatchId": "069834f4-a71d-42bd-8f70-a69630250ef0-execute-1",
+      "attempt": 1,
+      "commandKind": "execute",
+      "deliveryStatus": "succeeded",
+      "effectCount": 1,
+      "keyword": "httpproofaf583acac0ba493db9cd7c38370bd2f0robot",
+      "searchStatus": "TASK_STATUS_SUCCEEDED",
+      "searchVersion": 5
+    }
+  ],
+  "scope": "Real HTTP sessions, six snapshots, four inspect completions, cancellation, history, dispatch, CDC convergence and role boundaries. No Docker control or browser visual QA.",
+  "cancellation": {
+    "taskId": "ffb3673b-34e5-4142-aaf2-f61fd44e201a",
+    "entityId": "drone-001",
+    "status": "TASK_STATUS_CANCELLED",
+    "statusVersion": 6,
+    "executionKey": "ffb3673b-34e5-4142-aaf2-f61fd44e201a",
+    "executorId": "simulated_aircraft",
+    "historyCount": 7,
+    "history": [
+      {
+        "from": "TASK_STATUS_UNSPECIFIED",
+        "to": "TASK_STATUS_CREATED",
+        "version": 0,
+        "at": "2026-09-12T13:50:37.840745Z"
+      },
+      {
+        "from": "TASK_STATUS_CREATED",
+        "to": "TASK_STATUS_DISPATCH_PENDING",
+        "version": 1,
+        "at": "2026-09-12T13:50:37.840745Z"
+      },
+      {
+        "from": "TASK_STATUS_DISPATCH_PENDING",
+        "to": "TASK_STATUS_DISPATCHED",
+        "version": 2,
+        "at": "2026-09-12T13:50:38.330904Z"
+      },
+      {
+        "from": "TASK_STATUS_DISPATCHED",
+        "to": "TASK_STATUS_ACKED",
+        "version": 3,
+        "at": "2026-09-12T13:50:38.364277Z"
+      },
+      {
+        "from": "TASK_STATUS_ACKED",
+        "to": "TASK_STATUS_EXECUTING",
+        "version": 4,
+        "at": "2026-09-12T13:50:38.398228Z"
+      },
+      {
+        "from": "TASK_STATUS_EXECUTING",
+        "to": "TASK_STATUS_EXECUTING",
+        "version": 5,
+        "at": "2026-09-12T13:50:38.619847Z"
+      },
+      {
+        "from": "TASK_STATUS_EXECUTING",
+        "to": "TASK_STATUS_CANCELLED",
+        "version": 6,
+        "at": "2026-09-12T13:50:39.346461Z"
+      }
+    ],
+    "dispatchId": "ffb3673b-34e5-4142-aaf2-f61fd44e201a-cancel-1",
+    "attempt": 1,
+    "commandKind": "cancel",
+    "deliveryStatus": "dispatched",
+    "observedExecutingVersion": 4,
+    "intentAccepted": true
+  },
+  "finishedAt": "2026-09-12T13:50:39.6208953+00:00",
+  "elapsedSeconds": 9.483
+}

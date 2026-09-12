@@ -1,0 +1,51 @@
+[
+  {
+    "name": "simulation-e2e.json",
+    "source": ".cache/fullstack/simulation-final-e2e.json",
+    "rawSha256": "ff85f14472c07b4bfa95067d3f3e056bb0739f99c32239b035b5579a8ff7b844"
+  },
+  {
+    "name": "fullstack-regression.json",
+    "source": ".cache/fullstack/simulation-fullstack-regression.json",
+    "rawSha256": "42e4bd91473cdf105243ad84ba55b220e588d6efedc50e76712d8deb5e9af624"
+  },
+  {
+    "name": "course-copy.json",
+    "source": ".cache/lesson-copy-3281767e26404255be974fd818d4629d/result.json",
+    "rawSha256": "960efb0dc1b354f233a51f800136a73ef7f639b42b343c44bb2501796ae9da22"
+  },
+  {
+    "name": "course-substeps.json",
+    "source": ".cache/substeps-1cf5dda926bf47a6afaa7780d2f3367c/result.json",
+    "rawSha256": "e8f8ef2e99b2692d3f98e421d22cde12db20ffc4333190d13445f75d6cb81b88"
+  },
+  {
+    "name": "race.txt",
+    "source": ".cache/fullstack/simulation-race.txt",
+    "rawSha256": "114e71b589d722c5671ce9af24e750ed085d04f2b51f98a79e96fc6d25398a96"
+  },
+  {
+    "name": "course-substeps-initial-failure.json",
+    "source": ".cache/substeps-85f090fcbbb446a39fddb99d57359873/result.json",
+    "rawSha256": "ea23750b6a96adf738c37b9713a414e1b5b59c9f669d33720edc6706fb6f8d4a",
+    "privateRawOnly": true
+  },
+  {
+    "name": "course-memory-failure.txt",
+    "source": ".cache/substeps-85f090fcbbb446a39fddb99d57359873/z11-01-build.txt",
+    "rawSha256": "6f43af50e54edce0c2f62f15d802efa8205c82f982e6d01347fe8e00a397fcab",
+    "privateRawOnly": true
+  },
+  {
+    "name": "staticcheck-initial-failure.txt",
+    "source": ".cache/fullstack/simulation-staticcheck.txt",
+    "rawSha256": "577b5572e91174a67c4b70687ed69fc59f93bb617839537afcf9a23f90aac6c0",
+    "privateRawOnly": true
+  },
+  {
+    "name": "docker-final-up.txt",
+    "source": ".cache/fullstack/simulation-final-up.txt",
+    "rawSha256": "fcaec3b4fb0703c4d43434700992bb8bc21f329ef3e1a7f2d6b3592b2dff0a47",
+    "privateRawOnly": true
+  }
+]

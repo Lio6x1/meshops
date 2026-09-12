@@ -12,6 +12,7 @@ try { $probe.Start() } finally { $probe.Stop() }
 $binary = Join-Path $root 'bin/web-gateway.exe'
 if (-not (Test-Path -LiteralPath $binary)) { throw 'Build the gateway first: go build -o bin/web-gateway.exe ./cmd/web-gateway' }
 . (Join-Path $PSScriptRoot 'web-env.ps1')
+$env:MESHOPS_SIMULATION_CONTROL = '1'
 New-Item -ItemType Directory -Force (Join-Path $root '.local/logs') | Out-Null
 $process = Start-Process -FilePath $binary -WorkingDirectory $root -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $root '.local/logs/web.out.log') -RedirectStandardError (Join-Path $root '.local/logs/web.err.log')
 $record = New-CourseProcessRecord 'web-gateway' $process

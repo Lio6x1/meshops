@@ -5,6 +5,7 @@ import { api, errorText, query } from '../api'
 import { entityTypes, isExpired, time } from '../domain'
 import type { HistorySample, Inventory } from '../types'
 import SnapshotDetails from '../components/SnapshotDetails.vue'
+import EntityMap from '../components/EntityMap.vue'
 import { LatestRequest } from '../requests'
 defineProps<{ overview: boolean }>()
 const { inventory, state, connection, error, loading, now, ready, load, connect } = useEntities()
@@ -128,6 +129,7 @@ async function history(more = false) {
       <small>{{ ['sensor', 'facility'].includes(key) ? '状态感知' : '可授权执行' }}</small>
     </button>
   </section>
+  <EntityMap :inventory="rows" :records="state.entities" :now="now" :ready="ready" :selected="selected?.entityId" @select="detail" />
   <section class="panel">
     <div class="panel-heading">
       <div>
@@ -192,6 +194,10 @@ async function history(more = false) {
       :closable="false"
     />
     <SnapshotDetails :snapshot="current?.snapshot" />
+    <div class="actions spaced">
+      <RouterLink :to="{ path: '/tasks', query: { entity: selected?.entityId } }"><el-button type="primary">查看该实体任务</el-button></RouterLink>
+      <RouterLink to="/simulation"><el-button>模拟器控制</el-button></RouterLink>
+    </div>
     <h3>来源与版本</h3>
     <dl class="detail-grid">
       <dt>来源</dt>

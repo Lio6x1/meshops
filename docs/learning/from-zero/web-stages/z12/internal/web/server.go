@@ -22,6 +22,7 @@ import (
 )
 
 type Config struct {
+	Simulation     SimulationControl
 	Registry       *platform.Registry
 	TenantID       string
 	Entity         entityv1.EntityServiceClient
@@ -115,6 +116,8 @@ func New(cfg Config) (*Server, error) {
 	mux.HandleFunc("/api/session", s.sessionHTTP)
 	mux.HandleFunc("GET /api/v1/entities", s.inventory)
 	mux.HandleFunc("GET /api/v1/entities/stream", s.stream)
+	mux.HandleFunc("GET /api/v1/simulation", s.simulationHTTP)
+	mux.HandleFunc("PUT /api/v1/simulation/{source}", s.simulationHTTP)
 	mux.Handle("/api/", rpc)
 	s.mux = mux
 	return s, nil

@@ -1907,12 +1907,22 @@
       {
         "path": "cmd/web-gateway/main.go",
         "source": "web-stages/z11/cmd/web-gateway/main.go",
-        "sha256": "ae9387e65827e7b68d21478645ad774a5e3dbc135c30dd7c74c9fd83f8d4510d"
+        "sha256": "1c3bcdf5e732a3a1f3985b6e8f3e4ab0d56d86c57986083d60a462d0d56f7b41"
       },
       {
         "path": "cmd/web-gateway/main_test.go",
         "source": "web-stages/z11/cmd/web-gateway/main_test.go",
         "sha256": "2023c22d15397c3301a91e827969aaecb5d1aab4d58b7d7cd0d7c84c969f0e82"
+      },
+      {
+        "path": "internal/simulation/store.go",
+        "source": "web-stages/z11/internal/simulation/store.go",
+        "sha256": "e58dca4c9c49cffbe954398f43ef58f55feeedec813ae64030d536ba37511b69"
+      },
+      {
+        "path": "internal/simulation/store_test.go",
+        "source": "web-stages/z11/internal/simulation/store_test.go",
+        "sha256": "892817f003069b92b19175c2ef83f44f38bd397f66a8473cae1152a618b0ed53"
       },
       {
         "path": "internal/web/limits_test.go",
@@ -1922,7 +1932,7 @@
       {
         "path": "internal/web/server.go",
         "source": "web-stages/z11/internal/web/server.go",
-        "sha256": "b7c4644c2f93be653ab37406b952bf844d98761b8958f43e9cd423eceb0c628f"
+        "sha256": "b9f22fe39dcd497e322b22a4e88fba2242b155be7b7fda266f721cf0629c4255"
       },
       {
         "path": "internal/web/server_test.go",
@@ -1933,6 +1943,16 @@
         "path": "internal/web/session.go",
         "source": "web-stages/z11/internal/web/session.go",
         "sha256": "48817607c749a0c92ee7aca8b14d59ea14d6ee175a7e20bbec0043b5e098f69b"
+      },
+      {
+        "path": "internal/web/simulation.go",
+        "source": "web-stages/z11/internal/web/simulation.go",
+        "sha256": "47767651be2fdd36e256610da0acc2a24aff7360e8a6d0739c40a8272fb7a389"
+      },
+      {
+        "path": "internal/web/simulation_test.go",
+        "source": "web-stages/z11/internal/web/simulation_test.go",
+        "sha256": "20fafd6193a21107d14558ce2fe42437b6f32cfb2a9c3139f1a03ae92a5666a4"
       },
       {
         "path": "internal/web/stream.go",
@@ -1947,7 +1967,7 @@
       {
         "path": "scripts/start-web.ps1",
         "source": "web-stages/z11/scripts/start-web.ps1",
-        "sha256": "a14eabc3e42097a3e2b2b2087d309bbf7f490418649a6ba6772d081e1e2e4589"
+        "sha256": "592e8c7b968cb12e676b9e5ebfb50aec2a7f1eb0022a109f527acf3dc3aeac97"
       },
       {
         "path": "scripts/stop-web.ps1",
@@ -2002,6 +2022,11 @@
         "sha256": "ab61b79bba1785f99c3dfd6b1865cdf891d00b04bb185de8017c204e22b32aa1"
       },
       {
+        "path": "web/src/map.ts",
+        "source": "web-stages/z12/web/src/map.ts",
+        "sha256": "f3ab2b1f94a9f8c40d338da4084255835aa35379cb0a1e41c405cc62bda711b8"
+      },
+      {
         "path": "web/src/requests.ts",
         "source": "web-stages/z12/web/src/requests.ts",
         "sha256": "a6ff6207aa0f7a05ea2ad3dbc134ef92c64fd730b10a4337a725b32aa2e7b32b"
@@ -2027,6 +2052,11 @@
         "sha256": "92f8d1ddefdfbd9191d33b0efb5d931542daebfd45b786cbe08251d0cdd712d7"
       },
       {
+        "path": "web/tests/map.test.ts",
+        "source": "web-stages/z12/web/tests/map.test.ts",
+        "sha256": "64b3c84f762f218472d4fe20a897cd6aafc17db84e131a80c27226163a073fc0"
+      },
+      {
         "path": "web/tests/requests.test.ts",
         "source": "web-stages/z12/web/tests/requests.test.ts",
         "sha256": "1e02dba5e23fd297a5b3ce61fd3396be1d2af3dae59efba468088f886b3326ec"
@@ -2049,7 +2079,7 @@
   {
     "id": "z12-02",
     "stage": "z12",
-    "title": "会话、六个页面与真实接口联调",
+    "title": "会话、实体地图与模拟控制页面",
     "removed": [],
     "files": [
       {
@@ -2075,12 +2105,17 @@
       {
         "path": "web/src/App.vue",
         "source": "web-stages/z12/web/src/App.vue",
-        "sha256": "cc91601762470e8784da39a3ada7c9aa24de6e07da29b08bc58601b6a587fa3d"
+        "sha256": "0c24ca14bf5630a28b9bd5b590b4a32bf6bb077d1298debb459291e548d73cc7"
       },
       {
         "path": "web/src/api.ts",
         "source": "web-stages/z12/web/src/api.ts",
         "sha256": "6f9f99c2438852f6db3ae3ad180c21c7e7aa814fd0f11989a9c5f3dcda86d351"
+      },
+      {
+        "path": "web/src/components/EntityMap.vue",
+        "source": "web-stages/z12/web/src/components/EntityMap.vue",
+        "sha256": "1c5355fd838557302baa0bcc0c6d63f5e7aff9c9bd5c705e63c8936a0f27374a"
       },
       {
         "path": "web/src/components/SnapshotDetails.vue",
@@ -2100,7 +2135,7 @@
       {
         "path": "web/src/main.ts",
         "source": "web-stages/z12/web/src/main.ts",
-        "sha256": "a988fc5de4dfed2b04dfdedda93b0d298cd41008c8eaabac306670bf48bdbc88"
+        "sha256": "a6ae3a7d0e720ac07cd6d2d4664d5ba67c45317e974b81f282ccd0ccf17cf1b4"
       },
       {
         "path": "web/src/style.css",
@@ -2115,12 +2150,17 @@
       {
         "path": "web/src/views/Entities.vue",
         "source": "web-stages/z12/web/src/views/Entities.vue",
-        "sha256": "3393af4e8d63de0f7948407a036bdd38b097abba05fe5f638d659be150fd4ae1"
+        "sha256": "35385129dc6f4545d797e1ee5f01a3eddd08686809af900c88ff06c0736668e1"
       },
       {
         "path": "web/src/views/Search.vue",
         "source": "web-stages/z12/web/src/views/Search.vue",
         "sha256": "1ba90ceb60abd12633d4a76a5bd42ba56372ac752fdb1537d46cb1bb9bb63767"
+      },
+      {
+        "path": "web/src/views/Simulation.vue",
+        "source": "web-stages/z12/web/src/views/Simulation.vue",
+        "sha256": "f6df575adb01962d782f2c560015edb4083e29d3ad03bf469c699208f52b2316"
       },
       {
         "path": "web/src/views/Status.vue",
@@ -2135,7 +2175,7 @@
       {
         "path": "web/src/views/Tasks.vue",
         "source": "web-stages/z12/web/src/views/Tasks.vue",
-        "sha256": "48ddedade8390eae5b247cbcb2834e50b7c269003977089b0156d3a7855e3091"
+        "sha256": "2fc885246ece34677f33a33a9eadf09737cc90f0de8e66bd1e16bfb3c163f0ee"
       }
     ],
     "packages": [],
@@ -2211,7 +2251,7 @@
       {
         "path": "compose.demo.yml",
         "source": "../../../compose.demo.yml",
-        "sha256": "4883d7c3c099bcacb7df94e9a56683c78ad6fa5039e5e1a802c136f4c5f5df1e"
+        "sha256": "3bab0240f1040b9df387d340ccb7f18cb1e7cfd0f6a907da7acf093a6d26d0c5"
       },
       {
         "path": "deploy/demo/configs/dispatcher.yaml",
@@ -2254,6 +2294,11 @@
         "sha256": "b20358c8efbf75993cba20541333275cf409090720b9c76afcbf5db8b5767874"
       },
       {
+        "path": "internal/edge/simulation_test.go",
+        "source": "../../../internal/edge/simulation_test.go",
+        "sha256": "500202a0412bddb757411f4c41076336cb1686288792cbeea2c655a382feaf07"
+      },
+      {
         "path": "internal/platform/network.go",
         "source": "../../../internal/platform/network.go",
         "sha256": "4b3e2a2cfbcd0d97862ecb654dfcdaa9c43fed2030ead6dfc738a090116c4163"
@@ -2294,6 +2339,11 @@
         "sha256": "d2cdc3c37e0a9fbf526d587cb1556870506929c73595464425514f8ab9eafe48"
       },
       {
+        "path": "scripts/test-simulation.py",
+        "source": "../../../scripts/test-simulation.py",
+        "sha256": "d7477850146d6e4390eafffec30d4196f74977d7eafe5e600d46ff501a5cc3bc"
+      },
+      {
         "path": ".github/workflows/ci.yml",
         "source": "../../../.github/workflows/ci.yml",
         "sha256": "24b7fc11a21951f50044ef505241331768b55d94772206169c2b447c996074a7"
@@ -2301,7 +2351,12 @@
       {
         "path": "README.md",
         "source": "../../../README.md",
-        "sha256": "a3bd93f880601402d1ab08c75e26c8be400c3230f18c6ca68448bb4b35baf01b"
+        "sha256": "7b6805a605931da0d4b3a0e140c35e57655a99c24afa979fd6adcb9249f6d41c"
+      },
+      {
+        "path": "internal/edge/cli.go",
+        "source": "../../../internal/edge/cli.go",
+        "sha256": "16ac81cf34b056bdf5d01b11b78098d48020dc5ad838e051e74d638072722d52"
       },
       {
         "path": "internal/edge/executor.go",
@@ -2314,6 +2369,11 @@
         "sha256": "55a6d2085e835b6040959b4b8e1f9a6a8a5fa7a7d6a038b68db0272102e90e2d"
       },
       {
+        "path": "internal/edge/simulation.go",
+        "source": "../../../internal/edge/simulation.go",
+        "sha256": "8b439a81c47dbcfdfedd7f2033f62d9ffeeaeb5fbabaa2959c9f017db394e8e1"
+      },
+      {
         "path": "internal/platform/config.go",
         "source": "../../../internal/platform/config.go",
         "sha256": "b80861af6b7457477f7165daf63460ed7e59b814c0a09f29e118ec97f7389e73"
@@ -2322,6 +2382,11 @@
         "path": "internal/search/index.go",
         "source": "../../../internal/search/index.go",
         "sha256": "ea2382ffb58989486fdae97cb51c395dfc928c90a2462babe338ddbdd7b97262"
+      },
+      {
+        "path": "scripts/start.ps1",
+        "source": "../../../scripts/start.ps1",
+        "sha256": "9e8d6c188e1ee8566f41b98855b18833ad521c180b9cc35f64ef414726e11ea6"
       },
       {
         "path": "verification/2026-09-10/acceptance.md",
