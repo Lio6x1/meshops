@@ -52,4 +52,22 @@ edge/state/tasks 的 `TestDurableCrashChild` 在父测试之外不做业务场�
 
 任务 helper 本轮单独运行显示 SKIP、包 PASS（2.391s）；这不代表强杀场景通过。父测试仍需要确认子进程到达指定持久化屏障，真正杀掉它，再验证恢复事实。历史整包任务回归有一次缺 Kafka 配置失败，补配置后的单独强杀父测试通过；两份证据都保留，不能把第一次整包结果改成成功。
 
-截至本知识库编写时，本轮引用的是各模块定向结果和已有历史验证；新增全量 Linux race、教材最终同步和远端提交的最终状态请以各自新报告为准，本页不预先宣告通过。
+本轮收尾时，`31fda57` 的云端普通和真实依赖全包 race 已实际通过，见 [最终验收及精确 CI 链接](../review/2026-09-12/acceptance.md)。这不改变前述失败和定向运行的原始结果。
+
+## 案例四：已登录，push 仍超时
+
+本轮先遇到“连续 20 秒低速”，之后是 github.com:443 连接超时，默认 API 查询也有 DNS 超时/SSL 建连失败。这些输出没有显示 401/403，不能据此要求重新登录或认定 token 失效。
+
+先读取本机 DNS 的 A 记录，用同一 HTTPS 域名、正常证书校验测试连通。临时采用该解析结果后，推送成功；API 状态查询也成功取得 `31fda57` 的完整绿色 CI。此次没有进一步定位 DNS、IPv6 或路由中的唯一根因，因此不能把一次成功说成修好了系统网络。
+
+必要时可以只对一次 Git 命令指定刚确认的解析结果：
+
+```powershell
+$githubAddress = Resolve-DnsName github.com -Type A -DnsOnly |
+    Where-Object IPAddress | Select-Object -First 1 -ExpandProperty IPAddress
+if (-not $githubAddress) { throw '没有取得 GitHub 当前 A 记录' }
+git -c http.version=HTTP/1.1 -c "http.curloptResolve=github.com:443:$githubAddress" push origin main
+if ($LASTEXITCODE -ne 0) { throw '推送失败；继续保留本地提交并检查连接' }
+```
+
+此方法不修改系统 hosts、DNS 或全局 Git 配置，也不关闭 TLS 校验。不要照抄某次记录的固定 IP 长期使用，不要把访问令牌写进命令参数、错误日志或脚本文件。推送后仍须核对远端提交和对应 CI；网络成功不代表测试成功。

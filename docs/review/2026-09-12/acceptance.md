@@ -1,6 +1,6 @@
 # 全面复核：交付与验收记录
 
-本轮基于 `641bf62`，处理用户给出的 28 项检查意见，并独立检查现有业务、装配、测试、脚本和教材。逐项判定与额外发现见 [复核台账](assessment.md)。本机最终运行验收已通过；对应提交的云端 race 与发布结果单独记录，不用历史 CI 代替。
+本轮基于 `641bf62`，处理用户给出的 28 项检查意见，并独立检查现有业务、装配、测试、脚本和教材。逐项判定与额外发现见 [复核台账](assessment.md)。本机最终运行验收及修复提交 `31fda57` 的[云端 CI](https://github.com/Lio6x1/meshops/actions/runs/34680625332) 均通过，不用历史 CI 代替。
 
 ## 四项交付
 
@@ -18,7 +18,7 @@
 | Windows 全包集成 | `go test -tags integration ./... -json -count=1 -timeout=15m` 通过：145 个顶层测试 PASS、3 个具名子进程 helper SKIP、0 FAIL。19 项必需用例门禁通过，无业务测试跳过。 |
 | 门禁自身 | 完整、空报告、缺少必需测试、业务跳过、无测试包、允许的 helper、子测试失败七种输入符合预期。没有把 `[no test files]` 包当作业务跳过。 |
 | 独立最终代码复审 | 对 bus/state/edge/tasks/platform/verification 和 CI/测试入口修改未发现新的可操作正确性缺陷；另运行 11 项定向回归通过。Search 由主审查检查并纳入实际课程运行。复审不构成无缺陷保证。 |
-| Linux 首轮 race | 未通过：Go 容器内缺少故障测试所用 Docker CLI，另一个测试因 fault-Redis 地址保护拒绝执行。未检测到 DATA RACE，不等于完整 race 通过。最终完整 race 由具备 Docker CLI 和标准隔离端口的 GitHub CI 执行，按对应提交结果验收。 |
+| Linux 首轮 race | 未通过：Go 容器内缺少故障测试所用 Docker CLI，另一个测试因 fault-Redis 地址保护拒绝执行。未检测到 DATA RACE，不等于完整 race 通过。随后 `31fda57` 在具备 Docker CLI 和标准隔离端口的 GitHub CI 完成普通 race、全包真实依赖 race 和门禁，[全部成功](https://github.com/Lio6x1/meshops/actions/runs/34680625332)。首轮失败仍保留。 |
 
 Windows 顶层 PASS 分布为：edge 37、tasks 33、state 27、search 20、cli 10、bus 7、platform 6、verification 3、app 1、cmd/verify 1。三个 helper 仅负责被强杀父测试启动的子进程，不计入业务通过数；无测试包也不计测试用例。
 
@@ -52,6 +52,12 @@ Windows/amd64、Go 1.25.10、24 个逻辑 CPU，10,000 实体、10 个来源、3
 两阶段均无发生器队列丢弃、受理错误或抽样观察遗漏，结束时最新视图与历史消费 lag 均为 0。观察延迟包括轮询延迟，每 50 条计划事件抽取一个样本，看到同版本或更高版本即算观察成功。它覆盖独立 Ingest→Kafka→Entity→Redis/MySQL 状态链路，排除网关 bbolt、任务执行和订阅扇出，不能称为最大容量或全平台吞吐。脱敏结构化结果见 [运行证据](runtime-results.json)。
 
 历史清理另在隔离数据库生成十万条记录进行 EXPLAIN ANALYZE。稀疏样本原查询会使用 index_merge；积压样本 `OR + ORDER BY id + LIMIT 500` 扫描 30,500 行，约 10.1ms，两个独立年龄范围查询各扫描 500 行，约 0.175/0.174ms。生产实现把两段放在同一事务，合计删除预算仍为 500，并原子清理去重键。这是指定分布上的读取计划实验，不是生产容量或固定加速比承诺。见 [SQL 证据](../../troubleshooting/evidence/README.md)。
+
+## Git 与云端验证
+
+修复提交 `31fda577d2269f319f2d51deabf454e8f2aa3b36` 已快进整合到主目录并推送。主目录再次执行普通测试和 865 条教材指纹检查通过，十个可执行程序已重新构建。[GitHub Actions](https://github.com/Lio6x1/meshops/actions/runs/34680625332) 的全部步骤成功，包括模块校验、构建/vet、Staticcheck、普通 race、启动真实依赖、全包 integration race 及指定测试门禁；脱敏响应见 [CI 记录](ci-results.json)。
+
+最终文档提交记录以上已经发生的结果，不修改业务代码。临时网络连接问题与单次 DNS 解析处理已纳入 [Git/CI 排错](../../troubleshooting/11-git-ci.md)。主目录与远端最终提交会在交付前再次核对。
 
 ## 如何复验
 
