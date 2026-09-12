@@ -294,7 +294,7 @@ func initialize(dir string, values map[string]string) error {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 4*time.Minute)
 	defer cancel()
-	if err := child(ctx, "/app/opctl", "seed", "--manifest", manifest, "--migrations", "/app/migrations", "--token-env", "MESHOPS_ADMIN_TOKEN", "--dsn-env", "MESHOPS_DEMO_ADMIN_DSN"); err != nil {
+	if err := child(ctx, "/app/opctl", "seed", "--manifest", manifest, "--migrations", "/app/migrations", "--token-env", "MESHOPS_ADMIN_TOKEN", "--dsn-env", "MESHOPS_DEMO_ADMIN_DSN", "--allow-entity-expansion"); err != nil {
 		return err
 	}
 	db, err := platform.OpenDB("MESHOPS_DEMO_ADMIN_DSN")

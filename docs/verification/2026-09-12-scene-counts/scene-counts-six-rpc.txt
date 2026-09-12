@@ -1,0 +1,4 @@
+=== RUN   TestSixFixturesThroughAuthenticatedRPCAndKafka
+--- PASS: TestSixFixturesThroughAuthenticatedRPCAndKafka (4.24s)
+PASS
+ok  	example.com/meshops-course/internal/state	5.315s

@@ -1,0 +1,31 @@
+ok  	example.com/meshops-course/cmd/demo-init	2.598s
+?   	example.com/meshops-course/cmd/dispatcher	[no test files]
+?   	example.com/meshops-course/cmd/entity	[no test files]
+?   	example.com/meshops-course/cmd/executor-simulator	[no test files]
+?   	example.com/meshops-course/cmd/gateway-simulator	[no test files]
+?   	example.com/meshops-course/cmd/ingest	[no test files]
+?   	example.com/meshops-course/cmd/opctl	[no test files]
+?   	example.com/meshops-course/cmd/search	[no test files]
+?   	example.com/meshops-course/cmd/search-admin	[no test files]
+?   	example.com/meshops-course/cmd/task	[no test files]
+ok  	example.com/meshops-course/cmd/verify	2.254s
+ok  	example.com/meshops-course/cmd/web-gateway	2.898s
+?   	example.com/meshops-course/gen/common/v1	[no test files]
+?   	example.com/meshops-course/gen/dispatcher/v1	[no test files]
+?   	example.com/meshops-course/gen/entity/v1	[no test files]
+?   	example.com/meshops-course/gen/executor/v1	[no test files]
+?   	example.com/meshops-course/gen/ingest/v1	[no test files]
+?   	example.com/meshops-course/gen/search/v1	[no test files]
+?   	example.com/meshops-course/gen/task/v1	[no test files]
+ok  	example.com/meshops-course/internal/app	2.113s
+ok  	example.com/meshops-course/internal/bus	0.510s
+ok  	example.com/meshops-course/internal/cli	4.529s
+ok  	example.com/meshops-course/internal/edge	26.488s
+ok  	example.com/meshops-course/internal/platform	2.463s
+ok  	example.com/meshops-course/internal/search	2.156s
+ok  	example.com/meshops-course/internal/simulation	0.515s
+ok  	example.com/meshops-course/internal/state	2.580s
+ok  	example.com/meshops-course/internal/tasks	2.261s
+?   	example.com/meshops-course/internal/testsupport	[no test files]
+ok  	example.com/meshops-course/internal/verification	2.312s
+ok  	example.com/meshops-course/internal/web	2.323s

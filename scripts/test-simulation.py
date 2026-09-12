@@ -58,12 +58,15 @@ def main():
     code = os.environ['MESHOPS_WEB_OPERATOR_CODE']
     session = api('/api/session', 'POST', {'role': 'operator', 'accessCode': code})
     csrf = session['csrfToken']
-    original = source()['desired']
+    previous = source()
+    original = previous['desired']
     report = {'passed': False, 'checks': checks, 'scope': 'Real demo source control, durable pending queue and HTTP entity projection. Restores previous desired mode.'}
     try:
         inventory = api('/api/v1/simulation')['sources']
         assert len(inventory) == 6 and all(s['connected'] for s in inventory)
         check('six live source controllers', [s['sourceId'] for s in inventory])
+        api('/api/v1/simulation/drone_sim/count', 'PUT', {'count': 1})
+        wait_for(lambda: source()['observation']['activeCount'] == 1)
         set_mode('running')
         first = snapshot()
         changed = wait_for(lambda: (s if (s := snapshot())['version'] != first['version'] else None))
@@ -91,6 +94,8 @@ def main():
         report['passed'] = True
     finally:
         try:
+            api('/api/v1/simulation/drone_sim/count', 'PUT', {'count': previous['count']})
+            report['restoredCount'] = previous['count']
             set_mode(original)
             report['restoredMode'] = original
         finally:

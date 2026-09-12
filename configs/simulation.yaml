@@ -7,7 +7,7 @@ sources:
     fixture: ../testdata/sources/person.json
     stale_after: 30s
     rate_limit_per_second: 100
-    entities: {person-001: person-001}
+    entities: {person-001: person-001, person-002: person-002, person-003: person-003, person-004: person-004, person-005: person-005}
   - source_id: drone_sim
     adapter: drone
     source_generation: 1
@@ -15,7 +15,7 @@ sources:
     fixture: ../testdata/sources/drone.json
     stale_after: 30s
     rate_limit_per_second: 100
-    entities: {drone-001: drone-001}
+    entities: {drone-001: drone-001, drone-002: drone-002, drone-003: drone-003, drone-004: drone-004, drone-005: drone-005}
   - source_id: vehicle_sim
     adapter: vehicle
     source_generation: 1
@@ -23,7 +23,7 @@ sources:
     fixture: ../testdata/sources/vehicle.json
     stale_after: 30s
     rate_limit_per_second: 100
-    entities: {vehicle-001: vehicle-001}
+    entities: {vehicle-001: vehicle-001, vehicle-002: vehicle-002, vehicle-003: vehicle-003, vehicle-004: vehicle-004, vehicle-005: vehicle-005}
   - source_id: robot_sim
     adapter: robot
     source_generation: 1
@@ -31,7 +31,7 @@ sources:
     fixture: ../testdata/sources/robot.json
     stale_after: 30s
     rate_limit_per_second: 100
-    entities: {robot-001: robot-001}
+    entities: {robot-001: robot-001, robot-002: robot-002, robot-003: robot-003, robot-004: robot-004, robot-005: robot-005}
   - source_id: sensor_sim
     adapter: sensor
     source_generation: 1
@@ -39,7 +39,7 @@ sources:
     fixture: ../testdata/sources/sensor.json
     stale_after: 30s
     rate_limit_per_second: 100
-    entities: {sensor-001: sensor-001}
+    entities: {sensor-001: sensor-001, sensor-002: sensor-002, sensor-003: sensor-003, sensor-004: sensor-004, sensor-005: sensor-005}
   - source_id: facility_sim
     adapter: facility
     source_generation: 1
@@ -47,22 +47,22 @@ sources:
     fixture: ../testdata/sources/facility.json
     stale_after: 30s
     rate_limit_per_second: 100
-    entities: {facility-001: facility-001}
+    entities: {facility-001: facility-001, facility-002: facility-002, facility-003: facility-003, facility-004: facility-004, facility-005: facility-005}
 executors:
   - executor_id: simulated_personnel
-    entity_ids: [person-001]
+    entity_ids: [person-001, person-002, person-003, person-004, person-005]
     supported_tasks: [inspect]
     credential_env: MESHOPS_PERSON_EXECUTOR_TOKEN
   - executor_id: simulated_aircraft
-    entity_ids: [drone-001]
+    entity_ids: [drone-001, drone-002, drone-003, drone-004, drone-005]
     supported_tasks: [inspect]
     credential_env: MESHOPS_DRONE_EXECUTOR_TOKEN
   - executor_id: simulated_vehicle
-    entity_ids: [vehicle-001]
+    entity_ids: [vehicle-001, vehicle-002, vehicle-003, vehicle-004, vehicle-005]
     supported_tasks: [inspect]
     credential_env: MESHOPS_VEHICLE_EXECUTOR_TOKEN
   - executor_id: simulated_robot
-    entity_ids: [robot-001]
+    entity_ids: [robot-001, robot-002, robot-003, robot-004, robot-005]
     supported_tasks: [inspect]
     credential_env: MESHOPS_ROBOT_EXECUTOR_TOKEN
 actors:

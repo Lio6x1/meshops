@@ -1,0 +1,4 @@
+ok  	example.com/meshops-course/internal/simulation	1.022s
+ok  	example.com/meshops-course/internal/edge	27.802s
+ok  	example.com/meshops-course/internal/web	1.242s
+ok  	example.com/meshops-course/cmd/web-gateway	1.154s

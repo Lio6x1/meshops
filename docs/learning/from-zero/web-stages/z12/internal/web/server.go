@@ -118,6 +118,7 @@ func New(cfg Config) (*Server, error) {
 	mux.HandleFunc("GET /api/v1/entities/stream", s.stream)
 	mux.HandleFunc("GET /api/v1/simulation", s.simulationHTTP)
 	mux.HandleFunc("PUT /api/v1/simulation/{source}", s.simulationHTTP)
+	mux.HandleFunc("PUT /api/v1/simulation/{source}/{setting}", s.simulationHTTP)
 	mux.Handle("/api/", rpc)
 	s.mux = mux
 	return s, nil

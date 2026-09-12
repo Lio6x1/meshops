@@ -1,0 +1,10 @@
+=== RUN   TestDemoEntityExpansionIsAdditiveAndAtomic
+--- PASS: TestDemoEntityExpansionIsAdditiveAndAtomic (10.76s)
+PASS
+ok  	example.com/meshops-course/internal/tasks	11.846s
+=== RUN   TestSixFixturesThroughAuthenticatedRPCAndKafka
+    six_rpc_integration_test.go:77: kafka.(*Client).CreateTopics: [8] Broker Not Available: not a client facing error and is used mostly by tools when a broker is not alive
+--- FAIL: TestSixFixturesThroughAuthenticatedRPCAndKafka (0.03s)
+FAIL
+FAIL	example.com/meshops-course/internal/state	0.097s
+FAIL

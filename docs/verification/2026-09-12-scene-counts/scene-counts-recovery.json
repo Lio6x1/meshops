@@ -1,0 +1,59 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "six live source controllers",
+      "passed": true,
+      "details": [
+        "drone_sim",
+        "facility_sim",
+        "personnel_sim",
+        "robot_sim",
+        "sensor_sim",
+        "vehicle_sim"
+      ]
+    },
+    {
+      "name": "running produces changing location and version",
+      "passed": true,
+      "details": {
+        "from": "19269",
+        "to": "19270"
+      }
+    },
+    {
+      "name": "pause stops generation and sending",
+      "passed": true,
+      "details": {
+        "generated": "647",
+        "sent": "646"
+      }
+    },
+    {
+      "name": "offline accumulates durable backlog without sends",
+      "passed": true,
+      "details": {
+        "pending": "5"
+      }
+    },
+    {
+      "name": "last position visibly expires while source disconnected",
+      "passed": true,
+      "details": {
+        "version": "19271",
+        "expiresAt": "2026-09-12T14:57:47.562Z"
+      }
+    },
+    {
+      "name": "recovery drains queue and refreshes projection",
+      "passed": true,
+      "details": {
+        "pending": "0",
+        "version": "19348"
+      }
+    }
+  ],
+  "scope": "Real demo source control, durable pending queue and HTTP entity projection. Restores previous desired mode.",
+  "restoredCount": 1,
+  "restoredMode": "running"
+}

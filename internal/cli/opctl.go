@@ -105,6 +105,7 @@ func Opctl(ctx context.Context, args []string, out, diagnostics io.Writer) int {
 	manifest := fs.String("manifest", "configs/simulation.yaml", "identity manifest")
 	dsnEnv := fs.String("dsn-env", "MESHOPS_MYSQL_DSN", "database environment name")
 	migrations := fs.String("migrations", "migrations", "SQL migration directory")
+	allowExpansion := fs.Bool("allow-entity-expansion", false, "seed only: add source entity mappings without changing existing bindings")
 	brokers := fs.String("brokers", envDefault("MESHOPS_KAFKA_BROKERS", "localhost:19092"), "Kafka brokers")
 	topicPrefix := fs.String("topic-prefix", "", "Kafka topic prefix")
 	if e := fs.Parse(args); e != nil {
@@ -112,6 +113,9 @@ func Opctl(ctx context.Context, args []string, out, diagnostics io.Writer) int {
 	}
 	if fs.NArg() != 0 {
 		return usage("unexpected positional arguments")
+	}
+	if *allowExpansion && command != "seed" {
+		return usage("--allow-entity-expansion is valid only for seed")
 	}
 	// Validate required CLI arguments before connecting.
 	switch command {
@@ -254,7 +258,11 @@ func Opctl(ctx context.Context, args []string, out, diagnostics io.Writer) int {
 		if e = tasks.Migrate(run, db, *migrations); e != nil {
 			return failure(e)
 		}
-		if e = tasks.Seed(run, db, reg); e != nil {
+		seed := tasks.Seed
+		if *allowExpansion {
+			seed = tasks.SeedWithEntityExpansion
+		}
+		if e = seed(run, db, reg); e != nil {
 			return failure(e)
 		}
 		kafka := bus.New(strings.Split(*brokers, ","))

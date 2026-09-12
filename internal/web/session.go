@@ -174,6 +174,11 @@ func (s *Server) sessionHTTP(w http.ResponseWriter, r *http.Request) {
 }
 func (s *Server) inventory(w http.ResponseWriter, r *http.Request) {
 	p := r.Context().Value(sessionKey{}).(*session)
+	active, err := s.activeSimulationEntities(r.Context())
+	if err != nil {
+		webError(w, 503, "无法读取当前模拟场景数量，请稍后刷新")
+		return
+	}
 	type item struct {
 		EntityID string   `json:"entityId"`
 		Type     string   `json:"entityType"`
@@ -183,6 +188,9 @@ func (s *Server) inventory(w http.ResponseWriter, r *http.Request) {
 	entries := []item{}
 	for _, b := range s.cfg.Registry.Bindings {
 		if b.TenantID == p.tenant {
+			if enabled, controlled := active[b.EntityID]; controlled && !enabled {
+				continue
+			}
 			tasks := append([]string{}, b.Tasks...)
 			entries = append(entries, item{b.EntityID, b.Type, b.ExecutorID, tasks})
 		}

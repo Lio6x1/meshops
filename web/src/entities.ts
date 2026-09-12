@@ -11,14 +11,17 @@ export function useEntities() {
     loading = ref(false),
     now = ref(Date.now())
   let source: EventSource | undefined
+  let disposed = false, revision = 0
+  const controller = new AbortController()
   const timer = window.setInterval(() => {
     now.value = Date.now() + clockOffset.value
   }, 1000)
-  const ready = computed(() => state.value.ready && connection.value === '已连接')
+  const ready = computed(() => state.value.ready && ['已连接', '场景为空'].includes(connection.value))
   function connect() {
+    if (disposed) return
     source?.close()
-    state.value.ready = false
-    if (!inventory.value.length) return
+    state.value = newStreamState()
+    if (!inventory.value.length) { state.value.ready = true; connection.value = '场景为空'; return }
     // 这里只订阅可信清单中的 ID；每页一个连接，切换页面时主动关闭。
     const ids = inventory.value
       .slice(0, 100)
@@ -61,20 +64,25 @@ export function useEntities() {
     })
   }
   async function load() {
+    if (disposed) return
+    const current = ++revision
     loading.value = true
     error.value = ''
     try {
-      const data = await api<{ entities?: Inventory[]; serverTime?: string }>('/api/v1/entities')
+      const data = await api<{ entities?: Inventory[]; serverTime?: string }>('/api/v1/entities', { signal: controller.signal })
+      if (disposed || current !== revision) return
       inventory.value = data.entities ?? []
       calibrate(data.serverTime)
       connect()
     } catch (e) {
-      error.value = errorText(e)
+      if (!disposed && current === revision) error.value = errorText(e)
     } finally {
-      loading.value = false
+      if (!disposed && current === revision) loading.value = false
     }
   }
   onUnmounted(() => {
+    disposed = true
+    controller.abort()
     source?.close()
     clearInterval(timer)
   })

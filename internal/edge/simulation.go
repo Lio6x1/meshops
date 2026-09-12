@@ -12,6 +12,8 @@ import (
 	"io"
 	"math"
 	"math/rand"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -47,10 +49,20 @@ func simulateMotion(event *commonv1.EntityStateEvent, rng *rand.Rand) {
 		case "facility":
 			lat, lon = -.0015, .003
 		}
+		// Each type has five separately registered fixture entities. Keep -001 at
+		// its original site and place -002..005 around it in real coordinates.
+		// This offset is independent of version, so fixed facilities never move.
+		if suffix := strings.LastIndexByte(event.EntityId, '-'); suffix >= 0 {
+			if n, err := strconv.Atoi(event.EntityId[suffix+1:]); err == nil && n >= 2 && n <= simulation.MaxEntitiesPerSource {
+				angle := float64(n-2)*math.Pi/2 + math.Pi/4
+				lat += .0008 * math.Sin(angle)
+				lon += .0008 * math.Cos(angle)
+			}
+		}
 		if s.EntityType != "sensor" && s.EntityType != "facility" {
 			phase := float64(event.EntityVersion%360)*math.Pi/180 + bearing
-			lat += .00035 * math.Sin(phase)
-			lon += .0004 * math.Cos(phase)
+			lat += .00015 * math.Sin(phase)
+			lon += .00015 * math.Cos(phase)
 		}
 		s.Location.Latitude = math.Max(-90, math.Min(90, s.Location.Latitude+lat))
 		s.Location.Longitude = math.Max(-180, math.Min(180, s.Location.Longitude+lon))
@@ -66,14 +78,16 @@ func simulateMotion(event *commonv1.EntityStateEvent, rng *rand.Rand) {
 
 type simulationControlStore interface {
 	Desired(context.Context, string, string) (simulation.Mode, error)
+	DesiredCount(context.Context, string, string) (int, error)
 	Observe(context.Context, string, string, simulation.Observation) error
 }
 
 // runControlledSimulation owns the sole upload worker. Transition acknowledgements
 // are published only after the old stream is cancelled and joined. Paused stops
 // both generation and transport; offline keeps the durable queue growing.
-func runControlledSimulation(ctx context.Context, store simulationControlStore, tenant, source string, pollInterval, generateInterval time.Duration, generate func() error, upload func(context.Context) error, observation func() simulation.Observation, diagnostic io.Writer) (runErr error) {
+func runControlledSimulation(ctx context.Context, store simulationControlStore, tenant, source string, capacity int, pollInterval, generateInterval time.Duration, generate func(int) error, upload func(context.Context) error, observation func() simulation.Observation, diagnostic io.Writer) (runErr error) {
 	mode := simulation.Paused
+	activeCount := 0
 	var stopUpload context.CancelFunc
 	var uploadDone chan error
 	shutdownResult := func(err error) error {
@@ -100,14 +114,25 @@ func runControlledSimulation(ctx context.Context, store simulationControlStore, 
 	refresh := func() error {
 		controlCtx, cancel := context.WithTimeout(ctx, time.Second)
 		desired, err := store.Desired(controlCtx, tenant, source)
+		count := 0
+		if err == nil {
+			count, err = store.DesiredCount(controlCtx, tenant, source)
+		}
 		cancel()
 		if err != nil {
 			fmt.Fprintln(diagnostic, "simulation control unavailable; pausing source:", err)
 			desired = simulation.Paused
+			count = 0
 		}
 		if !desired.Valid() {
 			return fmt.Errorf("invalid desired simulation mode %q", desired)
 		}
+		if count < 0 || count > simulation.MaxEntitiesPerSource {
+			return fmt.Errorf("invalid desired simulation count %d", count)
+		}
+		// A custom opt-in manifest may contain fewer than five IDs. Acknowledge
+		// only the subset actually selected; never pretend missing IDs exist.
+		activeCount = min(count, capacity)
 		if desired != mode {
 			if err := stop(); err != nil {
 				return err
@@ -122,6 +147,7 @@ func runControlledSimulation(ctx context.Context, store simulationControlStore, 
 		}
 		o := observation()
 		o.Applied = mode
+		o.ActiveCount = activeCount
 		controlCtx, cancel = context.WithTimeout(ctx, time.Second)
 		err = store.Observe(controlCtx, tenant, source, o)
 		cancel()
@@ -157,8 +183,8 @@ func runControlledSimulation(ctx context.Context, store simulationControlStore, 
 				return err
 			}
 		case <-generateTick.C:
-			if mode != simulation.Paused {
-				if err := generate(); err != nil {
+			if mode != simulation.Paused && activeCount > 0 {
+				if err := generate(activeCount); err != nil {
 					return err
 				}
 			}

@@ -45,9 +45,21 @@ func TestGatewayCLIHundredOfflineEventsRestartAndDrain(t *testing.T) {
 	if e != nil {
 		t.Fatal(e)
 	}
+	t.Cleanup(func() { _ = q.Close() })
 	p, e := q.Pending(100)
-	if e != nil || len(p) != 100 || p[99].Event.EntityVersion != 100 {
+	if e != nil || len(p) != 100 {
 		t.Fatal(len(p), e)
+	}
+	versions := map[string]int64{}
+	for _, item := range p {
+		id := item.Event.EntityId
+		if item.Event.EntityVersion != versions[id]+1 {
+			t.Fatalf("non-monotonic version for %s", id)
+		}
+		versions[id] = item.Event.EntityVersion
+	}
+	if len(versions) != 5 {
+		t.Fatal("five registered entities were not exercised", versions)
 	}
 	q.Close()
 	listener, e := net.Listen("tcp", "127.0.0.1:0")
@@ -79,7 +91,7 @@ func TestGatewayCLIHundredOfflineEventsRestartAndDrain(t *testing.T) {
 	}
 	defer q.Close()
 	seq, e := q.Generate("demo_tenant:person-001", func(v int64) (*commonv1.EntityStateEvent, error) {
-		if v != 101 {
+		if v != versions["person-001"]+1 {
 			t.Fatalf("version reset: %d", v)
 		}
 		return &commonv1.EntityStateEvent{TenantId: "demo_tenant", EntityId: "person-001", EntityVersion: v}, nil
@@ -107,7 +119,11 @@ func TestGatewayCLIProducesEverySourceAndPreservesDuplicate(t *testing.T) {
 			if e != nil || len(p) != 3 {
 				t.Fatal(e, len(p))
 			}
-			if p[0].Event.Snapshot.EntityType != pair[1] || p[1].Event.EntityVersion != 2 || !proto.Equal(p[1].Event, p[2].Event) {
+			wantVersion := int64(1)
+			if p[1].Event.EntityId == p[0].Event.EntityId {
+				wantVersion = 2
+			}
+			if p[0].Event.Snapshot.EntityType != pair[1] || p[0].Event.EntityVersion != 1 || p[1].Event.EntityVersion != wantVersion || !proto.Equal(p[1].Event, p[2].Event) {
 				t.Fatal(p)
 			}
 			if e = q.BindSource("different-source"); e == nil {

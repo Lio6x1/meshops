@@ -8,6 +8,7 @@ import (
 	ingestv1 "example.com/meshops-course/gen/ingest/v1"
 	"example.com/meshops-course/internal/bus"
 	"example.com/meshops-course/internal/platform"
+	"fmt"
 	"github.com/redis/go-redis/v9"
 	"github.com/segmentio/kafka-go"
 	"google.golang.org/grpc"
@@ -15,7 +16,6 @@ import (
 	"google.golang.org/grpc/status"
 	"net"
 	"os"
-	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -49,6 +49,7 @@ func TestSixFixturesThroughAuthenticatedRPCAndKafka(t *testing.T) {
 	source := registry.Sources["demo_tenant:personnel_sim"]
 	source.TenantID = "other"
 	source.ID = "other_source"
+	source.Entities = map[string]string{"person-001": "person-001"}
 	registry.Sources["other:other_source"] = source
 	otherSourceToken := strings.Repeat("q", 40)
 	registry.Credentials["other:other_source"] = otherSourceToken
@@ -112,22 +113,25 @@ func TestSixFixturesThroughAuthenticatedRPCAndKafka(t *testing.T) {
 	queries := entityv1.NewEntityServiceClient(conn)
 	events := map[string]*commonv1.EntityStateEvent{}
 	for _, source := range registry.Sources {
-		raw, err := os.ReadFile(source.Fixture)
-		if err != nil {
-			t.Fatal(err)
+		batch := []*commonv1.EntityStateEvent{}
+		for rawID := range source.Entities {
+			now := time.Now().UTC()
+			raw, err := GenerateRaw(source, rawID, 1, now)
+			if err != nil {
+				t.Fatal(err)
+			}
+			raw = bytes.ReplaceAll(raw, []byte(`"battery_pct":78`), []byte(`"battery_pct":0`))
+			raw = bytes.ReplaceAll(raw, []byte(`"value":23.5`), []byte(`"value":0`))
+			if source.TenantID == "other" {
+				raw = bytes.ReplaceAll(raw, []byte(`"on_duty":true`), []byte(`"on_duty":false`))
+			}
+			event, err := Normalize(raw, source, now)
+			if err != nil {
+				t.Fatal(err)
+			}
+			batch = append(batch, event)
 		}
-		now := time.Now().UTC()
-		raw = bytes.ReplaceAll(raw, []byte("2026-09-05T00:00:00Z"), []byte(now.Format(time.RFC3339Nano)))
-		raw = bytes.ReplaceAll(raw, []byte("1788566400000"), []byte(strconv.FormatInt(now.UnixMilli(), 10)))
-		raw = bytes.ReplaceAll(raw, []byte(`"battery_pct": 78`), []byte(`"battery_pct": 0`))
-		raw = bytes.ReplaceAll(raw, []byte(`"value": 23.5`), []byte(`"value": 0`))
-		if source.TenantID == "other" {
-			raw = bytes.ReplaceAll(raw, []byte(`"on_duty": true`), []byte(`"on_duty": false`))
-		}
-		event, err := Normalize(raw, source, now)
-		if err != nil {
-			t.Fatal(err)
-		}
+		event := batch[0]
 		events[source.Adapter] = event
 		token, err := registry.Credential(source.TenantID, source.ID)
 		if err != nil {
@@ -139,59 +143,61 @@ func TestSixFixturesThroughAuthenticatedRPCAndKafka(t *testing.T) {
 			closeRPC()
 			t.Fatal(err)
 		}
-		err = stream.Send(&ingestv1.ReportEntityStatesRequest{GatewayEpoch: newID(), FirstSequence: 1, Events: []*commonv1.EntityStateEvent{event}})
+		err = stream.Send(&ingestv1.ReportEntityStatesRequest{GatewayEpoch: newID(), FirstSequence: 1, Events: batch})
 		if err != nil {
 			closeRPC()
 			t.Fatal(err)
 		}
 		ack, err := stream.Recv()
 		closeRPC()
-		if err != nil || ack.ConfirmedSequence != 1 {
+		if err != nil || ack.ConfirmedSequence != int64(len(batch)) {
 			t.Fatal("real publication not confirmed", err)
 		}
 	}
 	operator := platform.Outgoing(ctx, os.Getenv("MESHOPS_OPERATOR_TOKEN"))
 	for _, kind := range []string{"person", "drone", "vehicle", "robot", "sensor", "facility"} {
-		var snapshot *commonv1.EntitySnapshot
-		for {
-			r, err := queries.GetSnapshot(operator, &entityv1.GetSnapshotRequest{EntityId: kind + "-001"})
-			if err != nil {
-				t.Fatal(err)
+		for number := 1; number <= 5; number++ {
+			var snapshot *commonv1.EntitySnapshot
+			for {
+				r, err := queries.GetSnapshot(operator, &entityv1.GetSnapshotRequest{EntityId: fmt.Sprintf("%s-%03d", kind, number)})
+				if err != nil {
+					t.Fatal(err)
+				}
+				if r.Found {
+					snapshot = r.Snapshot
+					break
+				}
+				select {
+				case <-ctx.Done():
+					t.Fatal(ctx.Err())
+				case <-time.After(10 * time.Millisecond):
+				}
 			}
-			if r.Found {
-				snapshot = r.Snapshot
-				break
-			}
-			select {
-			case <-ctx.Done():
-				t.Fatal(ctx.Err())
-			case <-time.After(10 * time.Millisecond):
-			}
-		}
-		switch kind {
-		case "person":
-			if snapshot.Person == nil || !snapshot.Person.OnDuty || snapshot.Power != nil {
-				t.Fatal("person fields corrupted")
-			}
-		case "drone":
-			if snapshot.Power == nil || snapshot.Power.BatteryPercent == nil || snapshot.Power.GetBatteryPercent() != 0 || snapshot.Location.GetAltitude() != 25 {
-				t.Fatal("drone zero/units corrupted")
-			}
-		case "vehicle":
-			if snapshot.Velocity.Speed != 10 || snapshot.Vehicle.GetLoadKg() != 120.5 {
-				t.Fatal("vehicle unit/payload corrupted")
-			}
-		case "robot":
-			if snapshot.Power.GetBatteryPercent() != 65 || snapshot.Robot == nil {
-				t.Fatal("robot battery unit corrupted")
-			}
-		case "sensor":
-			if snapshot.Sensor == nil || snapshot.Sensor.Reading == nil || snapshot.Sensor.GetReading() != 0 {
-				t.Fatal("sensor zero lost")
-			}
-		case "facility":
-			if snapshot.Facility.GetOccupiedSlots() != 2 || snapshot.Facility.GetTotalSlots() != 8 || !snapshot.Facility.IsOpen {
-				t.Fatal("facility slots corrupted")
+			switch kind {
+			case "person":
+				if snapshot.Person == nil || !snapshot.Person.OnDuty || snapshot.Power != nil {
+					t.Fatal("person fields corrupted")
+				}
+			case "drone":
+				if snapshot.Power == nil || snapshot.Power.BatteryPercent == nil || snapshot.Power.GetBatteryPercent() != 0 || snapshot.Location.GetAltitude() != 25 {
+					t.Fatal("drone zero/units corrupted")
+				}
+			case "vehicle":
+				if snapshot.Velocity.Speed != 10 || snapshot.Vehicle.GetLoadKg() != 120.5 {
+					t.Fatal("vehicle unit/payload corrupted")
+				}
+			case "robot":
+				if snapshot.Power.GetBatteryPercent() != 65 || snapshot.Robot == nil {
+					t.Fatal("robot battery unit corrupted")
+				}
+			case "sensor":
+				if snapshot.Sensor == nil || snapshot.Sensor.Reading == nil || snapshot.Sensor.GetReading() != 0 {
+					t.Fatal("sensor zero lost")
+				}
+			case "facility":
+				if snapshot.Facility.GetOccupiedSlots() != 2 || snapshot.Facility.GetTotalSlots() != 8 || !snapshot.Facility.IsOpen {
+					t.Fatal("facility slots corrupted")
+				}
 			}
 		}
 	}

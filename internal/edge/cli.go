@@ -202,8 +202,7 @@ func GatewayCLI(ctx context.Context, args []string, out, diagnostic io.Writer) i
 	}
 	sort.Strings(ids)
 	rng := rand.New(rand.NewSource(*seed))
-	generate := func() error {
-		rawID := ids[rng.Intn(len(ids))]
+	generate := func(rawID string) error {
 		var original *commonv1.EntityStateEvent
 		_, err := q.Generate(platform.Key(source.TenantID, source.Entities[rawID]), func(version int64) (*commonv1.EntityStateEvent, error) {
 			now := time.Now().UTC()
@@ -233,13 +232,22 @@ func GatewayCLI(ctx context.Context, args []string, out, diagnostic io.Writer) i
 		defer cache.Close()
 		controlledCtx, controlledCancel := context.WithCancel(platform.Outgoing(genCtx, token))
 		defer controlledCancel()
-		err := runControlledSimulation(controlledCtx, simulation.NewStore(cache), source.TenantID, source.ID, 500*time.Millisecond, time.Second/time.Duration(*rate), func() error {
+		// The browser selects canonical entity IDs, which need not have the
+		// same order as a vendor's raw identifiers. Use that same order here.
+		sort.Slice(ids, func(i, j int) bool { return source.Entities[ids[i]] < source.Entities[ids[j]] })
+		nextEntity := 0
+		err := runControlledSimulation(controlledCtx, simulation.NewStore(cache), source.TenantID, source.ID, len(ids), 500*time.Millisecond, time.Second/time.Duration(*rate), func(activeCount int) error {
 			// A ready generation tick may win select after cancellation. Preserve
 			// the CLI's exact count contract even at very high configured rates.
 			if *count > 0 && generated.Load() >= *count {
 				return nil
 			}
-			if err := generate(); err != nil {
+			// A stable round-robin gives every selected entity a turn, including
+			// immediately after expanding or shrinking the live scene.
+			nextEntity %= activeCount
+			rawID := ids[nextEntity]
+			nextEntity = (nextEntity + 1) % activeCount
+			if err := generate(rawID); err != nil {
 				return err
 			}
 			if *count > 0 && generated.Load() >= *count {
@@ -279,7 +287,7 @@ generation:
 		case <-periodic.C:
 			printStats()
 		case <-ticker.C:
-			if err := generate(); err != nil {
+			if err := generate(ids[rng.Intn(len(ids))]); err != nil {
 				runErr = err
 				break generation
 			}

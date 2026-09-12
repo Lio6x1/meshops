@@ -1917,12 +1917,12 @@
       {
         "path": "internal/simulation/store.go",
         "source": "web-stages/z11/internal/simulation/store.go",
-        "sha256": "e58dca4c9c49cffbe954398f43ef58f55feeedec813ae64030d536ba37511b69"
+        "sha256": "ab7038ecd1e543e6da688c06e33e6d7873a20d3a0e74a92171b445fa26710a3c"
       },
       {
         "path": "internal/simulation/store_test.go",
         "source": "web-stages/z11/internal/simulation/store_test.go",
-        "sha256": "892817f003069b92b19175c2ef83f44f38bd397f66a8473cae1152a618b0ed53"
+        "sha256": "f1cdb4dff791df82dd043fc299b03d668542c8e83c875aaeae372c09f7a0601f"
       },
       {
         "path": "internal/web/limits_test.go",
@@ -1932,7 +1932,7 @@
       {
         "path": "internal/web/server.go",
         "source": "web-stages/z11/internal/web/server.go",
-        "sha256": "b9f22fe39dcd497e322b22a4e88fba2242b155be7b7fda266f721cf0629c4255"
+        "sha256": "16bf7ceb955de156113e1f148477c6f2e3c9b25c4284dd2b11500fece0052395"
       },
       {
         "path": "internal/web/server_test.go",
@@ -1942,17 +1942,17 @@
       {
         "path": "internal/web/session.go",
         "source": "web-stages/z11/internal/web/session.go",
-        "sha256": "48817607c749a0c92ee7aca8b14d59ea14d6ee175a7e20bbec0043b5e098f69b"
+        "sha256": "4ba82feb31a72ba3a00cf3be29629ccaaa414f2e1cafa2c483266d775c204d42"
       },
       {
         "path": "internal/web/simulation.go",
         "source": "web-stages/z11/internal/web/simulation.go",
-        "sha256": "47767651be2fdd36e256610da0acc2a24aff7360e8a6d0739c40a8272fb7a389"
+        "sha256": "b37512bea9019073e8a3f29016ea988d80c16c4740fafab5e826a5e8d5459143"
       },
       {
         "path": "internal/web/simulation_test.go",
         "source": "web-stages/z11/internal/web/simulation_test.go",
-        "sha256": "20fafd6193a21107d14558ce2fe42437b6f32cfb2a9c3139f1a03ae92a5666a4"
+        "sha256": "a9dfce0314dc60aba42d31dadc3a9e3049eb576da24fa6c4282b7fec6569bc28"
       },
       {
         "path": "internal/web/stream.go",
@@ -2032,6 +2032,11 @@
         "sha256": "a6ff6207aa0f7a05ea2ad3dbc134ef92c64fd730b10a4337a725b32aa2e7b32b"
       },
       {
+        "path": "web/src/scene.ts",
+        "source": "web-stages/z12/web/src/scene.ts",
+        "sha256": "6a01dda521f57ce1830d58f4d82f9dffed273203ff3d9084940fb0eb7dc01484"
+      },
+      {
         "path": "web/src/transport.ts",
         "source": "web-stages/z12/web/src/transport.ts",
         "sha256": "60b7127b1162344e49e5e3b04e26e597840cb8e37db0cbfae9000967236d02f2"
@@ -2060,6 +2065,11 @@
         "path": "web/tests/requests.test.ts",
         "source": "web-stages/z12/web/tests/requests.test.ts",
         "sha256": "1e02dba5e23fd297a5b3ce61fd3396be1d2af3dae59efba468088f886b3326ec"
+      },
+      {
+        "path": "web/tests/scene.test.ts",
+        "source": "web-stages/z12/web/tests/scene.test.ts",
+        "sha256": "3a9fd9c0245a04b1b1a62a56c06185c74de6c0ba8b4351e8d023d0c41af58bf7"
       },
       {
         "path": "web/tsconfig.json",
@@ -2115,7 +2125,7 @@
       {
         "path": "web/src/components/EntityMap.vue",
         "source": "web-stages/z12/web/src/components/EntityMap.vue",
-        "sha256": "1c5355fd838557302baa0bcc0c6d63f5e7aff9c9bd5c705e63c8936a0f27374a"
+        "sha256": "a3c236721871f793a4f3370b3be9e94f3507cb0dc7fb41940bd6f7e596e7a848"
       },
       {
         "path": "web/src/components/SnapshotDetails.vue",
@@ -2130,7 +2140,7 @@
       {
         "path": "web/src/entities.ts",
         "source": "web-stages/z12/web/src/entities.ts",
-        "sha256": "e7408a3ae2cbc19d165541361526d72d539a6105d402fe528073831455301e89"
+        "sha256": "073fee6fdeeb584eabb991890eea71ba2b9621fc2c5272dc2144478948ed5552"
       },
       {
         "path": "web/src/main.ts",
@@ -2160,7 +2170,7 @@
       {
         "path": "web/src/views/Simulation.vue",
         "source": "web-stages/z12/web/src/views/Simulation.vue",
-        "sha256": "f6df575adb01962d782f2c560015edb4083e29d3ad03bf469c699208f52b2316"
+        "sha256": "3bf69090e5419db487cfebe77aeb38187feacc6643e4fa5ea5080237ee362d25"
       },
       {
         "path": "web/src/views/Status.vue",
@@ -2216,7 +2226,7 @@
       {
         "path": "cmd/demo-init/main.go",
         "source": "../../../cmd/demo-init/main.go",
-        "sha256": "0c295cc1a34939024e6df5c9cc97fc3643f914732dbca7ae32d74995a1dd99fa"
+        "sha256": "0e904e38890e26b65171ee2298a15b71135ea2a010b9b00b9abc594ee6b3a0e3"
       },
       {
         "path": "cmd/demo-init/main_test.go",
@@ -2296,7 +2306,7 @@
       {
         "path": "internal/edge/simulation_test.go",
         "source": "../../../internal/edge/simulation_test.go",
-        "sha256": "500202a0412bddb757411f4c41076336cb1686288792cbeea2c655a382feaf07"
+        "sha256": "70b7460d3fa9e2b1f03c69debfc881aa6bad6adc02099405395c348d01e9d860"
       },
       {
         "path": "internal/platform/network.go",
@@ -2312,6 +2322,16 @@
         "path": "internal/search/network_test.go",
         "source": "../../../internal/search/network_test.go",
         "sha256": "1f9a2752a96a27b5a75e2261e68dcdbaf7f928da0fa443a5d8c94f6ae74f24a1"
+      },
+      {
+        "path": "internal/tasks/binding_expansion_integration_test.go",
+        "source": "../../../internal/tasks/binding_expansion_integration_test.go",
+        "sha256": "fc92b1f50a8d6f6d48b588063b71691b6af7722a3f3b3b7daf3a0204616e7d48"
+      },
+      {
+        "path": "internal/tasks/binding_expansion_test.go",
+        "source": "../../../internal/tasks/binding_expansion_test.go",
+        "sha256": "7ac4faaee4175b6287e1772942e142363f53bda6aa79c402798f42e2d5519753"
       },
       {
         "path": "scripts/demo-stack.ps1",
@@ -2339,9 +2359,14 @@
         "sha256": "d2cdc3c37e0a9fbf526d587cb1556870506929c73595464425514f8ab9eafe48"
       },
       {
+        "path": "scripts/test-scene-counts.py",
+        "source": "../../../scripts/test-scene-counts.py",
+        "sha256": "d0f08e24607cfa824aba5e25f5a6fd670fe17ae476a78d2a5a246878b45f641b"
+      },
+      {
         "path": "scripts/test-simulation.py",
         "source": "../../../scripts/test-simulation.py",
-        "sha256": "d7477850146d6e4390eafffec30d4196f74977d7eafe5e600d46ff501a5cc3bc"
+        "sha256": "647101ca981063cd54b660a4c93c8a1d0c674114a4350e3b6e6e1806f9ac72db"
       },
       {
         "path": ".github/workflows/ci.yml",
@@ -2351,12 +2376,27 @@
       {
         "path": "README.md",
         "source": "../../../README.md",
-        "sha256": "7b6805a605931da0d4b3a0e140c35e57655a99c24afa979fd6adcb9249f6d41c"
+        "sha256": "932f89d044c7c93b4d3d1b7ed28782aeee67c1dcefa567244d03192ed9859c7b"
+      },
+      {
+        "path": "configs/simulation.yaml",
+        "source": "../../../configs/simulation.yaml",
+        "sha256": "09aab6aec19ee9becca2187fde1741299686ae6bd149987b008227063af2f24f"
+      },
+      {
+        "path": "internal/cli/opctl.go",
+        "source": "../../../internal/cli/opctl.go",
+        "sha256": "dd01a7965e17a7dbe6c2b1adad6bb0298e67c6aa6bddfed0e97dc50b6b6a9eb9"
       },
       {
         "path": "internal/edge/cli.go",
         "source": "../../../internal/edge/cli.go",
-        "sha256": "16ac81cf34b056bdf5d01b11b78098d48020dc5ad838e051e74d638072722d52"
+        "sha256": "4ad762c18a4de4cea42a03ca7a184f1e78b9b4111f19e5c0418d43a419e5cc15"
+      },
+      {
+        "path": "internal/edge/cli_test.go",
+        "source": "../../../internal/edge/cli_test.go",
+        "sha256": "91bb6842ac5c4917068d913ee81d59ea11d562cd8a589882210873b4a2462395"
       },
       {
         "path": "internal/edge/executor.go",
@@ -2371,7 +2411,7 @@
       {
         "path": "internal/edge/simulation.go",
         "source": "../../../internal/edge/simulation.go",
-        "sha256": "8b439a81c47dbcfdfedd7f2033f62d9ffeeaeb5fbabaa2959c9f017db394e8e1"
+        "sha256": "73f40cadf764b398d7bdfd662a9bfb11616716bd39d8bc5e4e2f8f48f6cafc85"
       },
       {
         "path": "internal/platform/config.go",
@@ -2382,6 +2422,16 @@
         "path": "internal/search/index.go",
         "source": "../../../internal/search/index.go",
         "sha256": "ea2382ffb58989486fdae97cb51c395dfc928c90a2462babe338ddbdd7b97262"
+      },
+      {
+        "path": "internal/state/six_rpc_integration_test.go",
+        "source": "../../../internal/state/six_rpc_integration_test.go",
+        "sha256": "d9fcd04dbca27171ec9aee53a79454d37ec28876cffe01bfb8225dc6e6fa2d68"
+      },
+      {
+        "path": "internal/tasks/migrations.go",
+        "source": "../../../internal/tasks/migrations.go",
+        "sha256": "50affca76548637d5b5089e0f8a7107b55ddb6bf1cc14388a42588f035d50c13"
       },
       {
         "path": "scripts/start.ps1",

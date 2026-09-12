@@ -16,6 +16,7 @@ import (
 type SimulationControl interface {
 	Read(context.Context, string, string) (simulation.Status, error)
 	SetDesired(context.Context, string, string, simulation.Mode) error
+	SetCount(context.Context, string, string, int) error
 }
 type simulationSource struct {
 	SourceID   string   `json:"sourceId"`
@@ -51,6 +52,35 @@ func (s *Server) simulationHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		if !found {
 			webError(w, 404, "该模拟数据源不在当前租户的注册清单中")
+			return
+		}
+		if r.PathValue("setting") == "count" {
+			var body struct {
+				Count *int `json:"count"`
+			}
+			decoder := json.NewDecoder(r.Body)
+			decoder.DisallowUnknownFields()
+			if decoder.Decode(&body) != nil || decoder.Decode(new(any)) != io.EOF || body.Count == nil || *body.Count < 0 || *body.Count > simulation.MaxEntitiesPerSource {
+				webError(w, 400, "实体数量必须是 0—5 的整数")
+				return
+			}
+			for _, source := range sources {
+				if source.ID == id && *body.Count > len(source.Entities) {
+					webError(w, 400, "数量超过已注册候选实体，请更新演示配置")
+					return
+				}
+			}
+			if err := s.cfg.Simulation.SetCount(r.Context(), s.cfg.TenantID, id, *body.Count); err != nil {
+				webError(w, 503, "无法保存实体数量，请刷新后重试")
+				return
+			}
+			actor := r.Context().Value(sessionKey{}).(*session)
+			slog.Info("simulation entity count changed", "tenant", s.cfg.TenantID, "actor", actor.actor, "source", id, "count", *body.Count)
+			writeJSON(w, 202, map[string]any{"sourceId": id, "count": *body.Count})
+			return
+		}
+		if r.PathValue("setting") != "" {
+			webError(w, 404, "未知模拟设置")
 			return
 		}
 		var body struct {
@@ -93,4 +123,28 @@ func (s *Server) simulationHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(map[string]any{"sources": result, "serverTime": s.cfg.Now().UTC()})
+}
+
+// Active membership is presentation/generation configuration, not authorization.
+// Shrinking retains all registered identities, snapshots and existing task history.
+func (s *Server) activeSimulationEntities(ctx context.Context) (map[string]bool, error) {
+	if s.cfg.Simulation == nil {
+		return nil, nil
+	}
+	active := map[string]bool{}
+	for _, source := range s.simulationSources() {
+		status, err := s.cfg.Simulation.Read(ctx, s.cfg.TenantID, source.ID)
+		if err != nil {
+			return nil, err
+		}
+		ids := make([]string, 0, len(source.Entities))
+		for _, id := range source.Entities {
+			ids = append(ids, id)
+		}
+		sort.Strings(ids)
+		for i, id := range ids {
+			active[id] = i < status.Count
+		}
+	}
+	return active, nil
 }

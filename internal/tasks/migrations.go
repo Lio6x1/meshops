@@ -191,18 +191,95 @@ func bindingValues(reg *platform.Registry) map[string]string {
 	return out
 }
 func Seed(ctx context.Context, db *sql.DB, reg *platform.Registry) error {
-	return syncBindings(ctx, db, reg, true)
+	return syncBindings(ctx, db, reg, true, false)
 }
+
+// SeedWithEntityExpansion is an explicit maintenance operation used when the
+// demo upgrades from one to five registered entities per source. Only additive
+// raw-ID mappings may change. Entity ownership, source settings, credentials,
+// existing task history and every other persisted binding remain immutable.
+func SeedWithEntityExpansion(ctx context.Context, db *sql.DB, reg *platform.Registry) error {
+	return syncBindings(ctx, db, reg, true, true)
+}
+
+func additiveSourceEntities(old, next string) bool {
+	var a, b map[string]json.RawMessage
+	if json.Unmarshal([]byte(old), &a) != nil || json.Unmarshal([]byte(next), &b) != nil {
+		return false
+	}
+	var before, after map[string]string
+	if json.Unmarshal(a["Entities"], &before) != nil || json.Unmarshal(b["Entities"], &after) != nil || before == nil || after == nil {
+		return false
+	}
+	for rawID, entityID := range before {
+		if after[rawID] != entityID {
+			return false
+		}
+	}
+	delete(a, "Entities")
+	delete(b, "Entities")
+	// Compare every remaining field, including fields added by future releases.
+	var left, right any
+	if json.Unmarshal([]byte(canonical(a)), &left) != nil || json.Unmarshal([]byte(canonical(b)), &right) != nil {
+		return false
+	}
+	return canonical(left) == canonical(right)
+}
+
 func CheckBindings(ctx context.Context, db *sql.DB, reg *platform.Registry) error {
-	return syncBindings(ctx, db, reg, false)
+	return syncBindings(ctx, db, reg, false, false)
 }
-func syncBindings(ctx context.Context, db *sql.DB, reg *platform.Registry, seed bool) error {
+func syncBindings(ctx context.Context, db *sql.DB, reg *platform.Registry, seed, expand bool) error {
 	tx, e := db.BeginTx(ctx, nil)
 	if e != nil {
 		return e
 	}
 	defer tx.Rollback()
-	for key, value := range bindingValues(reg) {
+	wanted := bindingValues(reg)
+	if expand {
+		// Removing a whole source/entity must not escape the per-value subset
+		// check. Other tenants sharing a database are outside this manifest.
+		tenants := map[string]bool{}
+		for _, source := range reg.Sources {
+			tenants[source.TenantID] = true
+		}
+		for _, binding := range reg.Bindings {
+			tenants[binding.TenantID] = true
+		}
+		for tenant := range tenants {
+			sourcePrefix, entityPrefix := "source:"+tenant+":", "entity:"+tenant+":"
+			rows, err := tx.QueryContext(ctx, `SELECT binding_key FROM course_bindings WHERE LEFT(binding_key,CHAR_LENGTH(?))=? OR LEFT(binding_key,CHAR_LENGTH(?))=? FOR UPDATE`, sourcePrefix, sourcePrefix, entityPrefix, entityPrefix)
+			if err != nil {
+				return err
+			}
+			var missing string
+			for rows.Next() {
+				var key string
+				if err = rows.Scan(&key); err != nil {
+					rows.Close()
+					return err
+				}
+				if _, ok := wanted[key]; !ok {
+					missing = key
+				}
+			}
+			err = rows.Err()
+			rows.Close()
+			if err != nil {
+				return err
+			}
+			if missing != "" {
+				return fmt.Errorf("entity expansion cannot remove binding: %s", missing)
+			}
+		}
+	}
+	keys := make([]string, 0, len(wanted))
+	for key := range wanted {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	for _, key := range keys {
+		value := wanted[key]
 		var old string
 		e = tx.QueryRowContext(ctx, `SELECT binding_json FROM course_bindings WHERE binding_key=? FOR UPDATE`, key).Scan(&old)
 		if e == sql.ErrNoRows && seed {
@@ -212,7 +289,10 @@ func syncBindings(ctx context.Context, db *sql.DB, reg *platform.Registry, seed 
 			json.Unmarshal([]byte(old), &a)
 			json.Unmarshal([]byte(value), &b)
 			if canonical(a) != canonical(b) {
-				return fmt.Errorf("binding differs: %s", key)
+				if !expand || !strings.HasPrefix(key, "source:") || !additiveSourceEntities(old, value) {
+					return fmt.Errorf("binding differs: %s", key)
+				}
+				_, e = tx.ExecContext(ctx, `UPDATE course_bindings SET binding_json=? WHERE binding_key=?`, value, key)
 			}
 		}
 		if e != nil {

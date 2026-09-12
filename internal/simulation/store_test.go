@@ -32,7 +32,23 @@ func TestModeValidationAndKeyIsolation(t *testing.T) {
 	}
 }
 
-// This test touches only two uniquely scoped keys and never flushes a database.
+func TestCountValueDefaultsOnlyWhenMissing(t *testing.T) {
+	for _, tc := range []struct {
+		raw     any
+		want    int
+		invalid bool
+	}{
+		{nil, 1, false}, {"0", 0, false}, {"5", 5, false},
+		{"", 0, true}, {"6", 0, true}, {"-1", 0, true}, {"1.5", 0, true}, {"bad", 0, true},
+	} {
+		got, err := countValue(tc.raw)
+		if (err != nil) != tc.invalid || err == nil && got != tc.want {
+			t.Fatalf("countValue(%v) = %d, %v", tc.raw, got, err)
+		}
+	}
+}
+
+// This test touches only three uniquely scoped keys and never flushes a database.
 func TestRedisDesiredAndObservedLifecycle(t *testing.T) {
 	addr := os.Getenv("MESHOPS_TEST_REDIS_ADDR")
 	if addr == "" {
@@ -44,13 +60,42 @@ func TestRedisDesiredAndObservedLifecycle(t *testing.T) {
 	defer cancel()
 	tenant := fmt.Sprintf("sim-test-%d", time.Now().UnixNano())
 	source := "source"
-	defer client.Del(context.Background(), key(tenant, source, "desired"), key(tenant, source, "observed"))
+	defer client.Del(context.Background(), key(tenant, source, "desired"), key(tenant, source, "observed"), key(tenant, source, "count"))
 	store := NewStore(client)
 	initial, err := store.Read(ctx, tenant, source)
-	if err != nil || initial.Desired != Running || initial.Connected || initial.Observation != nil {
+	if err != nil || initial.Count != 1 || initial.Desired != Running || initial.Connected || initial.Observation != nil {
 		t.Fatal(initial, err)
 	}
 	if err = store.SetDesired(ctx, tenant, source, Offline); err != nil {
+		t.Fatal(err)
+	}
+	if n, err := store.DesiredCount(ctx, tenant, source); err != nil || n != 1 {
+		t.Fatal(n, err)
+	}
+	for _, n := range []int{0, 5, 1} {
+		if err := store.SetCount(ctx, tenant, source, n); err != nil {
+			t.Fatal(err)
+		}
+		got, err := store.Read(ctx, tenant, source)
+		if err != nil || got.Count != n || got.Desired != Offline {
+			t.Fatal("count update changed mode", got, err)
+		}
+	}
+	for _, n := range []int{-1, 6} {
+		if err := store.SetCount(ctx, tenant, source, n); err == nil {
+			t.Fatal("accepted invalid count", n)
+		}
+	}
+	if err := client.Set(ctx, key(tenant, source, "count"), "", 0).Err(); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := store.DesiredCount(ctx, tenant, source); err == nil {
+		t.Fatal("corrupt count became default")
+	}
+	if _, err := store.Read(ctx, tenant, source); err == nil {
+		t.Fatal("corrupt count accepted by status")
+	}
+	if err := store.SetCount(ctx, tenant, source, 5); err != nil {
 		t.Fatal(err)
 	}
 	if ttl := client.PTTL(ctx, key(tenant, source, "desired")).Val(); ttl != -1 {
@@ -63,12 +108,12 @@ func TestRedisDesiredAndObservedLifecycle(t *testing.T) {
 	if err != nil || mode != Offline {
 		t.Fatal(mode, err)
 	}
-	o := Observation{Applied: Paused, Generated: "9007199254740993", Sent: "2", Pending: "3"}
+	o := Observation{Applied: Paused, ActiveCount: 5, Generated: "9007199254740993", Sent: "2", Pending: "3"}
 	if err = store.Observe(ctx, tenant, source, o); err != nil {
 		t.Fatal(err)
 	}
 	status, err := store.Read(ctx, tenant, source)
-	if err != nil || !status.Connected || status.Desired != Offline || status.Observation.Applied != Paused || status.Observation.Generated != o.Generated || status.Observation.ObservedAt.IsZero() {
+	if err != nil || status.Count != 5 || !status.Connected || status.Observation.ActiveCount != 5 || status.Desired != Offline || status.Observation.Applied != Paused || status.Observation.Generated != o.Generated || status.Observation.ObservedAt.IsZero() {
 		t.Fatal(status, err)
 	}
 	if ttl := client.PTTL(ctx, key(tenant, source, "observed")).Val(); ttl <= 0 || ttl > HeartbeatTTL {
@@ -85,5 +130,8 @@ func TestRedisDesiredAndObservedLifecycle(t *testing.T) {
 	_ = closed.Close()
 	if _, err = NewStore(closed).Desired(ctx, tenant, source); err == nil {
 		t.Fatal("Redis failure became default running")
+	}
+	if _, err = NewStore(closed).DesiredCount(ctx, tenant, source); err == nil {
+		t.Fatal("Redis failure became default count")
 	}
 }
