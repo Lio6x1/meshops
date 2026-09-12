@@ -1,0 +1,13 @@
+Name: course-z04
+ListenOn: 127.0.0.1:25151
+Mode: dev
+Timeout: 5000
+Telemetry:
+  Name: course-z04
+  Endpoint: ""
+MeshOps:
+  Manifest: simulation.yaml
+  TopicPrefix: z04-
+  ConsumerGroupPrefix: z04-
+  KafkaBrokers: [localhost:29092]
+  RedisAddr: 127.0.0.1:26379

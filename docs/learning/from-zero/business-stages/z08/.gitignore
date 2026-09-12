@@ -1,0 +1,6 @@
+.local/
+bin/
+data/
+results/
+*.test.exe
+*.out

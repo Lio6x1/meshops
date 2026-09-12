@@ -1,0 +1,9 @@
+Name: entity-z02
+ListenOn: 127.0.0.1:50162
+Mode: dev
+Timeout: 3000
+Health: false
+Log:
+  ServiceName: entity-z02
+  Mode: console
+  Level: error

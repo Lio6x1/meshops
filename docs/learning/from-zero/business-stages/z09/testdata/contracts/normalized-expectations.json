@@ -1,0 +1,66 @@
+{
+  "description": "Future adapter acceptance oracle; fields use protojson paths. This is a specification, not current adapter output. Task catalogs are attached from trusted registry by the Entity service.",
+  "common": {
+    "tenantId": "demo_tenant",
+    "entityVersion": "1",
+    "sourceGeneration": "1",
+    "schemaVersion": 1,
+    "operation": "ENTITY_OPERATION_UPSERT",
+    "occurredAt": "2026-09-05T00:00:00Z",
+    "receivedAt": "2026-09-05T00:00:01Z",
+    "expiresAt": "2026-09-05T00:00:30Z",
+    "snapshot.location.latitude": 31.23,
+    "snapshot.location.longitude": 121.47,
+    "snapshot.location.coordinateSystem": "WGS84"
+  },
+  "cases": [
+    {
+      "fixture": "../sources/person.json",
+      "adapter": "person",
+      "source_id": "personnel_sim",
+      "entity_id": "person-001",
+      "fields": {"eventId": "person-observation-001", "snapshot.entityType": "person", "snapshot.status": "idle", "snapshot.person.onDuty": true, "snapshot.person.availability": "idle", "snapshot.person.skills": ["inspect"]},
+      "absent": ["snapshot.power", "snapshot.velocity", "snapshot.vehicle", "snapshot.robot", "snapshot.sensor", "snapshot.facility", "snapshot.location.altitude"]
+    },
+    {
+      "fixture": "../sources/drone.json",
+      "adapter": "drone",
+      "source_id": "drone_sim",
+      "entity_id": "drone-001",
+      "fields": {"eventId": "drone-observation-001", "snapshot.entityType": "drone", "snapshot.status": "idle", "snapshot.location.altitude": 25, "snapshot.power.batteryPercent": 78},
+      "absent": ["snapshot.person", "snapshot.vehicle", "snapshot.robot", "snapshot.sensor", "snapshot.facility"]
+    },
+    {
+      "fixture": "../sources/vehicle.json",
+      "adapter": "vehicle",
+      "source_id": "vehicle_sim",
+      "entity_id": "vehicle-001",
+      "fields": {"eventId": "vehicle-observation-001", "snapshot.entityType": "vehicle", "snapshot.status": "idle", "snapshot.velocity.speed": 10, "snapshot.vehicle.loadKg": 120.5, "snapshot.vehicle.availability": "idle"},
+      "absent": ["snapshot.person", "snapshot.power", "snapshot.robot", "snapshot.sensor", "snapshot.facility", "snapshot.location.altitude"]
+    },
+    {
+      "fixture": "../sources/robot.json",
+      "adapter": "robot",
+      "source_id": "robot_sim",
+      "entity_id": "robot-001",
+      "fields": {"eventId": "robot-observation-001", "snapshot.entityType": "robot", "snapshot.status": "idle", "snapshot.power.batteryPercent": 65, "snapshot.robot.availability": "idle", "snapshot.robot.faultCodes": []},
+      "absent": ["snapshot.person", "snapshot.vehicle", "snapshot.sensor", "snapshot.facility", "snapshot.location.altitude"]
+    },
+    {
+      "fixture": "../sources/sensor.json",
+      "adapter": "sensor",
+      "source_id": "sensor_sim",
+      "entity_id": "sensor-001",
+      "fields": {"eventId": "sensor-observation-001", "snapshot.entityType": "sensor", "snapshot.status": "online", "snapshot.sensor.reading": 23.5, "snapshot.sensor.unit": "celsius", "snapshot.sensor.measuredAt": "2026-09-05T00:00:00Z", "snapshot.sensor.health": "ok"},
+      "absent": ["snapshot.person", "snapshot.power", "snapshot.vehicle", "snapshot.robot", "snapshot.facility", "snapshot.location.altitude"]
+    },
+    {
+      "fixture": "../sources/facility.json",
+      "adapter": "facility",
+      "source_id": "facility_sim",
+      "entity_id": "facility-001",
+      "fields": {"eventId": "facility-observation-001", "snapshot.entityType": "facility", "snapshot.status": "open", "snapshot.facility.facilityType": "charging_station", "snapshot.facility.isOpen": true, "snapshot.facility.occupiedSlots": 2, "snapshot.facility.totalSlots": 8},
+      "absent": ["snapshot.person", "snapshot.power", "snapshot.velocity", "snapshot.vehicle", "snapshot.robot", "snapshot.sensor", "snapshot.location.altitude"]
+    }
+  ]
+}

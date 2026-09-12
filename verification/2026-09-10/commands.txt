@@ -1,0 +1,41 @@
+工作目录：docs/learning/from-zero/reference。以下为复现入口，不会自动覆盖本次归档结果。
+本轮使用 Go 1.25.10；协议工具版本见 testdata/proto/README.md。
+
+PowerShell：
+  ./scripts/initialize.ps1
+  ./scripts/test.ps1 -Integration
+
+本轮归档 integration.jsonl 的等价底层命令（依赖运行后）：
+  . ./scripts/env.ps1
+  docker compose --profile verification up -d --wait redis-fault
+  $env:MESHOPS_TEST_MYSQL_DSN = $env:MESHOPS_MYSQL_DSN
+  $env:MESHOPS_TEST_MYSQL_ADMIN_DSN = $env:MESHOPS_MYSQL_DSN
+  $env:MESHOPS_TEST_REDIS_ADDR = '127.0.0.1:16379'
+  $env:MESHOPS_TEST_REDIS_FAULT_ADDR = '127.0.0.1:16380'
+  $env:MESHOPS_TEST_KAFKA_BROKERS = 'localhost:19092'
+  $env:MESHOPS_TEST_KAFKA_DELETE_RECORDS = '1'
+  go test -tags integration ./... -json -count=1 -timeout=10m
+
+演示、故障、压测必须串行，不与其他集成测试共用依赖执行：
+  ./scripts/start.ps1 -Simulators
+  try { ./scripts/demo.ps1 -WaitSeconds 45 } finally { ./scripts/stop.ps1 }
+  ./scripts/faults.ps1
+  ./scripts/benchmark.ps1 -Seconds 30
+
+最终质量检查：
+  go mod verify
+  go vet ./...
+  $packages = @(go list ./... | Where-Object { $_ -notmatch '/gen/' })
+  staticcheck $packages
+  ./scripts/verify-proto.ps1
+  ./scripts/processes.test.ps1
+  go test ./internal/verification ./cmd/verify -count=1 -v
+
+Linux（本轮在本地 golang:1.25.10 Docker 容器执行，不传外部集成测试环境变量）：
+  go test -race ./... -count=1 -timeout=5m
+镜像需要 C/C++ 编译器；Go 模块缓存只读挂载，构建缓存位于 .local/linux-go-build。
+外部依赖测试在此轮会跳过，真实依赖完整验收以 Windows integration.jsonl 为准。
+
+各 go / buf / staticcheck 外部命令均需确认退出码0；PowerShell脚本抛出异常则本轮失败。
+README walk-through 执行 initialize / start / demo / finally stop，记录在 readme-walkthrough.txt。
+quality.json 记录最终质量命令的实际退出码；full integration 和 Linux race 的原始输出单独保留。

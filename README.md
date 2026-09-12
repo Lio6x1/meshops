@@ -1,174 +1,163 @@
-# 多源实体实时协同与可靠任务调度平台
+# MeshOps 多源实体实时协同与可靠任务调度平台
 
-**项目代号：MeshOps**，取自 **Multi-source Entity Collaboration & Operations**，表示“多源实体协同与运行管理”。简历和正式文档统一使用中文名称“多源实体实时协同与可靠任务调度平台”，MeshOps 只作为仓库名和工程代号。
+仓库根目录是唯一的完整实现，Go module：`example.com/meshops-course`。它使用模拟数据来源和模拟执行方，复现六类实体的统一接入、状态查询/订阅、inspect 任务下发与执行跟踪。旧骨架已移除，业务程序、协议、配置和脚本都在当前根目录。
 
-本项目面向 Go 后端校招展示。平台不直接管理无人机、车辆或传感器等硬件，也不实现 MQTT、OTA、飞控和设备影子；它接收边缘网关、仿真系统和业务集成服务已经标准化的数据，统一维护实体最新状态，并向操作端可靠地下发和跟踪任务。
+**开始学习：[Z00—Z10 课程目录](docs/learning/from-zero/lessons/README.md)。** 教材与阶段答案位于 `docs/learning/from-zero/`，你自己的学习工程仍使用 `D:\job\golang\projects\meshops-course-lab`。
 
-项目参考 Lattice 的 Entity、Component、Provenance、TaskCatalog 和版本化任务状态模型，但重点是可复现的互联网后端工程问题：突发事件流削峰、分区有序处理、最新值投影、实时订阅背压、事务消息、消费者幂等、任务并发控制、故障恢复与可观测性。
+原定关键实现及 A01—A28 已有 [验收记录](verification/2026-09-10/summary.md)。**任务搜索（MySQL → Canal → Kafka → ES）已完成真实同步、依赖停机恢复、维护重建和 Z10 教程；独立学习目录的升级与故障后继续同步已通过验证。** Z09 固定为教学快照，新增代码不会混进前九阶段。复制验证、已知边界及复核范围见 [工作记录](docs/learning/from-zero/BUILD-LEDGER.md)。
 
-> **当前状态：P0 工程骨架。** 已完成需求分析、架构决策、Protobuf 契约、go-zero 服务骨架、数据库初始迁移和本地依赖配置；业务逻辑、自动化测试、压测与故障演练尚待按阶段实现。下文描述的是目标能力，不代表已经完成或验证。
+## 数据经过哪些地方
 
-## 目标业务闭环
-
-1. 最小参考边缘网关生成标准化实体事件，先写入基于 bbolt 的本地持久化缓冲，再通过 gRPC 客户端流批量上报；链路恢复后按 ACK 水位限速补传。
-2. 接入服务完成认证、限流、协议校验和幂等检查，并按 `entity_id` 写入 Kafka。
-3. 状态投影器消费事件，依据版本号更新 Redis 最新状态快照，并按策略向 MySQL 写入历史抽样。
-4. 实时订阅服务第一阶段通过进程内有界队列向操作端推送；多实例阶段才启用 Redis Pub/Sub。断线重连时先拉快照，再继续增量订阅。
-5. 操作端创建任务；任务服务在一个 MySQL 事务中写入任务与 Outbox 事件。
-6. Outbox 投递器将任务事件投递到 Kafka；任务分发器消费后下发任务并处理 ACK、超时、重试和死信。
-7. 执行方回报任务状态，任务服务使用状态机、幂等键和乐观锁解决并发更新。
-
-## 双数据语义
-
-| 数据 | 业务语义 | 主要保证 | 技术路径 |
-| --- | --- | --- | --- |
-| 实体状态事件 | 高频；允许展示端丢失中间帧；需要短期回放和重建 | Kafka 分区内有序、至少一次消费、消费者幂等 | gRPC → Kafka → Redis最新快照 → 有界队列；多实例时增加Pub/Sub |
-| 任务与审计事件 | 低频但不可静默丢失、不可重复执行 | MySQL 事务、Transactional Outbox、至少一次投递、幂等消费 | MySQL + Outbox → Kafka → 任务分发器 |
-
-Kafka是可靠事件主干；MySQL是任务、配置和审计的事实来源；Redis是可重建的派生状态。Redis Pub/Sub只在实时订阅多实例后用于可恢复的低延迟通知，不承担可靠消息职责。
-
-## 技术栈
-
-- Go、go-zero 服务骨架、Protobuf/grpc-go 流式通信
-- Kafka (KRaft模式)：状态事件、任务事件、消费位点、重放、削峰和多消费者；校招项目使用单Broker KRaft模式
-- Redis：实体最新快照、限流和热点查询；Pub/Sub仅在实时订阅多实例阶段启用
-- MySQL：实体元数据、任务、Outbox、审计和历史抽样
-- bbolt：参考边缘网关本地持久化缓冲与 ACK 水位
-- Prometheus、结构化日志；Grafana和OpenTelemetry在核心稳定后启用
-- Docker Compose、GitHub Actions、自研Go负载模拟器；ghz仅辅助测试Unary RPC
-- etcd：**P3阶段**在至少两个真实服务实例下实现动态注册发现；P0—P2使用静态Endpoint
-- Elasticsearch、ClickHouse不属于当前实施技术栈，只保留基于实测的启用门槛
-
-## 术语说明
-
-| 术语 | 定义 | 测量边界 |
-| --- | --- | --- |
-| 受理延迟 | gRPC接收请求到Kafka返回ACK的时间 | 接入服务内部指标 |
-| 可见延迟 | 事件产生时刻到Redis快照更新完成的端到端时间 | 客户端埋点到查询验证 |
-| 投影延迟 | 从Kafka消费到Redis更新完成的时间 | 状态投影器内部指标 |
-| 补传 | 网关链路恢复后，从bbolt读取积压事件并限速上报 | 区别于实时上报 |
-| 幂等 | 重复请求不产生重复业务结果 | 不等于去重；允许执行多次但结果一致 |
-
-## 设计与压测目标
-
-以下是项目目标，不是未经验证的生产成绩：
-
-- 20～100 个集成数据源或边缘网关。
-- 1 万～10 万活跃实体。
-- 稳态 1,000～5,000 events/s；重连补报目标 20,000～50,000 events/s。
-- 20～50 个实时订阅者，压力测试扩展到 200。
-- 任务创建峰值目标 50～100/s。
-- 状态写入受理 P99 小于 100ms；实时可见 P99 小于 200ms。
-
-所有结果必须记录机器环境、数据集、并发模型和原始输出。简历只能引用已经通过自动化测试、压测或故障演练验证的能力。
-
-## 历史回放边界
-
-- Kafka 在配置的保留期内支持系统内部事件重放，用于重建 Redis 快照、修复消费者和新增下游。
-- 第一阶段由历史抽样写入器将状态按固定周期、显著变化或任务关键节点抽样写入 MySQL，提供基础轨迹查询和回放。
-- 完整长期原始轨迹、复杂地理检索和大规模聚合不进入核心阶段；需要时再增加 ClickHouse 或 Elasticsearch 消费者。
-
-## 非目标
-
-- 不实现硬件接入协议、MQTT、OTA、飞控、图传和设备影子。
-- 不宣称真实军用部署、真实生产 SLA 或未经验证的十万 QPS。
-- 不为了展示名词同时引入 Redis Streams、RabbitMQ、NATS 和 Kafka。
-- 不自研WAL；参考网关使用bbolt实现本地持久化缓冲队列。
-- 第一阶段不引入 Kubernetes、服务网格和完整 LLM Agent。
-- 后续 Agent 只能通过受控 Tool Gateway 调用应用服务，禁止直接访问数据库或通用命令执行器。
-
-## 工程结构
-
-```text
-meshops/
-├── proto/                     # Protobuf 源文件
-│   ├── common/v1/             # 共享消息（EntityStateEvent、Task 等）
-│   ├── ingest/v1/             # 接入服务 RPC 契约
-│   ├── entity/v1/             # 实体服务 RPC 契约
-│   ├── task/v1/               # 任务服务 RPC 契约
-│   └── dispatcher/v1/         # 分发器管理接口 RPC 契约
-├── gen/                       # 代码生成产物（不手动修改）
-│   ├── common/v1/             # 共享消息 pb.go（由 protoc 生成）
-│   ├── ingest/v1/             # 接入服务 pb.go + grpc.pb.go
-│   ├── entity/v1/             # 实体服务 pb.go + grpc.pb.go
-│   ├── task/v1/               # 任务服务 pb.go + grpc.pb.go
-│   └── dispatcher/v1/         # 分发器服务 pb.go + grpc.pb.go
-├── app/                       # goctl 生成的 zRPC 服务骨架
-│   ├── ingest/                # 接入服务（认证/限流/Kafka生产）
-│   │   ├── etc/               # 服务配置文件
-│   │   ├── internal/
-│   │   │   ├── config/        # 配置结构体
-│   │   │   ├── logic/         # 业务逻辑（填写 todo）
-│   │   │   ├── server/        # gRPC server 注册
-│   │   │   └── svc/           # ServiceContext（依赖注入）
-│   │   └── client/            # gRPC 客户端封装
-│   ├── entity/                # 实体服务（投影/快照/实时订阅）
-│   ├── task/                  # 任务服务（状态机/Outbox）
-│   └── dispatcher/            # 任务分发器管理接口
-├── configs/                   # 配置示例（config.example.yaml）
-├── migrations/                # 数据库版本化迁移（001_initial_schema.sql）
-├── deployments/               # Prometheus / Grafana 部署配置
-├── scripts/
-│   ├── proto-gen.sh           # proto 代码生成（方案A：protoc+goctl+alias修复）
-│   ├── benchmark/             # 压测脚本
-│   └── chaos/                 # 故障演练脚本
-├── docker-compose.yml         # 本地一键启动 Kafka(KRaft)/Redis/MySQL/etcd
-└── Makefile                   # 常用命令封装
+```mermaid
+flowchart LR
+  A[六类模拟来源：原始 JSON] --> A1[网关适配 / bbolt 待发送队列]
+  A1 -->|统一 Protobuf 事件、序号| B[Ingest：身份、来源与事件校验]
+  B -->|等待 Kafka ACK| C[(Kafka 状态事件)]
+  C --> D[Entity：版本校验与投影]
+  D --> E[(Redis 当前视图)]
+  D --> F[查询与订阅]
+  C --> G[历史抽样]
+  G --> H[(MySQL)]
+  I[opctl 指定执行实体] --> J[Task：事务、状态机、Outbox]
+  J --> H
+  J --> K[(Kafka 任务事件)]
+  K --> L[Dispatcher：投递、重试、DLQ]
+  L --> M[模拟执行方 / bbolt inbox]
+  M -->|状态回报| J
+  H -->|tasks binlog| N[Canal]
+  N --> O[(Kafka 搜索 CDC)]
+  O --> P[Search：版本投影]
+  P --> Q[(ES 任务索引)]
+  R[opctl task search] --> P
+  P -->|租户过滤 / PIT 分页| Q
 ```
 
-计划在对应阶段新增 `proto/executor/v1/`、`cmd/gateway-simulator/`、`cmd/executor-simulator/` 和 `cmd/opctl/`；这些目录当前尚未实现。
+人员、无人机、地面车辆、巡检机器人可以执行同一种 `inspect`；固定传感器和设施仅提供状态。每个实体绑定一个权威来源，任务执行方由注册信息确定，操作员选择目标实体。本项目不包含路径规划、最优资源分配或真实设备控制。
 
-### proto 生成策略（方案A）
+## 本机前提
 
-- **共享消息** (`proto/common/v1/`) → 用 `protoc` 生成到 `gen/common/v1/`，全项目单一真相源
-- **服务契约** (`proto/{svc}/v1/`) → 用 `goctl rpc protoc` 生成 zRPC 骨架到 `app/{svc}/`
-- `gen/` 下生成代码提交到仓库；新克隆可以直接构建，修改 Proto 后需同时提交重新生成的代码
+使用 PowerShell，以下命令的工作目录都为本文件所在目录。先确认工具在 PATH 中：
 
-```bash
-# 生成所有（包含 alias bug 自动修复）
-make proto
-
-# 只重新生成某个服务
-make proto-ingest
-make proto-entity
+```powershell
+go version
+docker version
+docker compose version
 ```
 
+已使用 Go 1.25.10 构建；依赖版本以 [go.mod](go.mod) 和 [go.sum](go.sum) 为准。已提交 `gen/`，直接构建不要求先安装代码生成工具。修改 Proto 时才需要 `protoc`、`protoc-gen-go` 和 `protoc-gen-go-grpc`，并执行 [generate.ps1](scripts/generate.ps1)。生成代码不能手改。
 
+在当前用户电脑上，若 PATH 未包含已安装的 Go，可在当前终端执行：
 
-## 快速开始
-
-```bash
-# 1. 下载依赖并验证当前骨架
-make deps
-make build
-make test
-
-# 2. 启动基础依赖（P0-P2）
-make up                       # docker compose up -d kafka redis mysql
-
-# 3. 应用数据库迁移
-make migrate
-
-# 4. 安装开发工具并运行提交前检查
-make tools                    # 安装 goctl、staticcheck
-make check                    # go vet + staticcheck + go test -race
-
-# 修改 Proto 时才需要安装 protoc 及 Go 插件，然后重新生成
-make proto
-
-# P3 阶段（含 etcd）与监控
-make up-p3                    # 启动 etcd
-make up-all                   # 启动完整环境含 Prometheus + Grafana
+```powershell
+$env:Path = 'D:\go1.25.10\bin;' + $env:Path
+Set-Location 'D:\job\golang\projects\meshops'
 ```
 
-应用服务端口：Ingest `50051`、Entity `50052`、Task `50053`、Dispatcher `50054`。
+其他电脑按实际 Go 安装路径设置；上述盘符不是 Go module 的一部分。`example.com` 是课程模块名中的占位域名，引用本模块文件时 Go 在本地寻找，运行本项目不用申请这个域名。
 
-依赖服务端口：Kafka `9092`、Redis `6379`、MySQL `3306`、etcd `2379`、Prometheus `9090`、Grafana `3000`。宿主机 Kafka 客户端使用 `localhost:9092`，Compose 网络内客户端使用 `kafka:29092`。
+## 初始化、启动、实际演示
 
-## 文档
+先启动 Docker Desktop 的 Linux engine，再执行：
 
-- [需求分析](docs/superpowers/specs/2026-08-24-meshops-requirement-analysis.md)
-- [总体架构与开发规划](docs/superpowers/specs/2026-08-24-meshops-system-design.md)
-- [技术选型评审](docs/superpowers/specs/2026-08-25-meshops-technology-selection-review.md)
-- [生产就绪检查清单](docs/production-readiness-checklist.md)
-- [架构决策记录](docs/adr)
+```powershell
+./scripts/initialize.ps1
+./scripts/start.ps1 -Simulators
+./scripts/demo.ps1
+```
+
+初始化脚本启动专用 Compose 服务、构建业务与工具程序（包含 `verify`、可选 Search 和本地搜索维护工具）、执行 001—004 增量迁移并导入来源/实体绑定。数据源与执行方凭证第一次运行时生成在 `.local/secrets.json`；再次运行会复用，避免已有队列突然失去身份。不要把这个文件提交到仓库。
+
+启动脚本运行四个服务、六个来源模拟器和四个执行方。来源默认每秒上报两次、运行 30 分钟；过期后重新启动模拟来源，查询才能恢复新鲜状态。演示脚本验证六类查询、四类 inspect 成功、重复创建返回同一任务 ID，以及真实订阅；任一步失败就报错，详细证据写入 `results/`。
+
+本工程使用以下本机地址，避免与旧工程的默认数据库端口混用：
+
+| 程序/依赖 | 地址 |
+| --- | --- |
+| Ingest / Entity / Task / Dispatcher | `127.0.0.1:50051` / `50052` / `50053` / `50054` |
+| 四个服务的健康与指标 | `127.0.0.1:18080` 至 `18083` |
+| MySQL / Redis / Kafka | `127.0.0.1:13306` / `16379` / `19092` |
+
+每次打开新终端，先加载当前终端需要的凭证与地址：
+
+```powershell
+. ./scripts/env.ps1
+./bin/opctl.exe snapshot --entity drone-001
+./bin/opctl.exe subscribe --entities 'person-001,drone-001' --duration 10s
+./bin/opctl.exe task create --entity drone-001 --key my-first-inspect --duration-seconds 1
+```
+
+创建响应的 `taskId` 是后续查询需要的实际值：
+
+```powershell
+$created = ./bin/opctl.exe task create --entity drone-001 --key another-inspect --duration-seconds 1 | ConvertFrom-Json
+if ($LASTEXITCODE -ne 0) { throw 'create failed' }
+./bin/opctl.exe task get --id $created.taskId
+./bin/opctl.exe task history --id $created.taskId
+./bin/opctl.exe dispatch get --task $created.taskId
+./bin/opctl.exe dispatcher status --token-env MESHOPS_ADMIN_TOKEN
+```
+
+`opctl` 成功输出真实的 Protobuf JSON，错误 JSON 输出到 stderr。退出码 `0` 为成功，`1` 为运行或 RPC 失败，`2` 为命令参数错误。同一个幂等键只能重试相同的标准化创建参数；换参数时使用新键。
+
+停止本次程序，但保留数据库和 bbolt 文件：
+
+```powershell
+./scripts/stop.ps1
+```
+
+Windows 的停止脚本采用强制进程退出，用于本地操作；服务收到正常退出信号时另有有界优雅退出逻辑。停止脚本按 PID、可执行文件路径和启动时间三者核对身份，不能只凭 PID 杀进程。要停数据库容器可执行 `docker compose stop`。
+
+## 测试
+
+```powershell
+./scripts/test.ps1
+./scripts/test.ps1 -Integration
+./scripts/processes.test.ps1
+```
+
+第一条运行单元/本地网络测试及 `go vet`。第二条还会连接真实 MySQL、Redis、Kafka，需要先初始化 Compose；脚本会启动 16380 端口的专用 Redis 故障容器，在这个容器测试 OOM，并在随机测试主题执行 Kafka DeleteRecords。测试使用随机测试库、命名空间或主题，账户需有创建测试库权限。普通测试输出中的集成用例 `SKIP` 表示未执行，不能记为通过。
+
+以下命令依次执行，先停止演示，不要与集成测试并行。故障脚本会实际停止并恢复本 Compose 的 Kafka/Redis/MySQL；压测会创建独立数据库、主题和实体命名空间，保留在 `.local/verification/<run-id>/` 供排查，不清空已有数据：
+
+```powershell
+./scripts/stop.ps1
+./scripts/faults.ps1
+./scripts/benchmark.ps1 -Seconds 30
+```
+
+压测先核对 10000 个不同实体快照，再依次运行 100/500 events/s。报告给出实际吞吐、错误、客户端至 Kafka ACK 的延迟、抽样可见延迟、Lag 和进程 Go 堆内存。它不代表订阅扇出、网关落盘或任务执行的性能。每个计时阶段另有三分钟排空预算，整个命令上限十五分钟，超时会返回失败。
+
+安装 [锁定的协议工具](testdata/proto/README.md) 并加入 PATH 后，运行 `./scripts/verify-proto.ps1` 检查 lint、兼容性与生成一致性。独立模块相对原骨架的 Go import 和四个 optional 字段存在有意的源码接口差异，不能直接替换旧生成包。Linux 单元/竞态检查可用 `go test -race ./... -count=1`；需 C/C++ 编译器。[项目 CI](.github/workflows/ci.yml)直接验证根目录工程；本地检查不表示远端 Actions 已运行。
+
+课程已有阶段连续复制验证，但全部讲解、操作衔接以及新增搜索后的统一验收仍需完成。代码测试通过不能直接推导“整套课程已验收”。
+
+## 文件与职责
+
+| 目录 | 需要理解的问题 |
+| --- | --- |
+| `proto/`、`gen/` | 请求/响应和流的边界；前者手写、后者生成 |
+| `internal/platform/` | 配置、可信身份、来源绑定、连接和分页签名 |
+| `internal/state/` | 原始格式适配、ACK、版本/墓碑、订阅和抽样历史 |
+| `internal/bus/` | Kafka 发布确认、分区内顺序处理、手动提交与真实 Lag |
+| `internal/tasks/` | 任务事实、事务、Outbox、投递尝试和状态回报 |
+| `internal/edge/` | 断线补传队列、执行幂等、取消和模拟副作用 |
+| `internal/app/` | 组装依赖、注册 RPC、健康检查和进程生命周期 |
+| `internal/cli/` | 操作员真实客户端，包含查询、订阅和任务命令 |
+| `migrations/`、`configs/`、`testdata/` | 表结构增量、注册信息、可复现原始输入 |
+
+课程从少量文件开始逐步引入上述结构。此表用于最后回看职责，不要求第一课就创建全部目录。
+
+## 当前排错入口
+
+- `DeadlineExceeded`：核对客户端和配置中的地址，当前课程统一使用 IPv4 回环地址；再查看对应服务日志及 `/readyz`。
+- 端口已占用：启动脚本会在启动前拒绝。先确认是否有已有课程进程，使用它所属的停止脚本；不要随意终止其他项目。
+- 实体 `found=false`：确认对应来源已接入，查看 `.local/logs/来源名.err.log`；原始数据不会绕过 Ingest 自动写进 Redis。
+- 实体已过期：检查来源模拟器是否已结束、网关是否有积压、Kafka 消费是否前进。过期状态仍可查询，不能据此接收新任务。
+- 任务停在投递中：查看执行方日志、`dispatch get` 和 `task history`。传输失败会有限重试，不能把“写进 Kafka”当作执行成功。
+- Docker Kafka 启动失败：检查 `docker compose logs kafka-init kafka`。Compose 中的初始化容器仅调整 Kafka 专用卷目录的属主，保留已有日志数据。
+
+## 可选任务搜索
+
+真实链路与早期运行记录见 [搜索运行记录](docs/learning/from-zero/verification/2026-09-11-search-runtime.md)。搜索扩展需要额外启动 Canal 和 Elasticsearch；按 [Z10 教程](docs/learning/from-zero/lessons/z10.md) 学习协议、实现、启动、查询和故障恢复，独立学习目录的验证见 [课程验收](docs/learning/from-zero/verification/2026-09-12-search-course.md)。
+
+搜索初始化中断或 ES 任务索引丢失时，使用 `./scripts/rebuild-search.ps1` 在维护窗口从 MySQL 重建。原本未运行 Search 时，再执行 `./scripts/start-search.ps1`；随后用 `./scripts/demo-search.ps1` 核对新增任务同步。已完成的故障与数据保留检查见 [维护重建记录](docs/learning/from-zero/verification/2026-09-12-search-rebuild.md)。

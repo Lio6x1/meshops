@@ -1,0 +1,55 @@
+{
+  "runID": "9d09cc23db174b59835bca6f49bf9111",
+  "learner": "D:\\job\\golang\\projects\\meshops\\.cache\\course-chain-9d09cc23db174b59835bca6f49bf9111\\learner",
+  "businessOnly": false,
+  "completedStages": [
+    {
+      "stage": "z01",
+      "verified": "copy and build",
+      "seconds": 0.7683843
+    },
+    {
+      "stage": "z02",
+      "verified": "real RPC smoke",
+      "seconds": 14.4088994
+    },
+    {
+      "stage": "z03",
+      "verified": "real RPC smoke",
+      "seconds": 15.4284897
+    },
+    {
+      "stage": "z04",
+      "verified": "real RPC and identity; Kafka/Redis from z05; six durable gateways and subscription in z06",
+      "seconds": 11.3182311
+    },
+    {
+      "stage": "z05",
+      "verified": "real RPC and identity; Kafka/Redis from z05; six durable gateways and subscription in z06",
+      "seconds": 24.0994843
+    },
+    {
+      "stage": "z06",
+      "verified": "real RPC and identity; Kafka/Redis from z05; six durable gateways and subscription in z06",
+      "seconds": 26.6358961
+    },
+    {
+      "stage": "z07",
+      "verified": "fresh isolated Compose; six snapshots; four tasks; history in z08/z09; same learner credentials and durable files",
+      "seconds": 85.6738625
+    },
+    {
+      "stage": "z08",
+      "verified": "fresh isolated Compose; six snapshots; four tasks; history in z08/z09; same learner credentials and durable files",
+      "seconds": 63.5108545
+    },
+    {
+      "stage": "z09",
+      "verified": "fresh isolated Compose; six snapshots; four tasks; history in z08/z09; same learner credentials and durable files",
+      "seconds": 67.8098127
+    }
+  ],
+  "failure": null,
+  "cleanupErrors": [],
+  "passed": true
+}

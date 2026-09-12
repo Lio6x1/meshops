@@ -1,0 +1,1 @@
+Course processes started; logs: .local/logs; stop: ./scripts/stop.ps1

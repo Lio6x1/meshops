@@ -1,0 +1,8 @@
+$ErrorActionPreference = 'Stop'
+$env:MESHOPS_PERSON_SOURCE_TOKEN = 'z06-local-person-source-credential-0000000000000000'
+$env:MESHOPS_DRONE_SOURCE_TOKEN = 'z06-local-drone-source-credential-0000000000000000'
+$env:MESHOPS_VEHICLE_SOURCE_TOKEN = 'z06-local-vehicle-source-credential-0000000000000000'
+$env:MESHOPS_ROBOT_SOURCE_TOKEN = 'z06-local-robot-source-credential-0000000000000000'
+$env:MESHOPS_SENSOR_SOURCE_TOKEN = 'z06-local-sensor-source-credential-0000000000000000'
+$env:MESHOPS_FACILITY_SOURCE_TOKEN = 'z06-local-facility-source-credential-0000000000000000'
+$env:MESHOPS_OPERATOR_TOKEN = 'z06-local-operator-credential-0000000000000000'

@@ -1,0 +1,3 @@
+id=person-001 found=true type=person lat=31.2304 lon=121.4737 power=unknown
+id=missing found=false
+PASS: z02 real gRPC query

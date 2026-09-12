@@ -1,0 +1,36 @@
+{
+  "entityId": "person-001",
+  "version": "1789005394281",
+  "snapshot": {
+    "entityType": "person",
+    "status": "idle",
+    "location": {
+      "latitude": 31.23,
+      "longitude": 121.47,
+      "coordinateSystem": "WGS84"
+    },
+    "velocity": null,
+    "capability": null,
+    "metadata": {},
+    "power": null,
+    "person": {
+      "onDuty": true,
+      "availability": "idle",
+      "skills": [
+        "inspect"
+      ]
+    },
+    "sensor": null,
+    "taskCatalog": null,
+    "vehicle": null,
+    "robot": null,
+    "facility": null
+  },
+  "updatedAt": "2026-09-10T01:56:34.354051400Z",
+  "found": true,
+  "sourceId": "personnel_sim",
+  "sourceGeneration": "1",
+  "viewGeneration": "a711a7e6-f82d-4785-a535-2aca07bf1bc3",
+  "expiresAt": "2026-09-10T01:57:04.351950800Z",
+  "executorId": ""
+}

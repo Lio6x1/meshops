@@ -1,199 +1,73 @@
-name: CI
+name: MeshOps
 
 on:
   push:
-    branches: [ main, develop ]
   pull_request:
-    branches: [ main, develop ]
-
-env:
-  GO_VERSION: '1.25.10'
 
 jobs:
-  # ==========================================================================
-  # 静态检查与单元测试
-  # ==========================================================================
-  test:
-    name: Test & Lint
+  reference:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
     steps:
       - uses: actions/checkout@v6
-
-      - name: Set up Go
-        uses: actions/setup-go@v7
+      - name: Verify published course file hashes
+        run: python3 docs/learning/from-zero/verify-git-checkpoints.py
+      - uses: actions/setup-go@v7
         with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
+          go-version: '1.25.10'
+          cache-dependency-path: go.sum
+      - name: Verify module, build and vet
+        run: |
+          go mod verify
+          go build ./...
+          go vet ./...
+      - name: Staticcheck handwritten packages
+        run: |
+          go install honnef.co/go/tools/cmd/staticcheck@v0.7.0
+          staticcheck $(go list ./... | grep -v '/gen/')
+      - name: Linux race checks
+        run: go test -race ./... -count=1 -timeout=10m
+      - name: Start isolated integration dependencies
+        run: docker compose -f docker-compose.yml -f compose.search.yml --profile verification --profile search up -d --wait --wait-timeout 180 mysql kafka redis redis-fault elasticsearch
+      - name: Full integration acceptance
+        env:
+          MESHOPS_TEST_MYSQL_DSN: 'root:course_local_root@tcp(127.0.0.1:13306)/meshops_course?parseTime=true&loc=UTC'
+          MESHOPS_TEST_MYSQL_ADMIN_DSN: 'root:course_local_root@tcp(127.0.0.1:13306)/meshops_course?parseTime=true&loc=UTC'
+          MESHOPS_TEST_REDIS_ADDR: '127.0.0.1:16379'
+          MESHOPS_TEST_REDIS_FAULT_ADDR: '127.0.0.1:16380'
+          MESHOPS_TEST_KAFKA_BROKERS: 'localhost:19092'
+          MESHOPS_TEST_KAFKA_DELETE_RECORDS: '1'
+          MESHOPS_TEST_ES_ENDPOINT: 'http://127.0.0.1:19200'
+        run: |
+          mkdir -p results
+          set -o pipefail
+          go test -tags integration ./... -json -count=1 -timeout=10m | tee results/integration.jsonl
+          go test -race -tags integration ./internal/search -json -count=1 -timeout=5m | tee results/search-race.jsonl
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
 
-      - name: Verify dependencies
-        run: go mod verify
-
-      - name: go vet
-        run: go vet ./...
-
-      - name: Install staticcheck
-        run: go install honnef.co/go/tools/cmd/staticcheck@v0.7.0
-
-      - name: Run staticcheck
-        run: staticcheck $(go list ./... | grep -v '/gen/')
-
-      - name: Run unit tests
-        run: go test ./... -count=1
-
-      - name: Run tests with race detector
-        run: go test -race ./... -count=1
-
-      - name: Generate coverage report
-        run: go test ./... -coverprofile=coverage.out -covermode=atomic
-
-      - name: Upload coverage
+          events = [json.loads(line) for line in Path('results/search-race.jsonl').read_text().splitlines() if line.strip()]
+          required = {
+              'TestRealElasticsearchVersionProjection',
+              'TestSnapshotEstablishesReadViewBeforeReleasingLock',
+              'TestCDCRebuildStartsAfterOldHistory',
+          }
+          passed = {event.get('Test') for event in events if event.get('Action') == 'pass'}
+          missing = required - passed
+          failed = any(event.get('Action') in {'fail', 'build-fail'} for event in events)
+          if missing or failed:
+              raise SystemExit(f'Search race verification failed; required tests not passed: {sorted(missing)}')
+          print('Required MySQL/Kafka/ES search race tests passed; none silently skipped.')
+          PY
+      - name: Upload acceptance output
+        if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: coverage
-          path: coverage.out
-
-  # ==========================================================================
-  # Protobuf 生成与兼容性检查
-  # ==========================================================================
-  proto:
-    name: Proto Lint & Breaking Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0  # buf breaking 需要历史
-
-      - name: Check protobuf
-        uses: bufbuild/buf-action@v1
-        with:
-          version: '1.72.0'
-          input: proto
-          lint: true
-          format: false
-          breaking: ${{ github.event_name == 'pull_request' }}
-          breaking_against: 'https://github.com/${{ github.repository }}.git#branch=main,subdir=proto'
-          push: false
-          archive: false
-          pr_comment: false
-          github_token: ${{ github.token }}
-
-  # ==========================================================================
-  # 数据库迁移测试
-  # ==========================================================================
-  migration:
-    name: Migration Test
-    runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: test_root
-          MYSQL_DATABASE: meshops_test
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h localhost -u root -ptest_root"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Wait for MySQL
-        run: |
-          for i in {1..30}; do
-            if mysql -h 127.0.0.1 -u root -ptest_root -e 'SELECT 1' >/dev/null 2>&1; then
-              echo "MySQL is ready"
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "MySQL did not become ready in time" >&2
-          exit 1
-
-      - name: Apply migrations to empty database
-        run: |
-          for f in migrations/*.sql; do
-            echo "Applying $f..."
-            mysql -h 127.0.0.1 -u root -ptest_root meshops_test < "$f"
-          done
-
-      - name: Verify schema
-        run: |
-          mysql -h 127.0.0.1 -u root -ptest_root meshops_test -e "SHOW TABLES;"
-          mysql -h 127.0.0.1 -u root -ptest_root meshops_test -e "SELECT COUNT(*) FROM integration_sources;"
-
-  # ==========================================================================
-  # 服务构建
-  # ==========================================================================
-  build:
-    name: Build Services
-    runs-on: ubuntu-latest
-    needs: [test]
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Set up Go
-        uses: actions/setup-go@v7
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
-
-      - name: Build services
-        run: make build
-
-  # ==========================================================================
-  # 核心集成测试（依赖 Docker Compose）
-  # ==========================================================================
-  integration:
-    name: Integration Test
-    runs-on: ubuntu-latest
-    needs: [test]
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Set up Go
-        uses: actions/setup-go@v7
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
-
-      - name: Detect integration tests
-        id: integration-tests
-        shell: bash
-        run: |
-          if grep -R -l --include='*_test.go' '//go:build integration' . | grep -q .; then
-            echo "present=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "present=false" >> "$GITHUB_OUTPUT"
-            echo "No integration-tagged tests yet; dependency startup is skipped."
-          fi
-
-      - name: Start dependencies
-        if: steps.integration-tests.outputs.present == 'true'
-        run: docker compose up -d --wait --wait-timeout 120 kafka redis mysql
-
-      - name: Run integration tests
-        if: steps.integration-tests.outputs.present == 'true'
-        run: go test ./... -tags=integration -count=1 -timeout=10m
-        env:
-          KAFKA_BROKERS: localhost:9092
-          REDIS_ADDR: localhost:6379
-          MYSQL_DSN: root:meshops_dev_root@tcp(localhost:3306)/meshops
-
-      - name: Collect logs on failure
-        if: failure() && steps.integration-tests.outputs.present == 'true'
-        run: |
-          docker compose logs kafka > kafka.log 2>&1 || true
-          docker compose logs mysql > mysql.log 2>&1 || true
-
-      - name: Upload failure artifacts
-        if: failure() && steps.integration-tests.outputs.present == 'true'
-        uses: actions/upload-artifact@v6
-        with:
-          name: integration-failure-logs
-          path: '*.log'
-
-      - name: Teardown
-        if: always() && steps.integration-tests.outputs.present == 'true'
-        run: docker compose down -v
+          name: reference-acceptance
+          path: results/
+      - name: Stop dedicated dependencies
+        if: always()
+        run: docker compose -f docker-compose.yml -f compose.search.yml --profile verification --profile search stop

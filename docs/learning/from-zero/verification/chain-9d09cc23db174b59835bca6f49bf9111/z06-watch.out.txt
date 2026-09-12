@@ -1,0 +1,384 @@
+{
+  "entityId":  "",
+  "version":  "0",
+  "snapshot":  null,
+  "updatedAt":  null,
+  "kind":  "ENTITY_UPDATE_KIND_SNAPSHOT_END",
+  "syncId":  "de441ef3-8210-46aa-8e4f-e11a3311b582",
+  "viewGeneration":  "67450ad3-05b4-4493-97d6-4612787c22af",
+  "sourceId":  "",
+  "sourceGeneration":  "0",
+  "expiresAt":  null
+}
+{
+  "entityId":  "person-001",
+  "version":  "1",
+  "snapshot":  {
+    "entityType":  "person",
+    "status":  "idle",
+    "location":  {
+      "latitude":  31.23000881018176,
+      "longitude":  121.47000329120107,
+      "coordinateSystem":  "WGS84"
+    },
+    "velocity":  null,
+    "capability":  null,
+    "metadata":  {},
+    "power":  null,
+    "person":  {
+      "onDuty":  true,
+      "availability":  "idle",
+      "skills":  [
+        "inspect"
+      ]
+    },
+    "sensor":  null,
+    "taskCatalog":  null,
+    "vehicle":  null,
+    "robot":  null,
+    "facility":  null
+  },
+  "updatedAt":  "2026-09-10T01:57:00.239851500Z",
+  "kind":  "ENTITY_UPDATE_KIND_UPSERT",
+  "syncId":  "de441ef3-8210-46aa-8e4f-e11a3311b582",
+  "viewGeneration":  "67450ad3-05b4-4493-97d6-4612787c22af",
+  "sourceId":  "personnel_sim",
+  "sourceGeneration":  "1",
+  "expiresAt":  "2026-09-10T01:57:29.229345500Z"
+}
+{
+  "entityId":  "person-001",
+  "version":  "2",
+  "snapshot":  {
+    "entityType":  "person",
+    "status":  "idle",
+    "location":  {
+      "latitude":  31.229998492749942,
+      "longitude":  121.47000373646145,
+      "coordinateSystem":  "WGS84"
+    },
+    "velocity":  null,
+    "capability":  null,
+    "metadata":  {},
+    "power":  null,
+    "person":  {
+      "onDuty":  true,
+      "availability":  "idle",
+      "skills":  [
+        "inspect"
+      ]
+    },
+    "sensor":  null,
+    "taskCatalog":  null,
+    "vehicle":  null,
+    "robot":  null,
+    "facility":  null
+  },
+  "updatedAt":  "2026-09-10T01:57:00.239851500Z",
+  "kind":  "ENTITY_UPDATE_KIND_UPSERT",
+  "syncId":  "de441ef3-8210-46aa-8e4f-e11a3311b582",
+  "viewGeneration":  "67450ad3-05b4-4493-97d6-4612787c22af",
+  "sourceId":  "personnel_sim",
+  "sourceGeneration":  "1",
+  "expiresAt":  "2026-09-10T01:57:29.329385100Z"
+}
+{
+  "entityId":  "person-001",
+  "version":  "3",
+  "snapshot":  {
+    "entityType":  "person",
+    "status":  "idle",
+    "location":  {
+      "latitude":  31.229993130385097,
+      "longitude":  121.46999193939038,
+      "coordinateSystem":  "WGS84"
+    },
+    "velocity":  null,
+    "capability":  null,
+    "metadata":  {},
+    "power":  null,
+    "person":  {
+      "onDuty":  true,
+      "availability":  "idle",
+      "skills":  [
+        "inspect"
+      ]
+    },
+    "sensor":  null,
+    "taskCatalog":  null,
+    "vehicle":  null,
+    "robot":  null,
+    "facility":  null
+  },
+  "updatedAt":  "2026-09-10T01:57:00.239851500Z",
+  "kind":  "ENTITY_UPDATE_KIND_UPSERT",
+  "syncId":  "de441ef3-8210-46aa-8e4f-e11a3311b582",
+  "viewGeneration":  "67450ad3-05b4-4493-97d6-4612787c22af",
+  "sourceId":  "personnel_sim",
+  "sourceGeneration":  "1",
+  "expiresAt":  "2026-09-10T01:57:29.429403200Z"
+}
+{
+  "entityId":  "person-001",
+  "version":  "4",
+  "snapshot":  {
+    "entityType":  "person",
+    "status":  "idle",
+    "location":  {
+      "latitude":  31.23000030425257,
+      "longitude":  121.47000627279922,
+      "coordinateSystem":  "WGS84"
+    },
+    "velocity":  null,
+    "capability":  null,
+    "metadata":  {},
+    "power":  null,
+    "person":  {
+      "onDuty":  true,
+      "availability":  "idle",
+      "skills":  [
+        "inspect"
+      ]
+    },
+    "sensor":  null,
+    "taskCatalog":  null,
+    "vehicle":  null,
+    "robot":  null,
+    "facility":  null
+  },
+  "updatedAt":  "2026-09-10T01:57:00.239851500Z",
+  "kind":  "ENTITY_UPDATE_KIND_UPSERT",
+  "syncId":  "de441ef3-8210-46aa-8e4f-e11a3311b582",
+  "viewGeneration":  "67450ad3-05b4-4493-97d6-4612787c22af",
+  "sourceId":  "personnel_sim",
+  "sourceGeneration":  "1",
+  "expiresAt":  "2026-09-10T01:57:29.529456700Z"
+}
+{
+  "entityId":  "person-001",
+  "version":  "5",
+  "snapshot":  {
+    "entityType":  "person",
+    "status":  "idle",
+    "location":  {
+      "latitude":  31.229997613143787,
+      "longitude":  121.46999636116348,
+      "coordinateSystem":  "WGS84"
+    },
+    "velocity":  null,
+    "capability":  null,
+    "metadata":  {},
+    "power":  null,
+    "person":  {
+      "onDuty":  true,
+      "availability":  "idle",
+      "skills":  [
+        "inspect"
+      ]
+    },
+    "sensor":  null,
+    "taskCatalog":  null,
+    "vehicle":  null,
+    "robot":  null,
+    "facility":  null
+  },
+  "updatedAt":  "2026-09-10T01:57:00.239851500Z",
+  "kind":  "ENTITY_UPDATE_KIND_UPSERT",
+  "syncId":  "de441ef3-8210-46aa-8e4f-e11a3311b582",
+  "viewGeneration":  "67450ad3-05b4-4493-97d6-4612787c22af",
+  "sourceId":  "personnel_sim",
+  "sourceGeneration":  "1",
+  "expiresAt":  "2026-09-10T01:57:29.629715100Z"
+}
+{
+  "entityId":  "person-001",
+  "version":  "6",
+  "snapshot":  {
+    "entityType":  "person",
+    "status":  "idle",
+    "location":  {
+      "latitude":  31.229995660683024,
+      "longitude":  121.46999586203715,
+      "coordinateSystem":  "WGS84"
+    },
+    "velocity":  null,
+    "capability":  null,
+    "metadata":  {},
+    "power":  null,
+    "person":  {
+      "onDuty":  true,
+      "availability":  "idle",
+      "skills":  [
+        "inspect"
+      ]
+    },
+    "sensor":  null,
+    "taskCatalog":  null,
+    "vehicle":  null,
+    "robot":  null,
+    "facility":  null
+  },
+  "updatedAt":  "2026-09-10T01:57:00.239851500Z",
+  "kind":  "ENTITY_UPDATE_KIND_UPSERT",
+  "syncId":  "de441ef3-8210-46aa-8e4f-e11a3311b582",
+  "viewGeneration":  "67450ad3-05b4-4493-97d6-4612787c22af",
+  "sourceId":  "personnel_sim",
+  "sourceGeneration":  "1",
+  "expiresAt":  "2026-09-10T01:57:29.729604300Z"
+}
+{
+  "entityId":  "person-001",
+  "version":  "7",
+  "snapshot":  {
+    "entityType":  "person",
+    "status":  "idle",
+    "location":  {
+      "latitude":  31.229994371061053,
+      "longitude":  121.46999406373753,
+      "coordinateSystem":  "WGS84"
+    },
+    "velocity":  null,
+    "capability":  null,
+    "metadata":  {},
+    "power":  null,
+    "person":  {
+      "onDuty":  true,
+      "availability":  "idle",
+      "skills":  [
+        "inspect"
+      ]
+    },
+    "sensor":  null,
+    "taskCatalog":  null,
+    "vehicle":  null,
+    "robot":  null,
+    "facility":  null
+  },
+  "updatedAt":  "2026-09-10T01:57:00.239851500Z",
+  "kind":  "ENTITY_UPDATE_KIND_UPSERT",
+  "syncId":  "de441ef3-8210-46aa-8e4f-e11a3311b582",
+  "viewGeneration":  "67450ad3-05b4-4493-97d6-4612787c22af",
+  "sourceId":  "personnel_sim",
+  "sourceGeneration":  "1",
+  "expiresAt":  "2026-09-10T01:57:29.829288100Z"
+}
+{
+  "entityId":  "person-001",
+  "version":  "8",
+  "snapshot":  {
+    "entityType":  "person",
+    "status":  "idle",
+    "location":  {
+      "latitude":  31.230001413465523,
+      "longitude":  121.47000724982875,
+      "coordinateSystem":  "WGS84"
+    },
+    "velocity":  null,
+    "capability":  null,
+    "metadata":  {},
+    "power":  null,
+    "person":  {
+      "onDuty":  true,
+      "availability":  "idle",
+      "skills":  [
+        "inspect"
+      ]
+    },
+    "sensor":  null,
+    "taskCatalog":  null,
+    "vehicle":  null,
+    "robot":  null,
+    "facility":  null
+  },
+  "updatedAt":  "2026-09-10T01:57:00.239851500Z",
+  "kind":  "ENTITY_UPDATE_KIND_UPSERT",
+  "syncId":  "de441ef3-8210-46aa-8e4f-e11a3311b582",
+  "viewGeneration":  "67450ad3-05b4-4493-97d6-4612787c22af",
+  "sourceId":  "personnel_sim",
+  "sourceGeneration":  "1",
+  "expiresAt":  "2026-09-10T01:57:29.929111100Z"
+}
+{
+  "entityId":  "person-001",
+  "version":  "9",
+  "snapshot":  {
+    "entityType":  "person",
+    "status":  "idle",
+    "location":  {
+      "latitude":  31.22999594165127,
+      "longitude":  121.4700050514607,
+      "coordinateSystem":  "WGS84"
+    },
+    "velocity":  null,
+    "capability":  null,
+    "metadata":  {},
+    "power":  null,
+    "person":  {
+      "onDuty":  true,
+      "availability":  "idle",
+      "skills":  [
+        "inspect"
+      ]
+    },
+    "sensor":  null,
+    "taskCatalog":  null,
+    "vehicle":  null,
+    "robot":  null,
+    "facility":  null
+  },
+  "updatedAt":  "2026-09-10T01:57:00.239851500Z",
+  "kind":  "ENTITY_UPDATE_KIND_UPSERT",
+  "syncId":  "de441ef3-8210-46aa-8e4f-e11a3311b582",
+  "viewGeneration":  "67450ad3-05b4-4493-97d6-4612787c22af",
+  "sourceId":  "personnel_sim",
+  "sourceGeneration":  "1",
+  "expiresAt":  "2026-09-10T01:57:30.029477500Z"
+}
+{
+  "entityId":  "person-001",
+  "version":  "10",
+  "snapshot":  {
+    "entityType":  "person",
+    "status":  "idle",
+    "location":  {
+      "latitude":  31.230007306700262,
+      "longitude":  121.47000393438331,
+      "coordinateSystem":  "WGS84"
+    },
+    "velocity":  null,
+    "capability":  null,
+    "metadata":  {},
+    "power":  null,
+    "person":  {
+      "onDuty":  true,
+      "availability":  "idle",
+      "skills":  [
+        "inspect"
+      ]
+    },
+    "sensor":  null,
+    "taskCatalog":  null,
+    "vehicle":  null,
+    "robot":  null,
+    "facility":  null
+  },
+  "updatedAt":  "2026-09-10T01:57:00.239851500Z",
+  "kind":  "ENTITY_UPDATE_KIND_UPSERT",
+  "syncId":  "de441ef3-8210-46aa-8e4f-e11a3311b582",
+  "viewGeneration":  "67450ad3-05b4-4493-97d6-4612787c22af",
+  "sourceId":  "personnel_sim",
+  "sourceGeneration":  "1",
+  "expiresAt":  "2026-09-10T01:57:30.129182300Z"
+}
+{
+  "entityId":  "",
+  "version":  "0",
+  "snapshot":  null,
+  "updatedAt":  null,
+  "kind":  "ENTITY_UPDATE_KIND_HEARTBEAT",
+  "syncId":  "de441ef3-8210-46aa-8e4f-e11a3311b582",
+  "viewGeneration":  "67450ad3-05b4-4493-97d6-4612787c22af",
+  "sourceId":  "",
+  "sourceGeneration":  "0",
+  "expiresAt":  null
+}

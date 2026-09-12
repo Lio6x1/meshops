@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package meshops.executor.v1;
+
+option go_package = "example.com/meshops-course/gen/executor/v1;executorv1";
+
+import "common/v1/task.proto";
+
+// Hosted by the Dispatcher process, not a fifth central service.
+// Feedback goes to TaskService.ReportTaskStatus.
+service ExecutorService {
+  rpc ListenTasks(ListenTasksRequest) returns (stream ListenTasksResponse);
+}
+
+message ListenTasksRequest {
+  string executor_id = 1; // Bound to authenticated identity, not trusted on its own.
+}
+
+message ListenTasksResponse {
+  string command_id = 1; // Stable when the same command is redelivered.
+  TaskCommandKind kind = 2;
+  meshops.common.v1.Task task = 3;
+  string dispatch_id = 4;
+  int32 attempt = 5;
+}
+
+enum TaskCommandKind {
+  TASK_COMMAND_KIND_UNSPECIFIED = 0;
+  TASK_COMMAND_KIND_EXECUTE = 1;
+  TASK_COMMAND_KIND_CANCEL = 2;
+}

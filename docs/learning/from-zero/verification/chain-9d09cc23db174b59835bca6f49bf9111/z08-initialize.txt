@@ -1,0 +1,16 @@
+ Container meshops-copy-9d09cc23-redis-1 Running 
+ Container meshops-copy-9d09cc23-kafka-1 Running 
+ Container meshops-copy-9d09cc23-mysql-1 Running 
+ Container meshops-copy-9d09cc23-kafka-init-1 Starting 
+ Container meshops-copy-9d09cc23-kafka-init-1 Started 
+ Container meshops-copy-9d09cc23-kafka-init-1 Waiting 
+ Container meshops-copy-9d09cc23-kafka-init-1 Exited 
+ Container meshops-copy-9d09cc23-mysql-1 Waiting 
+ Container meshops-copy-9d09cc23-redis-1 Waiting 
+ Container meshops-copy-9d09cc23-kafka-init-1 Waiting 
+ Container meshops-copy-9d09cc23-kafka-1 Waiting 
+ Container meshops-copy-9d09cc23-redis-1 Healthy 
+ Container meshops-copy-9d09cc23-kafka-init-1 Exited 
+ Container meshops-copy-9d09cc23-kafka-1 Healthy 
+ Container meshops-copy-9d09cc23-mysql-1 Healthy 
+{"entities":6,"seeded":true,"topics":3}

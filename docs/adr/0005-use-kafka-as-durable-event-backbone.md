@@ -13,7 +13,7 @@
 
 - `entity-state-events.v1`：Key为`tenant_id:entity_id`（多租户隔离 + 同实体有序），供状态投影、历史抽样和后续分析消费者使用。
 - `task-events.v1`：Key为`task_id`，由MySQL Transactional Outbox发布。
-- 任务重试使用有限层级的延迟主题；超过上限进入DLQ。
+- 任务重试使用 MySQL next_attempt_at 与有界 worker；Kafka 不提供原生延迟计时，超过上限进入DLQ。
 - Redis Pub/Sub继续承担可恢复的低延迟通知，不承担可靠消息。
 - 不同时引入Redis Streams、RabbitMQ或NATS。
 
@@ -54,7 +54,11 @@
 
 1. Broker不可用时Ingest不得返回虚假成功。
 2. 状态投影器处理后崩溃、Offset未提交时，重复消费不破坏快照。
-3. 清空Redis后能在保留窗口内重建最新状态。
+3. 清空Redis后，只有窗口覆盖全部最新事件和墓碑才能完整重建；否则需来源全量补报或检查点。
 4. Consumer Group重平衡期间无不可解释的数据丢失。
 5. Outbox投递器重复发送不会导致重复任务执行。
 6. 保存Consumer Lag、吞吐、端到端P99和故障恢复时间的原始证据。
+
+## 2026-09-05 框架对齐
+
+沿用原决策，执行细节以[当前实现与课程入口](../../README.md)为准：单实体单权威来源、两种原始模拟格式、单一 inspect 任务、指定执行方与稳定业务执行键。当前只完成契约和骨架，不代表依赖已接通。

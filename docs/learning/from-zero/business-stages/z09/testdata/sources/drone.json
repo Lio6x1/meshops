@@ -1,0 +1,12 @@
+{
+  "sample_id": "drone-observation-001",
+  "aircraft_id": "drone-001",
+  "revision": 1,
+  "timestamp_ms": 1788566400000,
+  "lat_e7": 312300000,
+  "lon_e7": 1214700000,
+  "altitude_cm": 2500,
+  "battery_pct": 78,
+  "flight_state": "idle",
+  "supported_tasks": ["inspect"]
+}

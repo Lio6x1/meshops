@@ -1,0 +1,1 @@
+{"configuredNetDrainRate":-10,"confirmedSequence":0,"epoch":"5797f788a8b4605ef2ad364e3b08539d","fileBytes":65536,"generated":10,"netDrainRate":-9.94815123060123,"pending":10,"pendingBytes":1891,"reconnects":0,"sent":0}

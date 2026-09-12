@@ -1,0 +1,12 @@
+=== RUN   TestStopUncertaintyStillRestoresDependency
+--- PASS: TestStopUncertaintyStillRestoresDependency (0.00s)
+=== RUN   TestRestoreErrorsAreNotLost
+--- PASS: TestRestoreErrorsAreNotLost (0.00s)
+=== RUN   TestAllSupportedBenchmarkDurationsLeaveDrainBudget
+--- PASS: TestAllSupportedBenchmarkDurationsLeaveDrainBudget (0.00s)
+PASS
+ok  	example.com/meshops-course/internal/verification	3.152s
+=== RUN   TestReportWriteFailureReturnsNonzero
+--- PASS: TestReportWriteFailureReturnsNonzero (0.00s)
+PASS
+ok  	example.com/meshops-course/cmd/verify	2.450s

@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "name": "00-baseline",
+      "exit": 0,
+      "expectedCode": "",
+      "passed": true
+    },
+    {
+      "name": "01-missing-argument",
+      "exit": 2,
+      "expectedCode": "",
+      "passed": true
+    },
+    {
+      "name": "02-bad-credential",
+      "exit": 1,
+      "expectedCode": "Unauthenticated",
+      "passed": true
+    },
+    {
+      "name": "03-role-denied",
+      "exit": 1,
+      "expectedCode": "PermissionDenied",
+      "passed": true
+    },
+    {
+      "name": "04-invalid-id",
+      "exit": 1,
+      "expectedCode": "InvalidArgument",
+      "passed": true
+    },
+    {
+      "name": "05-correct-query",
+      "exit": 0,
+      "expectedCode": "",
+      "passed": true
+    },
+    {
+      "name": "06-correct-role",
+      "exit": 0,
+      "expectedCode": "",
+      "passed": true
+    }
+  ],
+  "scope": "read-only CLI and real Entity/Dispatcher RPC; no task creation or dependency fault injection"
+}

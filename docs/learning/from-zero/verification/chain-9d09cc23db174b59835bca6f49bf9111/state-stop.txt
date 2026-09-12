@@ -1,0 +1,6 @@
+ Container meshops-state-lessons-redis-1 Stopping 
+ Container meshops-state-lessons-kafka-1 Stopping 
+ Container meshops-state-lessons-redis-1 Stopped 
+ Container meshops-state-lessons-kafka-1 Stopped 
+ Container meshops-state-lessons-kafka-init-1 Stopping 
+ Container meshops-state-lessons-kafka-init-1 Stopped 

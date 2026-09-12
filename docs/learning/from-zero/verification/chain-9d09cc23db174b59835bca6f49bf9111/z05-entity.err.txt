@@ -1,0 +1,2 @@
+2026/09/10 09:56:33 WARN consumer group retry topic=z05-entity-state-events.v1 error="[15] Group Coordinator Not Available: the broker returns this error code for group coordinator requests, offset commits, and most group management requests if the offsets topic has not yet been created, or if the group coordinator is not active"
+2026/09/10 09:56:34 WARN consumer group retry topic=z05-entity-state-events.v1 error="[16] Not Coordinator For Group: the broker returns this error code if it receives an offset fetch or commit request for a group that it is not a coordinator for"

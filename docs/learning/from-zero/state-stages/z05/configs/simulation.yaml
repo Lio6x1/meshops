@@ -1,0 +1,22 @@
+tenant_id: demo_tenant
+sources:
+  - source_id: personnel_sim
+    adapter: person
+    source_generation: 1
+    credential_env: MESHOPS_PERSON_SOURCE_TOKEN
+    fixture: ../testdata/sources/person.json
+    stale_after: 30s
+    rate_limit_per_second: 100
+    entities: {person-001: person-001}
+  - source_id: drone_sim
+    adapter: drone
+    source_generation: 1
+    credential_env: MESHOPS_DRONE_SOURCE_TOKEN
+    fixture: ../testdata/sources/drone.json
+    stale_after: 30s
+    rate_limit_per_second: 100
+    entities: {drone-001: drone-001}
+actors:
+  - id: demo_operator
+    role: operator
+    credential_env: MESHOPS_OPERATOR_TOKEN

@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package meshops.entity.v1;
+option go_package = "example.com/meshops-course/gen/entity/v1;entityv1";
+
+import "common/v1/entity.proto";
+
+service EntityService {
+  rpc GetSnapshot(GetSnapshotRequest) returns (GetSnapshotResponse);
+}
+
+message GetSnapshotRequest {
+  string entity_id = 1;
+}
+
+message GetSnapshotResponse {
+  string entity_id = 1;
+  meshops.common.v1.EntitySnapshot snapshot = 3;
+  bool found = 5;
+}

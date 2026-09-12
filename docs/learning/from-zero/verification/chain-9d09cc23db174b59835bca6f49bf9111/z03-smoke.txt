@@ -1,0 +1,12 @@
+id=person-001 found=false
+id=person-001 stored=memory-only
+id=person-001 found=true type=person lat=31.2304 lon=121.4737 power=unknown
+id=drone-001 stored=memory-only
+id=drone-001 found=true type=drone lat=31.2304 lon=121.4737 power=0.0%
+id=drone-001 stored=memory-only
+id=drone-001 found=true type=drone lat=32.0000 lon=121.4737 power=80.0%
+invalid latitude rejected: InvalidArgument
+id=drone-001 found=true type=drone lat=32.0000 lon=121.4737 power=80.0%
+id=person-001 found=false
+id=drone-001 found=false
+PASS: z03 real gRPC write/query/update/rejection/restart loss

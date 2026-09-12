@@ -1,0 +1,69 @@
+{
+  "stages": [
+    {
+      "stage": "z01",
+      "files": 9,
+      "added": 9,
+      "replaced": 0,
+      "removed": 0
+    },
+    {
+      "stage": "z02",
+      "files": 16,
+      "added": 7,
+      "replaced": 2,
+      "removed": 0
+    },
+    {
+      "stage": "z03",
+      "files": 19,
+      "added": 3,
+      "replaced": 10,
+      "removed": 0
+    },
+    {
+      "stage": "z04",
+      "files": 31,
+      "added": 24,
+      "replaced": 7,
+      "removed": 12
+    },
+    {
+      "stage": "z05",
+      "files": 38,
+      "added": 9,
+      "replaced": 4,
+      "removed": 2
+    },
+    {
+      "stage": "z06",
+      "files": 50,
+      "added": 12,
+      "replaced": 8,
+      "removed": 0
+    },
+    {
+      "stage": "z07",
+      "files": 130,
+      "added": 84,
+      "replaced": 13,
+      "removed": 4
+    },
+    {
+      "stage": "z08",
+      "files": 133,
+      "added": 3,
+      "replaced": 5,
+      "removed": 0
+    },
+    {
+      "stage": "z09",
+      "files": 168,
+      "added": 35,
+      "replaced": 9,
+      "removed": 0
+    }
+  ],
+  "finalSourceMatchesPreviouslyVerifiedFiles": 143,
+  "excludedHistoricalOutput": "internal/tasks/integration-results.txt"
+}

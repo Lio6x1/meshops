@@ -1,0 +1,9 @@
+Name: entity-z03
+ListenOn: 127.0.0.1:50163
+Mode: dev
+Timeout: 3000
+Health: false
+Log:
+  ServiceName: entity-z03
+  Mode: console
+  Level: error

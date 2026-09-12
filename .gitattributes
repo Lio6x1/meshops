@@ -1,4 +1,5 @@
-* text=auto
+# Published course checkpoints hash file bytes; keep checkouts stable on Windows/Linux.
+* text=auto eol=lf
 
 .gitattributes text eol=lf
 *.go text eol=lf

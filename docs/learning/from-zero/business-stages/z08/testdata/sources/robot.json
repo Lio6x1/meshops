@@ -1,0 +1,10 @@
+{
+  "event_id": "robot-observation-001",
+  "robot_id": "robot-001",
+  "revision": 1,
+  "timestamp": "2026-09-05T00:00:00Z",
+  "pose": {"latitude": 31.23, "longitude": 121.47},
+  "energy": {"ratio": 0.65},
+  "fault_codes": [],
+  "availability": "idle"
+}
