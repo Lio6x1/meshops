@@ -1,10 +1,12 @@
 # 完整前后端成品与学习部署设计
 
+> 按日期保留的设计/实施记录，不作为当前待办或启动指南。当前工程已演进至 Z13；旧路径和阶段状态按当时上下文理解，后续状态见 [记录说明](../README.md)。
+
 用户已批准：先交付可以独立运行的完整成品，再以成品为目标从空目录学习；不以静态原型或最小页面替代完整业务展示。原后端保留，范围为六类实体、四类 inspect 执行方、历史、可靠分发及任务搜索。
 
 ## 成品与边界
 
-参考工程位于 meshops，学生工程位于同级 meshops-course-lab。Vue 3 + TypeScript + Vite + Element Plus 实现实体、任务、搜索、分发与运行状态页面。默认中文界面，清楚标注模拟来源；页面数据来自后端。离线原型作为设计历史保留链接，不参与运行。
+参考工程位于 meshops，学生工程位于同级 meshops-course-lab。Vue 3 + TypeScript + Vite + Element Plus 实现实体、任务、搜索、分发与运行状态页面。默认中文界面，清楚标注模拟来源；页面数据来自后端。离线原型已于 2026-09-13 目录整理时删除，当前只维护 web/ 中的成品界面；当日原型仍可从 Git 历史追溯。
 
 浏览器用同源 HTTP/JSON 和 SSE。新增 Go web-gateway 使用 grpc-gateway 生成选定的一元接口，不开放来源上报或执行状态回报。HTTP 映射放在外部 proto/http.yaml，以免修改既有线协议；教程同时解释 google.api.http 注解的等价含义。现有 Entity/Task/Dispatcher/Search 继续通过 gRPC 调用。
 

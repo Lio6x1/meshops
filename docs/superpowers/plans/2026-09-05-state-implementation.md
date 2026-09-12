@@ -1,5 +1,7 @@
 # MeshOps P0—P1 状态链路实施计划
 
+> 按日期保留的设计/实施记录，不作为当前待办或启动指南。当前工程已演进至 Z13；旧路径和阶段状态按当时上下文理解，后续状态见 [记录说明](../README.md)。
+
 > For agentic workers: 按任务逐项执行；有对应技能时使用 superpowers:executing-plans。只有用户选择委派时才使用 subagent-driven-development。本文是后续业务开发计划，本次编写文档不执行这些任务。
 
 **Goal:** 两类来源先形成可运行状态链路，再完成六类实体、可靠补传、订阅和历史抽样。

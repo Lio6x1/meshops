@@ -1,5 +1,7 @@
 # MeshOps P2 可靠任务链路实施计划
 
+> 按日期保留的设计/实施记录，不作为当前待办或启动指南。当前工程已演进至 Z13；旧路径和阶段状态按当时上下文理解，后续状态见 [记录说明](../README.md)。
+
 > For agentic workers: 使用 superpowers:executing-plans 逐任务执行；用户明确选择委派时再使用 subagent-driven-development。先阅读Spec和S01交付，本文不授权本次自动编写业务。
 
 **Goal:** 对指定实体完成inspect创建、可靠下发、持久执行与状态回报，并验证取消/超时竞态。

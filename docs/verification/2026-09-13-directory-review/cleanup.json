@@ -1,0 +1,364 @@
+{
+  "archive": ".local/archives/directory-review-20260913/retained-context.zip",
+  "archive_sha256": "80517cd7a2da76c8f7ff87119fb6ae9557184d476672f23dff577299e33499f6",
+  "archive_bytes": 11420937,
+  "retained_files_verified": 5908,
+  "targets": [
+    {
+      "path": ".cache/align_existing_docs.py",
+      "files": 1,
+      "bytes": 26498,
+      "retained_files": 1,
+      "retained_bytes": 26498
+    },
+    {
+      "path": ".cache/bin",
+      "files": 3,
+      "bytes": 7334400,
+      "retained_files": 0,
+      "retained_bytes": 0
+    },
+    {
+      "path": ".cache/bootstrap_reference.py",
+      "files": 1,
+      "bytes": 1918,
+      "retained_files": 1,
+      "retained_bytes": 1918
+    },
+    {
+      "path": ".cache/build_curriculum.py",
+      "files": 1,
+      "bytes": 55860,
+      "retained_files": 1,
+      "retained_bytes": 55860
+    },
+    {
+      "path": ".cache/course-chain-9d09cc23db174b59835bca6f49bf9111",
+      "files": 309,
+      "bytes": 969244954,
+      "retained_files": 297,
+      "retained_bytes": 2324762
+    },
+    {
+      "path": ".cache/create_miniframe.py",
+      "files": 1,
+      "bytes": 28279,
+      "retained_files": 1,
+      "retained_bytes": 28279
+    },
+    {
+      "path": ".cache/curriculum-meta.json",
+      "files": 1,
+      "bytes": 59363,
+      "retained_files": 1,
+      "retained_bytes": 59363
+    },
+    {
+      "path": ".cache/enrich_lessons.py",
+      "files": 1,
+      "bytes": 123707,
+      "retained_files": 1,
+      "retained_bytes": 123707
+    },
+    {
+      "path": ".cache/finalize_teaching_docs.py",
+      "files": 1,
+      "bytes": 2397,
+      "retained_files": 1,
+      "retained_bytes": 2397
+    },
+    {
+      "path": ".cache/finish_scaffold.py",
+      "files": 1,
+      "bytes": 2269,
+      "retained_files": 1,
+      "retained_bytes": 2269
+    },
+    {
+      "path": ".cache/lesson-copy-3281767e26404255be974fd818d4629d",
+      "files": 13388,
+      "bytes": 250444676,
+      "retained_files": 334,
+      "retained_bytes": 1777737
+    },
+    {
+      "path": ".cache/lesson-copy-366d02585c514569a1584df9e43dfe46",
+      "files": 13393,
+      "bytes": 250483407,
+      "retained_files": 339,
+      "retained_bytes": 1812788
+    },
+    {
+      "path": ".cache/lesson-copy-3948cf7ebd614cb5a9e1b0636ba0bb97",
+      "files": 13400,
+      "bytes": 250507293,
+      "retained_files": 346,
+      "retained_bytes": 1834570
+    },
+    {
+      "path": ".cache/lesson-copy-3a4072043b2d4fd49d8073eaefd661c9",
+      "files": 322,
+      "bytes": 1822377,
+      "retained_files": 322,
+      "retained_bytes": 1822377
+    },
+    {
+      "path": ".cache/lesson-copy-78853e97a19a4fda91693a86848019d4",
+      "files": 322,
+      "bytes": 1822377,
+      "retained_files": 322,
+      "retained_bytes": 1822377
+    },
+    {
+      "path": ".cache/lesson-copy-84440923c9ce45c4994a5e9f66164ed1",
+      "files": 13377,
+      "bytes": 252487150,
+      "retained_files": 324,
+      "retained_bytes": 1729923
+    },
+    {
+      "path": ".cache/lesson-copy-9a8705cc7dd74ab6aa8494417d6d5ae5",
+      "files": 13367,
+      "bytes": 252446219,
+      "retained_files": 314,
+      "retained_bytes": 1688992
+    },
+    {
+      "path": ".cache/lesson-copy-be19a0f03f0246f89bca56527c27a5ec",
+      "files": 328,
+      "bytes": 129115940,
+      "retained_files": 289,
+      "retained_bytes": 1640797
+    },
+    {
+      "path": ".cache/lesson-copy-f51440d145be4a8688a4457c2ca47546",
+      "files": 316,
+      "bytes": 127049367,
+      "retained_files": 299,
+      "retained_bytes": 1686794
+    },
+    {
+      "path": ".cache/miniframe-check",
+      "files": 14,
+      "bytes": 30840904,
+      "retained_files": 12,
+      "retained_bytes": 25160
+    },
+    {
+      "path": ".cache/polish_scaffold.py",
+      "files": 1,
+      "bytes": 6447,
+      "retained_files": 1,
+      "retained_bytes": 6447
+    },
+    {
+      "path": ".cache/refresh_scaffold_docs.py",
+      "files": 1,
+      "bytes": 46813,
+      "retained_files": 1,
+      "retained_bytes": 46813
+    },
+    {
+      "path": ".cache/search-course-becee877564946828271653d627fe0b6",
+      "files": 378,
+      "bytes": 930422863,
+      "retained_files": 368,
+      "retained_bytes": 2013775
+    },
+    {
+      "path": ".cache/search-course-c904ec1ac4374edd8af3d3bca449df8f",
+      "files": 379,
+      "bytes": 930426658,
+      "retained_files": 369,
+      "retained_bytes": 2017570
+    },
+    {
+      "path": ".cache/substeps-017b65c8c7914c1491cdde6cc4b2d873",
+      "files": 13387,
+      "bytes": 125167894,
+      "retained_files": 336,
+      "retained_bytes": 1837379
+    },
+    {
+      "path": ".cache/substeps-1cf5dda926bf47a6afaa7780d2f3367c",
+      "files": 13375,
+      "bytes": 125104918,
+      "retained_files": 324,
+      "retained_bytes": 1780187
+    },
+    {
+      "path": ".cache/substeps-85f090fcbbb446a39fddb99d57359873",
+      "files": 233,
+      "bytes": 1460779,
+      "retained_files": 233,
+      "retained_bytes": 1460779
+    },
+    {
+      "path": ".cache/substeps-ac60d432f2554be3adc539a611a1ab0a",
+      "files": 13364,
+      "bytes": 127147143,
+      "retained_files": 314,
+      "retained_bytes": 1732127
+    },
+    {
+      "path": ".cache/substeps-d17e99e4a15d40a08bcf4904c3a5e720",
+      "files": 13380,
+      "bytes": 125143830,
+      "retained_files": 329,
+      "retained_bytes": 1815419
+    },
+    {
+      "path": ".cache/substeps-f3b008d2335645a9b9d731e4db82256b",
+      "files": 335,
+      "bytes": 3983896,
+      "retained_files": 278,
+      "retained_bytes": 1661694
+    },
+    {
+      "path": ".cache/switch_to_from_zero.py",
+      "files": 1,
+      "bytes": 8988,
+      "retained_files": 1,
+      "retained_bytes": 8988
+    },
+    {
+      "path": ".cache/tcp_check_miniframe.py",
+      "files": 1,
+      "bytes": 2080,
+      "retained_files": 1,
+      "retained_bytes": 2080
+    },
+    {
+      "path": ".cache/update_generator.py",
+      "files": 1,
+      "bytes": 2389,
+      "retained_files": 1,
+      "retained_bytes": 2389
+    },
+    {
+      "path": ".cache/verify_curriculum.py",
+      "files": 1,
+      "bytes": 4859,
+      "retained_files": 1,
+      "retained_bytes": 4859
+    },
+    {
+      "path": ".cache/verify_handoff_docs.py",
+      "files": 1,
+      "bytes": 8304,
+      "retained_files": 1,
+      "retained_bytes": 8304
+    },
+    {
+      "path": ".cache/verify_scaffold_support.py",
+      "files": 1,
+      "bytes": 2202,
+      "retained_files": 1,
+      "retained_bytes": 2202
+    },
+    {
+      "path": ".cache/verify_tutorials.py",
+      "files": 1,
+      "bytes": 3655,
+      "retained_files": 1,
+      "retained_bytes": 3655
+    },
+    {
+      "path": ".cache/write_course_assets.py",
+      "files": 1,
+      "bytes": 10471,
+      "retained_files": 1,
+      "retained_bytes": 10471
+    },
+    {
+      "path": ".local/proto-check-5b16abcad7a44c0ab041440842b18552",
+      "files": 18,
+      "bytes": 368797,
+      "retained_files": 18,
+      "retained_bytes": 368797
+    },
+    {
+      "path": ".local/proto-check-78bf70ee47454010a551af250664fb2e",
+      "files": 0,
+      "bytes": 0,
+      "retained_files": 0,
+      "retained_bytes": 0
+    },
+    {
+      "path": ".local/proto-check-840960d18e5e4a2b9dfceb8d92d0cbbc",
+      "files": 14,
+      "bytes": 309867,
+      "retained_files": 14,
+      "retained_bytes": 309867
+    },
+    {
+      "path": ".local/proto-check-9e6f262e17cd452697ed3a93eb7e9803",
+      "files": 18,
+      "bytes": 368809,
+      "retained_files": 18,
+      "retained_bytes": 368809
+    },
+    {
+      "path": ".local/proto-check-a86f6e37dc024bdaaa61dc188b0ae67e",
+      "files": 14,
+      "bytes": 309867,
+      "retained_files": 14,
+      "retained_bytes": 309867
+    },
+    {
+      "path": ".local/proto-check-baddb68ee87b4850b395d2ba1800f24a",
+      "files": 14,
+      "bytes": 309867,
+      "retained_files": 14,
+      "retained_bytes": 309867
+    },
+    {
+      "path": ".local/proto-check-cbc91e6453d449069e77e0329fbeefc0",
+      "files": 18,
+      "bytes": 368809,
+      "retained_files": 18,
+      "retained_bytes": 368809
+    },
+    {
+      "path": ".local/proto-check-cdc8a43d7f1041af8a48c400ff70396d",
+      "files": 12,
+      "bytes": 286608,
+      "retained_files": 12,
+      "retained_bytes": 286608
+    },
+    {
+      "path": ".local/proto-check-d82e329f6c01497585682510053cea4e",
+      "files": 12,
+      "bytes": 286608,
+      "retained_files": 12,
+      "retained_bytes": 286608
+    },
+    {
+      "path": ".local/proto-check-eeaa444c2a604f849b78a7f92704cbb6",
+      "files": 18,
+      "bytes": 368797,
+      "retained_files": 18,
+      "retained_bytes": 368797
+    },
+    {
+      "path": ".worktrees",
+      "files": 0,
+      "bytes": 0,
+      "retained_files": 0,
+      "retained_bytes": 0
+    },
+    {
+      "path": "docs/ui/prototype",
+      "files": 3,
+      "bytes": 57734,
+      "retained_files": 3,
+      "retained_bytes": 57734
+    }
+  ],
+  "skipped_reparse_targets": [
+    ".cache/course-copy-08e5d47d60314ee3ae1a68e040b34196",
+    ".cache/course-copy-adc154e60a69446a967d8751ac90da85"
+  ],
+  "planned_removed_bytes": 4895889307,
+  "status": "archived-verified-and-deleted"
+}

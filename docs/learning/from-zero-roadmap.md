@@ -18,8 +18,12 @@
 | Z07 | 怎样可靠下发一次巡检 | Task/Dispatcher、MySQL 事务与 Outbox、执行去重、回报、取消、超时与死信 |
 | Z08 | 怎样查历史 | 抽样、去重、清理、签名游标分页和完整操作端 |
 | Z09 | 怎样证明可靠性 | 影子重建、故障恢复、性能与验收证据 |
+| Z10 | 怎样检索任务并恢复索引 | MySQL → Canal → Kafka → ES、引导与重建、PIT 分页 |
+| Z11 | 浏览器怎样调用后端 | HTTP/SSE 网关、会话、角色与 CSRF |
+| Z12 | 怎样用页面操作真实数据 | Vue 控制台、实体地图、任务、搜索与模拟控制界面 |
+| Z13 | 怎样部署完整成品 | Docker Compose、初始化与持久化、六类模拟器、运动与混合压测 |
 
-Z04—Z09 再拆为 [20 个小步骤](from-zero/lessons/steps/README.md)。Z 是阶段，不预先强求课程数量等于 50。Z07 的最终装配文件较多，需要分组讲解，不能以一次编译成功代替理解。
+Z04—Z13 再拆为 [28 个小步骤](from-zero/lessons/steps/README.md)。Z 是阶段，不预先强求课程数量等于 50。Z07 的最终装配文件较多，需要分组讲解，不能以一次编译成功代替理解。
 
 ## 每一步如何讲
 
@@ -38,4 +42,4 @@ Z04—Z09 再拆为 [20 个小步骤](from-zero/lessons/steps/README.md)。Z 是
 
 最终既有范围为六类实体、每实体一个权威来源、操作员选择执行实体、可信绑定选择执行方、一种 inspect。技术要求参照 [契约](../implementation/contracts.md) 和 [验收矩阵](../implementation/acceptance.md)。不包括路径规划、自动最优分配、真实设备控制与 AI agent。
 
-新增任务搜索将另补设计、实现和课程，现有 Z00—Z09 不因此被视为已包含 Canal/ES。完整参考代码及阶段证据见 [材料导航](from-zero/README.md)；学习进度见 [学习记录](../implementation/learning-progress.md)。
+任务搜索在 Z10 引入，网页与完整部署在 Z11—Z13 引入；早期阶段保留当时已学习的能力。百万实体容量验证未执行，不是现行课程必做项。完整参考代码及阶段证据见 [材料导航](from-zero/README.md)；学习进度见 [学习记录](../implementation/learning-progress.md)。

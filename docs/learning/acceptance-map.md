@@ -20,4 +20,4 @@
 - [20 步构建与指定测试](from-zero/verification/2026-09-10-remaining-steps.md)
 - [完整交付标准](reference-code-standard.md)
 
-新增 Canal/ES 搜索还需要自己的验收条件与课程，不能直接套用既有通过结果。
+新增范围分别验收：Z10 搜索与独立学习目录恢复见 [整体复核](from-zero/verification/2026-09-12-integrated-review.md)；Z11—Z13 前后端见 [全栈发布](../verification/2026-09-12-fullstack/release.md)；六类运动与混合压测见 [场景验证](../verification/2026-09-12-motion-mixed/README.md)。不能直接套用原 A01—A28 的通过结果。

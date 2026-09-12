@@ -1,5 +1,7 @@
 # Fullstack Demo Implementation Plan
 
+> 按日期保留的设计/实施记录，不作为当前待办或启动指南。当前工程已演进至 Z13；旧路径和阶段状态按当时上下文理解，后续状态见 [记录说明](../README.md)。
+
 > **For agentic workers:** Use superpowers:executing-plans with independent agents for bounded frontend and evidence work. Check boxes record actual verification, not intent.
 
 **Goal:** Deliver a runnable full-stack reference plus Docker and local learning instructions.

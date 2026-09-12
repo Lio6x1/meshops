@@ -1,6 +1,6 @@
 # 交付与协议规格
 
-本文定义实现输入，不宣称当前业务已存在。MUST 表示核心版本必须满足；可选增强不阻塞交付。字段补充集中在 S01/S05，其他任务复用它们。六类字段样例在 `testdata/sources/`，确定性转换结果见 `testdata/contracts/normalized-expectations.json`。
+本文保留当前核心业务契约，MUST 表示必须满足的性质；功能与验证状态见 [当前入口](README.md)。S/T/V 是历史实施任务编号，不是当前未完成清单。六类字段样例在 `testdata/sources/`，确定性转换结果见 `testdata/contracts/normalized-expectations.json`。
 
 ## C01 身份、类型与来源
 
@@ -13,7 +13,7 @@
 
 ## C02 六类组件与字段补充
 
-保留已存在的字段号。在 `proto/common/v1/entity.proto` 的 EntitySnapshot 新增 vehicle=11、robot=12、facility=13，消息结构如下，S05 实现：
+保留已存在的字段号。在 `proto/common/v1/entity.proto` 的 EntitySnapshot 已包含 vehicle=11、robot=12、facility=13，消息结构如下：
 
 ```proto
 message VehicleState {
@@ -32,7 +32,7 @@ message FacilityState {
 }
 ```
 
-S01将Location.altitude/accuracy 与 Velocity.heading/vertical_speed 改为 proto3 optional，字段号不变；新接入禁止通过标量零值猜测“未知”。经纬度在原始数据中两者同时必填；来源若缺失定位，整个 location 消息省略，不能只省纬度或经度。现有 PersonState.on_duty 在原始人员数据中必填。
+Location.altitude/accuracy 与 Velocity.heading/vertical_speed 已使用 proto3 optional，字段号不变；新接入禁止通过标量零值猜测“未知”。经纬度在原始数据中两者同时必填；来源若缺失定位，整个 location 消息省略，不能只省纬度或经度。现有 PersonState.on_duty 在原始人员数据中必填。
 
 | 类型 | 必有组件 | 可选组件 | 本版原始格式/映射 |
 | --- | --- | --- | --- |
@@ -130,7 +130,7 @@ bbolt buckets：meta(epoch,next_sequence,confirmed_sequence)、pending(8字节�
 
 同幂等键重试先查原任务并比较哈希，再考虑当前实体是否过期，保证首次创建后实体离线仍能返回原成功。首次创建须读取Entity快照及注册执行能力；ID格式错误INVALID_ARGUMENT，合法ID但不存在NOT_FOUND，过期、离线、busy/fault、人员离岗、未声明inspect均FAILED_PRECONDITION。这只是创建时检查，不是资源预留，任务执行前还要由执行方确认；不实现跨任务实体资源锁。
 
-一次事务：插入CREATED/version0任务→写CREATED审计(version0)→推进DISPATCH_PENDING/version1并写审计→插入CREATED类型TaskEvent(current_status=DISPATCH_PENDING,status_version=1)的Outbox→提交。两条审计共享创建请求关联信息，但event_id分别唯一。CreateTask返回已提交的pending状态；`tasks`需新增`result JSON NULL`和`completed_at TIMESTAMP(6) NULL`，common.Task新增result_json=19、completed_at=20，使GetTask能查询最终模拟结果。
+一次事务：插入CREATED/version0任务→写CREATED审计(version0)→推进DISPATCH_PENDING/version1并写审计→插入CREATED类型TaskEvent(current_status=DISPATCH_PENDING,status_version=1)的Outbox→提交。两条审计共享创建请求关联信息，但event_id分别唯一。CreateTask返回已提交的pending状态；`tasks`已包含`result JSON NULL`和`completed_at TIMESTAMP(6) NULL`，common.Task新增result_json=19、completed_at=20，使GetTask能查询最终模拟结果。
 
 TaskEvent.data_json 统一为完整 Task 的 protojson，Kafka value 为整个TaskEvent的protobuf；Outbox.payload为TaskEvent的protojson。所有变更都发事件，使用 tenant_id:task_id 做Kafka Key。Dispatcher只对CREATED/CANCEL_REQUESTED产生新命令，其余用于更新本地投递状态，避免成功事件再次触发执行。
 
@@ -140,7 +140,7 @@ TaskEvent.data_json 统一为完整 Task 的 protojson，Kafka value 为整个Ta
 
 ## C08 分发、执行与回报的缺口补充
 
-Task服务需验证回报所引用的dispatch。S01在GetDispatchRequest新增dispatch_id=2，空表示最新attempt；GetDispatchResponse新增command_id=9、execution_key=10、delivery_status=11（pending/dispatched/acked/executing/succeeded/failed/timeout/cancelled/abandoned/dlq）、command_kind=12（execute/cancel）。现有TaskStatus status字段仅表示关联任务最近已知状态，不能将其当作投递记录状态。Task通过只读内部RPC核对租户、task_id、executor_id、execution_key及命令种类，不直接写Dispatcher表。
+Task服务验证回报所引用的dispatch。GetDispatchRequest已包含dispatch_id=2，空表示最新attempt；GetDispatchResponse包含command_id=9、execution_key=10、delivery_status=11（pending/dispatched/acked/executing/succeeded/failed/timeout/cancelled/abandoned/dlq）、command_kind=12（execute/cancel）。现有TaskStatus status字段仅表示关联任务最近已知状态，不能将其当作投递记录状态。Task通过只读内部RPC核对租户、task_id、executor_id、execution_key及命令种类，不直接写Dispatcher表。
 
 新回报还必须引用具有 `dispatched_at` 的尝试。该时间表示发送前已持久化投递意图；只有 pending 行、从未建立投递意图不能推进任务状态。它不证明设备已经物理收到命令，也不排斥实际收到命令的历史 timeout/dlq 尝试回报。分发器在远程查询 Task 后重新锁定尝试并核对任务镜像版本，防止旧查询覆盖新终态；人工 execute 重试还须拒绝已 ACKED/EXECUTING 的任务或更新镜像，取消命令仍按取消语义处理。
 
@@ -172,7 +172,7 @@ GetStatus按认证租户统计：active_tasks为最新已知非终态且有未�
 
 ## C10 历史抽样与迁移补充
 
-原001/002保持不改，新增 `migrations/003_implementation_contracts.sql` 承载C07/C09列、任务状态审计唯一约束(tenant_id,task_id,status_version)、历史幂等表。升级前检查旧审计版本重复，发现不一致失败并列出冲突，不静默删除；新唯一约束不要求event_id全局唯一。
+保留原001/002，增量迁移 `migrations/003_implementation_contracts.sql` 承载C07/C09列、任务状态审计唯一约束(tenant_id,task_id,status_version)、历史幂等表。升级前检查旧审计版本重复，发现不一致失败并列出冲突，不静默删除；新唯一约束不要求event_id全局唯一。
 
 历史采样group独立消费，按实体在内存记录最后样本。启动/重平衡后从MySQL读取该实体最新样本，允许选择边界因重启不同，但相同事件不能落两份。触发规则按优先级选择一个reason：status变化→state_change，位置变化≥50米→position，速度变化≥20%或方向≥30度→velocity，距上样本occurred_at≥1秒→periodic；第一条为periodic。速度从0到正值视为变化，方向用圆周最小夹角。模板里的task_event采样延后，核心任务审计由Task负责。
 
@@ -184,34 +184,16 @@ GetStatus按认证租户统计：active_tasks为最新已知非终态且有未�
 
 ## C11 验证与局部实现接口
 
-以下是计划中测试使用的应用级接口约定，按所在任务创建；不是仓库当前可调用函数。实现可拆分内部函数，但外部契约与测试断言不能删减。
+本节导航到实际实现，不再列不存在的占位包和计划函数签名：
 
-```go
-// internal/domain: Protocol-level deterministic helpers, no network or DB.
-type InspectParams struct { DurationSeconds int64 `json:"duration_seconds"`; Note string `json:"note,omitempty"` }
-func ParseInspect(raw string) (InspectParams, error)
-func NormalizePriority(value int32) (int32, error)
-func CanTransition(from, to commonv1.TaskStatus, cancelRequested bool, role string) bool
-// internal/auth: immutable manifest, credentials never logged.
-type Principal struct { ID, TenantID, Role, SourceID, ExecutorID string; EntityIDs []string }
-func (m *Manifest) Authenticate(token string) (Principal, error)
-// internal/gateway: bbolt-backed, single owner, ctx-aware network work lives above it.
-func OpenQueue(path string) (*Queue, error)
-func (q *Queue) Enqueue(event *commonv1.EntityStateEvent) (int64, error)
-func (q *Queue) Generate(entityKey string, build func(version int64)(*commonv1.EntityStateEvent,error)) (int64, error)
-func (q *Queue) Pending(limit int) ([]QueuedEvent, error)
-func (q *Queue) Ack(epoch string, sequence int64) error
-func (q *Queue) Epoch() string
-func (q *Queue) Close() error
-type QueuedEvent struct { Sequence int64; Event *commonv1.EntityStateEvent }
-// internal/execution: the only simulated side effect is a durable count/result.
-func OpenInbox(path string) (*Inbox, error)
-func (i *Inbox) Accept(command *executorv1.ListenTasksResponse) (bool, error)
-func (i *Inbox) CommitResult(executionKey, resultJSON string) (bool, error)
-func (i *Inbox) EffectCount(executionKey string) (int, error)
-func (i *Inbox) Close() error
-```
+| 规则或机制 | 当前源码 |
+| --- | --- |
+| inspect 参数、优先级与状态转换 | [internal/tasks/domain.go](../../internal/tasks/domain.go) |
+| 可信身份与实体来源绑定 | [internal/platform/registry.go](../../internal/platform/registry.go)、[auth.go](../../internal/platform/auth.go) |
+| 六类原始格式转换 | [internal/state/adapters.go](../../internal/state/adapters.go) |
+| bbolt 队列、版本生成与连续 ACK | [internal/edge/queue.go](../../internal/edge/queue.go) |
+| 执行接收、待处理索引与持久结果 | [internal/edge/inbox.go](../../internal/edge/inbox.go) |
 
-所有新增实现都有对应测试文件与验收ID，映射见三份计划和[验收矩阵](acceptance.md)。源码/Proto、迁移实际测试和实测证据是最终判断依据；不能以本文描述代替通过记录。
+接口签名以源码为准，完整可复制实现以对应课程的文件答案为准；实现拆分不能删减外部契约与验收断言。业务行为与日期证据从 [验收矩阵](acceptance.md) 进入，不以本文说明代替测试结果。
 
 读取normalized-expectations时，common与每case.fields合并，sourceId/entityId取case.source_id/entity_id；比较Go消息语义或使用protojson EmitUnpopulated=true。absent表示消息/optional字段无presence，序列化后省略或null都接受；空repeated字段与空数组等价，不能把默认JSON省略行为当转换失败。该文件只定义预期，不由当前Adapter生成。

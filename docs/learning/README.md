@@ -1,11 +1,11 @@
 # MeshOps 学习入口
 
-**从 [Z00—Z09 课程目录](from-zero/lessons/README.md) 开始。** 按需求 → 协议 → 单服务 → 持久状态 → 可靠任务逐步搭建，同一个学习工程持续演进。
+**从 [Z00—Z13 课程目录](from-zero/lessons/README.md) 开始。** 按需求 → 协议 → 单服务 → 持久状态 → 可靠任务逐步搭建，同一个学习工程持续演进。
 
 | 需要什么 | 入口 |
 | --- | --- |
 | 每课讲解、完整代码与顺序 | [课程目录](from-zero/lessons/README.md) |
-| 阶段内精确操作 | [20 个分步操作](from-zero/lessons/steps/README.md) |
+| 阶段内精确操作 | [28 个分步操作](from-zero/lessons/steps/README.md) |
 | 启动和多终端环境 | [阶段运行手册](from-zero/CHECKPOINTS.md) |
 | 日志与纠错 | [排错实操](from-zero/lessons/debugging.md) |
 | 查看最终项目 | [完整参考工程](../../README.md) |
@@ -19,7 +19,7 @@
 
 ## 当前状态
 
-参考工程已实现原定功能并有验收记录；九个阶段提供完整文件答案，Z04—Z09 共 20 个可构建步骤，连续复制和指定测试已有记录。全部讲解与操作衔接仍待最终复核。Canal/ES 搜索属于下一阶段待实现功能。
+参考工程已实现状态、任务、搜索、HTTP/SSE 网关、Vue 控制台、模拟器与 Docker 演示。Z00 讨论需求，Z01—Z13 共 13 个代码阶段，Z04—Z13 共 28 个分步操作。连续复制、构建、真实依赖与浏览器验证各有适用范围，见 [工作记录](from-zero/BUILD-LEDGER.md)；不能把历史一次通过视为所有后续修改都已验收。
 
 用户学习进度单独记录在 [学习记录](../implementation/learning-progress.md)，不能用 AI 写完代码代替用户完成学习。
 

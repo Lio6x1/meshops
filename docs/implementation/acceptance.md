@@ -1,6 +1,6 @@
 # 验收矩阵与演示流程
 
-状态：本页保留原验收规格。独立课程参考工程的实际结果见[关键验收记录](../../verification/2026-09-10/summary.md)；它不表示仓库根目录旧骨架已实现相同功能。表中的预期是必须由测试证明的行为，不是成绩，逐课复制验收另行记录。
+状态：本页保留原 A01—A28 核心验收规格，日期结果见 [关键验收记录](../../verification/2026-09-10/summary.md)。完整实现已迁入仓库根目录；搜索与前后端新增范围另行验收。表中预期必须由测试证明，逐课复制验证和学员学习情况单独记录。
 
 ## 1. 测试环境与证据规则
 
@@ -47,59 +47,13 @@
 
 A02分阶段记录：S01验证身份解析和Unary/Stream角色拦截；S03/S04/T01/T03补齐真实资源隔离。T01的A16/A17可先通过真实MySQL repository测试验证事务和去重，使用明确标记的已校验dispatch输入；跨服务回报鉴权须T02/T03接通后补验。子项通过不能把整项提前标为完成。
 
-## 3. 完成业务后的演示脚本
+## 3. 当前演示与验收入口
 
-以下流程在S/T/V实现后执行，目前不可直接照抄声称已有功能。示例用Bash，Windows可在Git Bash运行；PowerShell用户可执行同一二进制与参数。真实token、DSN、CursorKey事先设置为环境变量，不在命令历史里传值。
+从 [根 README](../../README.md) 执行现行 PowerShell 初始化、启动、demo 和测试命令；网页模式使用 [完整前后端手册](../run-fullstack.md)。不再使用旧 app 配置、Makefile 或未交付的 demo.sh。
 
-**环境初始化：** 依O03准备专用测试环境、执行迁移并构建四服务和三个客户端。`go build -o bin/opctl ./cmd/opctl`等命令生成本机二进制，Windows可加.exe。最终Makefile提供build-binaries以统一路径；当前make build只检查编译。
+六类状态应经过真实接入、投影和查询链路；四类 inspect 应查询到真实终态及持久结果，同幂等键同参数返回同一任务。取消意图与最终取消分开检查。断网补传保留原 bbolt 队列、epoch 与实体版本，不能通过重建空 DB 伪造恢复成功。
 
-```bash
-# 已有隔离依赖就绪，manifest与环境变量匹配；seed不会覆盖冲突元数据。
-bin/opctl seed --manifest configs/simulation.local.yaml --dsn-env MESHOPS_MYSQL_DSN --token-env MESHOPS_ADMIN_TOKEN
-# 分别在终端启动四个已构建服务，使用对应 -f 文件。
-bin/entity -f app/entity/etc/meshops.entity.v1.yaml
-bin/task -f app/task/etc/meshops.task.v1.yaml
-bin/dispatcher -f app/dispatcher/etc/meshops.dispatcher.v1.yaml
-bin/ingest -f app/ingest/etc/meshops.ingest.v1.yaml
-```
-
-四条服务命令是分别运行的长期进程，不是依次等待退出的脚本。scripts/demo.sh负责受控启动子进程与结束清理，Windows用隐藏子进程，不启动用户不可控的可见窗口。
-
-**六类状态：** 六个来源分别运行网关；下面给人员示例，其余source/token/DB按O02对应替换，不共享bbolt文件：
-
-```bash
-bin/gateway-simulator --manifest configs/simulation.local.yaml --source personnel_sim --db data/personnel.db --token-env MESHOPS_PERSON_SOURCE_TOKEN --rate 20 --duration 120s
-bin/opctl snapshot --entity person-001 --token-env MESHOPS_OPERATOR_TOKEN
-bin/opctl subscribe --entities person-001,drone-001,vehicle-001,robot-001,sensor-001,facility-001 --duration 30s --token-env MESHOPS_OPERATOR_TOKEN
-```
-
-预期：输出包含SNAPSHOT_END和六类快照，人员无电量、设施占用字段存在、sensor读数可为0。演示期间让网关持续运行，避免30秒过期导致任务创建被正确拒绝。normal输出中的int64按protojson为字符串，检查程序不能误认为缺失。
-
-**任务闭环：** 四类执行方各运行一个进程，分别使用自己token与DB；以下是无人机示例：
-
-```bash
-bin/executor-simulator --manifest configs/simulation.local.yaml --executor simulated_aircraft --db data/aircraft-executor.db --token-env MESHOPS_DRONE_EXECUTOR_TOKEN
-bin/opctl task create --entity drone-001 --type inspect --duration-seconds 5 --key demo-inspect-001 --token-env MESHOPS_OPERATOR_TOKEN
-# 将 create 输出 taskId 赋给 TASK_ID，再执行以下命令；禁止随意填一个不存在的ID。
-bin/opctl task get --id "$TASK_ID" --token-env MESHOPS_OPERATOR_TOKEN
-bin/opctl task history --id "$TASK_ID" --token-env MESHOPS_OPERATOR_TOKEN
-bin/opctl dispatch get --task "$TASK_ID" --token-env MESHOPS_OPERATOR_TOKEN
-```
-
-预期：创建为DISPATCH_PENDING，随后ACKED/EXECUTING/SUCCEEDED；最终resultJSON.effect_count=1。同key同参数再次create返回相同taskId，对sensor-001创建inspect返回FAILED_PRECONDITION。自动demo用JSON解析create响应的taskId，不依赖人工复制。
-
-**取消与离线补传：** 新建duration30秒的任务，用另一终端取消；先见cancelRequested=true，执行方确认后CANCELLED。停止人员来源进程后，使用它原来的网关DB offline生成，退出后同DB drain-only，确认pending归零并从快照查询最大版本。重启普通网关继续产生事件，证明实体版本没有归零。
-
-```bash
-bin/opctl task create --entity drone-001 --type inspect --duration-seconds 30 --key demo-cancel-001 --token-env MESHOPS_OPERATOR_TOKEN
-# 将本次 create 的 taskId 赋给 CANCEL_TASK_ID，立即取消；不能使用前面已经成功的任务ID。
-bin/opctl task cancel --id "$CANCEL_TASK_ID" --reason demo-cancel --token-env MESHOPS_OPERATOR_TOKEN
-# 确认原 personnel_sim 进程已退出，以下两个网关命令顺序运行。
-bin/gateway-simulator --manifest configs/simulation.local.yaml --source personnel_sim --db data/personnel.db --token-env MESHOPS_PERSON_SOURCE_TOKEN --offline --rate 10 --duration 10s
-bin/gateway-simulator --manifest configs/simulation.local.yaml --source personnel_sim --db data/personnel.db --token-env MESHOPS_PERSON_SOURCE_TOKEN --drain-only --timeout 60s
-```
-
-新建DB不能用于已有实体的版本重置。原DB停服→offline→drain保留epoch与实体版本；要使用全新DB须配套新的测试manifest/实体命名空间。不得两个不同DB同时生成同一source的实体版本。固定demo幂等键用于单次新测试环境，重复整场演示使用新的run-id作为key前缀。
+原 A01—A28 结果见 [业务证据](../../verification/2026-09-10/acceptance.md)，后续修复见 [全面复核](../review/2026-09-12/acceptance.md)。搜索、网页和混合场景单独验收，入口见 [工程验证边界](../production-readiness-checklist.md)。报告只证明对应日期、提交与范围，学员在自己的环境重新执行并保存结果。
 
 ## 4. 性能报告最小内容
 
@@ -116,4 +70,4 @@ bin/gateway-simulator --manifest configs/simulation.local.yaml --source personne
 
 ## 5. 完成判定
 
-S/T/V进度表全部完成且A01—A28有证据，才称“校招核心完整版本”。某机缺CGO、Docker或依赖时，对应项保持待验证，并记录可在Linux CI执行的命令；不能把缺环境算成业务通过。完成后新增实体类型、任务类型或多实例部署都需要重新列验收项，不自动继承这份通过结论。
+对应核心实现完成且A01—A28有证据，才称“校招核心完整版本”。某机缺CGO、Docker或依赖时，对应项保持待验证，并记录可在Linux CI执行的命令；不能把缺环境算成业务通过。完成后新增实体类型、任务类型或多实例部署都需要重新列验收项，不自动继承这份通过结论。

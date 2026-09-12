@@ -1,5 +1,7 @@
 # MeshOps Comprehensive Review Implementation Plan
 
+> 按日期保留的设计/实施记录，不作为当前待办或启动指南。当前工程已演进至 Z13；旧路径和阶段状态按当时上下文理解，后续状态见 [记录说明](../README.md)。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 完成用户确认的全面复核与修复、必要代码注释、本地问题记录和前端 UI 设计方案。
@@ -81,7 +83,7 @@ python ./docs/learning/from-zero/verify-git-checkpoints.py
 
 ## F. UI 设计方案
 
-**Files:** `docs/ui/README.md`、`docs/ui/design.md`、`docs/ui/prototype/index.html` 和本地静态资源。
+**当日交付：** UI 设计及离线原型；后者已在 2026-09-13 清理，当前只维护 `web/` 成品和 `docs/ui/` 的当前说明。
 
 - [x] 根据实际协议确定实体概览/详情、任务列表/详情/创建、任务搜索和运行状态入口。
 - [x] 明确数据新鲜度、未知字段、加载、空结果、断连、错误、只读与权限不足等状态。

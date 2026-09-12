@@ -1,6 +1,6 @@
 # ADR-0005：使用 Kafka 作为可靠事件主干
 
-- 状态：已接受，待实现验证
+- 状态：已实施；验证范围见文末当前入口
 - 日期：2026-08-25
 
 ## 背景
@@ -12,9 +12,9 @@
 使用Kafka作为状态事件和任务领域事件的统一可靠主干：
 
 - `entity-state-events.v1`：Key为`tenant_id:entity_id`（多租户隔离 + 同实体有序），供状态投影、历史抽样和后续分析消费者使用。
-- `task-events.v1`：Key为`task_id`，由MySQL Transactional Outbox发布。
+- `task-events.v1`：Key为`tenant_id:task_id`，由MySQL Transactional Outbox发布。
 - 任务重试使用 MySQL next_attempt_at 与有界 worker；Kafka 不提供原生延迟计时，超过上限进入DLQ。
-- Redis Pub/Sub继续承担可恢复的低延迟通知，不承担可靠消息。
+- Redis Pub/Sub 仅是多实例通知的条件式候选，当前未启用；当前单实例订阅由实体服务维护。
 - 不同时引入Redis Streams、RabbitMQ或NATS。
 
 ## 语义
@@ -59,6 +59,6 @@
 5. Outbox投递器重复发送不会导致重复任务执行。
 6. 保存Consumer Lag、吞吐、端到端P99和故障恢复时间的原始证据。
 
-## 2026-09-05 框架对齐
+## 当前落地范围（2026-09-13）
 
-沿用原决策，执行细节以[当前实现与课程入口](../../README.md)为准：单实体单权威来源、两种原始模拟格式、单一 inspect 任务、指定执行方与稳定业务执行键。当前只完成契约和骨架，不代表依赖已接通。
+根工程已实现六类模拟来源、状态与 inspect 闭环、任务搜索及 HTTP/SSE/Vue 成品。单实体仍使用单权威来源，任务采用稳定 execution_key。2026-09-05 的两类来源骨架阶段已结束，具体范围与证据见 [当前工程](../../README.md) 和 [验证边界](../production-readiness-checklist.md)。
