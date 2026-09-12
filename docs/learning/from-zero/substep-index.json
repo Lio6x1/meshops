@@ -1601,7 +1601,7 @@
       {
         "path": "cmd/search-admin/main.go",
         "source": "../../../cmd/search-admin/main.go",
-        "sha256": "2a8e883889bd57d1137b8c5338ff68f7e050f2f626dfd755d3c4a96f2c2ede04"
+        "sha256": "c84657c7e8b6784104ab4a1e0a3b268c58ac20e0620a86eca738eff0428440ff"
       },
       {
         "path": "cmd/search/main.go",
