@@ -1,4 +1,4 @@
-// Package state implements the telemetry path used by the course reference.
+// Package state 实现课程参考实现中的遥测链路。
 package state
 
 import (
@@ -55,7 +55,7 @@ func ordered(v []string) []string {
 	return out
 }
 
-// object rejects unknown keys at every level and preserves JSON number syntax.
+// object 拒绝各层级的未知键，并保留 JSON 数字的语法形式。
 type object map[string]json.RawMessage
 
 func decodeObject(raw []byte, allowed ...string) (object, error) {
@@ -169,8 +169,8 @@ func nestedLocation(m object, key, lat, lon string) (*commonv1.Location, error) 
 	return location(n, lat, lon, "", 1, 1)
 }
 
-// Normalize accepts only the six documented wire formats. Capability comes from
-// the trusted registry at ingestion; source self-reported tasks never grant it.
+// Normalize 只接受文档约定的六种传输格式。能力来自
+// 接入时的可信注册表；来源自报的任务不能授予能力。
 func Normalize(raw []byte, source platform.Source, received time.Time) (*commonv1.EntityStateEvent, error) {
 	keys := map[string][]string{
 		"person":   {"employee_id", "observation_id", "version", "observed_at", "latitude", "longitude", "on_duty", "availability", "skills"},

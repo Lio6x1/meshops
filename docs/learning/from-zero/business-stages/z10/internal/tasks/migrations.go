@@ -13,8 +13,8 @@ import (
 	"strings"
 )
 
-// SplitSQL understands the DELIMITER directives in the unchanged historical
-// migrations. It never sends a mysql-client directive to the SQL server.
+// SplitSQL 能解析未作修改的历史迁移脚本中的 DELIMITER 指令，
+// 不会把 mysql 客户端指令发送给 SQL 服务端。
 func SplitSQL(raw string) ([]string, error) {
 	var result []string
 	var b strings.Builder
@@ -50,9 +50,9 @@ func SplitSQL(raw string) ([]string, error) {
 	return result, nil
 }
 
-// Migrate serializes migrations with a MySQL advisory lock. Since MySQL DDL is
-// not transactional, each step is journaled before execution. An interrupted
-// uncertain step fails explicitly on restart for operator inspection.
+// Migrate 使用 MySQL 咨询锁串行执行迁移。由于 MySQL DDL 不支持事务，
+// 每一步执行前都先写入日志。若中断导致某一步结果不确定，
+// 重启时会明确报错，交由运维人员检查。
 func Migrate(ctx context.Context, db *sql.DB, dir string) error {
 	conn, e := db.Conn(ctx)
 	if e != nil {
@@ -80,8 +80,8 @@ func Migrate(ctx context.Context, db *sql.DB, dir string) error {
 			return fmt.Errorf("migration sequence gap: %s", filepath.Base(file))
 		}
 	}
-	// Adopt externally applied 001/002 only when their distinguishing tables and
-	// columns exist; pending facts are never rewritten or removed.
+	// 仅当用于识别 001/002 的特征表和列存在时，才接纳外部已执行的迁移；
+	// 不重写或删除待处理事实。
 	for _, file := range files {
 		raw, e := os.ReadFile(file)
 		if e != nil {

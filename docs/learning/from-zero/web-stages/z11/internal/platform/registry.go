@@ -22,7 +22,7 @@ func ValidID(s string, max int) bool { return len(s) > 0 && len(s) <= max && idP
 func NewID() string                  { return uuid.NewString() }
 func Hash(b []byte) string           { h := sha256.Sum256(b); return hex.EncodeToString(h[:]) }
 
-// Authenticate validates a high-entropy machine token, not a user's password.
+// Authenticate 校验高熵机器令牌，不用于校验用户密码。
 // SHA-256 这里只用于查找可信身份；不能据此实现用户密码存储。课程脚本生成
 // 32 字节随机令牌，进程从本地环境读取；Credentials 还用于模拟执行方的出站认证，
 // 因而内存中保留原令牌。此设计不提供本地凭证文件或进程内存泄露后的保护。

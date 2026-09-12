@@ -23,8 +23,8 @@ def main():
             scene.set_count(source['sourceId'],5)
             sim.api('/api/v1/simulation/'+source['sourceId'],'PUT',{'mode':'running'})
         sim.wait_for(lambda:scene.all_applied(5),20)
-        # A full round-robin takes 2.5 seconds. Allow two rounds before the
-        # baseline so no pre-upgrade cached location enters this measurement.
+        # 完整轮询一遍需要 2.5 秒；记录基线前等待两轮，
+        # 避免升级前缓存的位置进入本次位移测量。
         time.sleep(6)
         inventory=sim.api('/api/v1/entities')['entities']
         assert len(inventory)==30

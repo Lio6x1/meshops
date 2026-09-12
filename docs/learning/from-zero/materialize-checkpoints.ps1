@@ -85,7 +85,7 @@ if ($Scope -in @('business','all')) {
             $b = $entity.IndexOf('func (e *Entity) generation', [StringComparison]::Ordinal)
             if ($a -lt 0 -or $b -lt $a) { throw 'Missing Entity constructor boundaries' }
             $constructor = @'
-// Z07 has current state and subscriptions. State history enters in Z08.
+// Z07 只包含当前状态和订阅，状态历史在 Z08 中加入。
 type Entity struct {
     entityv1.UnimplementedEntityServiceServer
     cfg platform.Settings

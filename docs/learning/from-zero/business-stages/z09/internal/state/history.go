@@ -143,8 +143,8 @@ func (e *Entity) Sample(ctx context.Context, raw []byte) error {
 		return err
 	}
 	defer tx.Rollback()
-	// The key is reserved before insertion. A duplicate cannot create an orphan
-	// sample, and a failed transaction cannot leave a durable reservation.
+	// 插入前先预留键。重复记录不能产生孤立
+	// 样本，事务失败也不能留下持久化的预留记录。
 	_, err = tx.ExecContext(ctx, `INSERT INTO history_sample_keys(tenant_id,source_id,source_generation,event_id,sampled_at,sample_id) VALUES(?,?,?,?,?,0)`, event.TenantId, event.SourceId, event.SourceGeneration, event.EventId, now)
 	if err != nil {
 		var me *mysql.MySQLError
@@ -300,10 +300,10 @@ func (e *Entity) pruneHistoryPage(ctx context.Context, cutoff time.Time) (int, e
 	}
 	defer tx.Rollback()
 	total := 0
-	// Separate age ranges preserve OR semantics while each ORDER BY follows its
-	// existing age index. LIMIT now bounds each range scan, not a union/sort of
-	// every expired row. Delete the first range before reading the second so an
-	// event old by both clocks cannot consume the page budget twice.
+	// 拆分年龄范围以保留 OR 语义，同时让每个 ORDER BY 使用
+	// 现有的年龄索引。LIMIT 现在限制各范围的扫描量，避免合并并排序
+	// 所有过期行。先删除第一个范围，再读取第二个范围，确保
+	// 按两种时钟都已过期的事件不会重复消耗分页预算。
 	for _, query := range []string{
 		`SELECT id FROM entity_history_samples WHERE sampled_at<? ORDER BY sampled_at,id LIMIT ? FOR UPDATE`,
 		`SELECT id FROM entity_history_samples WHERE occurred_at<? ORDER BY occurred_at,id LIMIT ? FOR UPDATE`,

@@ -25,7 +25,7 @@ func TestDurableCrashChild(t *testing.T) {
 	b := bus.New(strings.Split(os.Getenv("MESHOPS_TEST_KAFKA_BROKERS"), ","))
 	prefix := os.Getenv("MESHOPS_CRASH_PREFIX")
 	err := b.Consume(ctx, prefix+"projector", prefix+"entity-state-events.v1", func(c context.Context, raw []byte) error {
-		// Use a unique shadow namespace to avoid changing a shared active pointer.
+		// 使用唯一的影子命名空间，避免修改共享的活动指针。
 		event, err := e.decode(raw)
 		if err != nil {
 			return err

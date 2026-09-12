@@ -104,7 +104,7 @@ func (i *Ingest) ReportEntityStates(stream ingestv1.IngestService_ReportEntitySt
 		if req.GatewayEpoch != epoch || req.ResumeAfterSequence != resume || req.FirstSequence != ack+1 {
 			return status.Error(codes.InvalidArgument, "epoch or continuous sequence mismatch")
 		}
-		// Validate and encode the whole batch before the first externally visible write.
+		// 在第一次对外可见的写入前，完成整批数据的校验与编码。
 		payloads := make([][]byte, len(req.Events))
 		events := make([]*commonv1.EntityStateEvent, len(req.Events))
 		received := timestamppb.Now()

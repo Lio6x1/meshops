@@ -225,25 +225,25 @@ func GatewayCLI(ctx context.Context, args []string, out, diagnostic io.Writer) i
 		}
 		return err
 	}
-	// Browser controls are an explicit demo opt-in. Offline/drain/compact CLI
-	// exercises keep their original semantics and never consult this control plane.
+	// 浏览器控制是显式启用的演示选项。离线、排空、压缩等 CLI
+	// 练习保持原有语义，不读取此控制平面。
 	if os.Getenv("MESHOPS_SIMULATION_CONTROL") == "1" && !*offline {
 		cache := redis.NewClient(&redis.Options{Addr: endpoint("MESHOPS_REDIS_ADDR", "127.0.0.1:16379"), DialTimeout: time.Second, ReadTimeout: time.Second, WriteTimeout: time.Second, MaxRetries: -1, ContextTimeoutEnabled: true})
 		defer cache.Close()
 		controlledCtx, controlledCancel := context.WithCancel(platform.Outgoing(genCtx, token))
 		defer controlledCancel()
-		// The browser selects canonical entity IDs, which need not have the
-		// same order as a vendor's raw identifiers. Use that same order here.
+		// 浏览器选择的是规范实体 ID，其顺序未必与
+		// 厂商原始标识符一致。此处使用与浏览器相同的顺序。
 		sort.Slice(ids, func(i, j int) bool { return source.Entities[ids[i]] < source.Entities[ids[j]] })
 		nextEntity := 0
 		err := runControlledSimulation(controlledCtx, simulation.NewStore(cache), source.TenantID, source.ID, len(ids), 500*time.Millisecond, time.Second/time.Duration(*rate), func(activeCount int) error {
-			// A ready generation tick may win select after cancellation. Preserve
-			// the CLI's exact count contract even at very high configured rates.
+			// 取消后，已就绪的生成时钟仍可能被 select 选中。即使配置速率极高，
+			// 也必须保持 CLI 生成数量精确符合约定。
 			if *count > 0 && generated.Load() >= *count {
 				return nil
 			}
-			// A stable round-robin gives every selected entity a turn, including
-			// immediately after expanding or shrinking the live scene.
+			// 稳定的轮询顺序确保每个选中实体都能轮到，
+			// 包括实时场景刚扩大或缩小之后。
 			nextEntity %= activeCount
 			rawID := ids[nextEntity]
 			nextEntity = (nextEntity + 1) % activeCount

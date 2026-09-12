@@ -1,4 +1,4 @@
-// Package platform contains the shared configuration and trusted identities.
+// Package platform 提供共享配置与可信身份定义。
 //
 //lint:file-ignore SA5008 go-zero conf intentionally extends JSON tags with optional; LoadConfig tests exercise these tags.
 package platform
@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// MaxEntityVersion bounds Redis Lua exact integer comparisons (2^53-1).
+// MaxEntityVersion 限定 Redis Lua 可精确比较的整数上限（2^53-1）。
 const MaxEntityVersion int64 = 1<<53 - 1
 
 type Principal struct {
@@ -89,5 +89,5 @@ type Config struct {
 	MeshOps Settings
 }
 
-// Duration is used only after LoadConfig has validated configured values.
+// Duration 只能在 LoadConfig 已校验配置值后使用。
 func Duration(s string) time.Duration { d, _ := time.ParseDuration(s); return d }

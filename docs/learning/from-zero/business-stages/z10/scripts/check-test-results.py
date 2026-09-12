@@ -22,12 +22,12 @@ def check(path):
     events = [json.loads(line) for line in Path(path).read_text(encoding="utf-8-sig").splitlines() if line.strip()]
     passed = {(e.get("Package", "").removeprefix("example.com/meshops-course/"), e.get("Test")) for e in events if e.get("Action") == "pass"}
     missing = [(package, name) for package, names in REQUIRED.items() for name in names if (package, name) not in passed]
-    # Only these exact helper entries may skip. A skipped child/subtest or an
-    # unrelated test is an incomplete explicit acceptance run, not a success.
+    # 仅允许下列精确匹配的辅助入口跳过；跳过子测试或其他测试，
+    # 都表示本次显式验收不完整，不能算作成功。
     helpers = {"example.com/meshops-course/internal/" + p for p in ("edge", "state", "tasks")}
-    # Go emits package-level skip events for packages containing no test files
-    # (e.g. generated protobuf). These are not skipped test cases. Missing tests
-    # in critical packages are still rejected by REQUIRED above.
+    # Go 对没有测试文件的包也会输出包级 skip 事件，
+    # 例如生成的 protobuf 包；这不等于跳过某个测试用例。
+    # 关键包缺少必跑测试时，仍会被上面的 REQUIRED 检查拒绝。
     skipped = [(e.get("Package"), e.get("Test")) for e in events if e.get("Action") == "skip" and e.get("Test") and not (e.get("Package") in helpers and e.get("Test") == "TestDurableCrashChild")]
     failed = [(e.get("Package"), e.get("Test")) for e in events if e.get("Action") in {"fail", "build-fail"}]
     if missing or skipped or failed:

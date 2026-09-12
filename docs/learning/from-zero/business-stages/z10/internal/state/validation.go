@@ -104,8 +104,8 @@ func validateShape(e *commonv1.EntityStateEvent) error {
 	return nil
 }
 
-// Validate checks authoritative ownership even for DELETE. It never accepts
-// capability increases from telemetry. Ingest generates the final catalog.
+// Validate 即使对 DELETE 也会检查权威归属，不接受
+// 遥测带来的能力扩张。最终能力目录由 Ingest 生成。
 func Validate(e *commonv1.EntityStateEvent, registry *platform.Registry) error {
 	if err := validateShape(e); err != nil {
 		return status.Error(codes.InvalidArgument, err.Error())

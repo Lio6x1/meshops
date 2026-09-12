@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 $scriptPath = Join-Path $PSScriptRoot 'test-fullstack.ps1'
 if (-not (Test-Path -LiteralPath $scriptPath)) { throw 'test-fullstack.ps1 is missing' }
-# Every rejected URL must fail before it can make an HTTP request or write evidence.
+# 所有不合规 URL 都必须在发送 HTTP 请求或写入证据前被拒绝。
 $invalid = @('http://example.com:18090','http://127.0.0.1:18090/api','http://user:pass@127.0.0.1:18090','http://127.0.0.1:18090?x=1','file:///C:/Windows','http://192.0.2.1:18090')
 foreach ($url in $invalid) {
     $rejected = $false

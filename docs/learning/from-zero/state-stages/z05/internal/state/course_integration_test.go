@@ -14,8 +14,8 @@ import (
 	"time"
 )
 
-// Each integration test writes unique view keys and topic/group names. It never
-// changes activeKey, flushes Redis, or starts/stops another course's services.
+// 每个集成测试使用唯一的视图键、主题和消费组名，绝不
+// 修改 activeKey、清空 Redis，或启动和停止其他学习工程的服务。
 func TestRedisAtomicOrderingAndTombstone(t *testing.T) {
 	addr := os.Getenv("MESHOPS_TEST_REDIS_ADDR")
 	if addr == "" {
@@ -68,7 +68,7 @@ func TestRedisAtomicOrderingAndTombstone(t *testing.T) {
 	if err != nil || other.Found {
 		t.Fatal("tenant leakage", other, err)
 	}
-	// A new service instance can read the same durable view without an in-memory map.
+	// 新服务实例无需旧内存映射，就能读取同一份持久化视图。
 	restarted := &Entity{redis: cache, registry: r}
 	record, err = restarted.read(ctx, generation, "t", "p")
 	if err != nil || record.version != 3 {
@@ -108,7 +108,7 @@ func TestKafkaACKThenRedisProjection(t *testing.T) {
 	if err != nil || absent.Found {
 		t.Fatal("projection ran before consumer", absent, err)
 	}
-	// Start the consumer AFTER the ACK: replay from retained Kafka, not a local callback.
+	// 收到 ACK 后才启动消费者，验证数据从 Kafka 保留日志重放，而非依赖本地回调。
 	done := make(chan error, 1)
 	go func() {
 		done <- k.Consume(ctx, prefix+"projector", prefix+"entity-state-events.v1", func(ctx context.Context, raw []byte) error {

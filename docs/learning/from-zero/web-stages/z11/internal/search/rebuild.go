@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-// ResetTaskIndex is maintenance-only. Search and Canal must be stopped, and the
-// bootstrap marker invalidated, before calling it. It never touches MySQL.
+// ResetTaskIndex 仅用于维护。调用前必须停止搜索服务与 Canal，
+// 并使引导标记失效。此操作不会触及 MySQL。
 func (s *Index) ResetTaskIndex(ctx context.Context) error {
 	if s.name != TaskIndexName || s.expectedUUID != "" {
 		return fmt.Errorf("reset requires the unbound dedicated task index")

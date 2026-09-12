@@ -18,7 +18,7 @@ if ($Simulators) { $binaries += @('gateway-simulator','executor-simulator') }
 foreach ($binary in $binaries) {
     if (-not (Test-Path -LiteralPath (Join-Path $courseRoot "bin/$binary.exe") -PathType Leaf)) { throw "Missing bin/$binary.exe; run scripts/build.ps1 first." }
 }
-# Preflight above is read-only, including before env.ps1 creates local secrets.
+# 上面的预检只读执行，并且早于 env.ps1 创建本地凭证。
 if ($Search) { . (Join-Path $PSScriptRoot 'search-env.ps1') } else { . (Join-Path $PSScriptRoot 'env.ps1') }
 $script:records = @()
 New-Item -ItemType Directory -Force -Path (Join-Path $courseRoot 'data'),(Join-Path $courseRoot '.local/logs') | Out-Null

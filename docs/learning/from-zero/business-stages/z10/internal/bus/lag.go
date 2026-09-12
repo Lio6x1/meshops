@@ -8,10 +8,10 @@ import (
 	"time"
 )
 
-// Lag sums broker end offsets minus committed next offsets across the topic.
-// A new group starts at the retained beginning, as Consume does. Retention gaps
-// return a RetentionGap error rather than a healthy backlog. This is an observation, not an atomic
-// snapshot across producers, commits and retention.
+// Lag 汇总主题内各分区的 broker 末尾偏移量与已提交的下一偏移量之差。
+// 新消费组与 Consume 一样从保留日志的起点开始。存在保留期缺口时
+// 返回 RetentionGap 错误，不能将其视为正常积压。这只是一次观测，并非覆盖
+// 生产、提交和保留期变化的原子快照。
 func (k *Kafka) Lag(ctx context.Context, group, topic string) (int64, error) {
 	if len(k.brokers) == 0 || group == "" || topic == "" {
 		return 0, errors.New("Kafka brokers, group and topic required")
@@ -20,8 +20,8 @@ func (k *Kafka) Lag(ctx context.Context, group, topic string) (int64, error) {
 	defer cancel()
 	for {
 		lag, err := k.lag(ctx, group, topic)
-		// Newly created partitions and leader elections can have metadata before
-		// the leader serves offsets. Retry within the same caller deadline.
+		// 新建分区或选主期间，元数据可能已存在，但主节点
+		// 尚未提供偏移量查询。在调用者的同一个截止时间内重试。
 		if !errors.Is(err, kafka.NotLeaderForPartition) && !errors.Is(err, kafka.LeaderNotAvailable) {
 			return lag, err
 		}

@@ -65,7 +65,7 @@ func TestGeneratedGatewayAndStreamCancellation(t *testing.T) {
 	if w.Code != 200 || !strings.Contains(w.Body.String(), `"version":"9007199254740991"`) {
 		t.Fatalf("generated mapping %d %s", w.Code, w.Body.String())
 	}
-	// A caller-provided authorization header must not replace the browser actor.
+	// 调用方传入的 Authorization 请求头不能替换浏览器会话身份。
 	req := httptest.NewRequest("GET", "http://localhost:18090/api/v1/entities/drone-001", nil)
 	req.AddCookie(cookie)
 	req.Header.Set("Authorization", "Bearer attacker")

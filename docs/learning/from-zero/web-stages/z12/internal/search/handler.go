@@ -16,9 +16,9 @@ type Handler struct {
 	Index    TaskIndex
 }
 
-// Handle returns nil only after every row has reached the versioned projection.
-// It is suitable for a consumer that commits only after handler success. The
-// consumer must separately reject retention gaps rather than skip missing data.
+// Handle 仅在所有行均已应用到带版本的投影后返回 nil。
+// 适用于仅在处理函数成功后提交位点的消费者。消费者还必须
+// 单独拒绝因数据保留期限产生的缺口，不能跳过缺失数据。
 func (h *Handler) Handle(ctx context.Context, data []byte) error {
 	if h.Index == nil {
 		return fmt.Errorf("task index required")

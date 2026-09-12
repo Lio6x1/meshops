@@ -52,8 +52,8 @@ func NewDispatcher(cfg platform.Settings, reg *platform.Registry, db *sql.DB, ta
 	return &Dispatcher{cfg: cfg, reg: reg, db: db, task: task, streams: map[string]*connection{}}, nil
 }
 
-// SetLagReader configures the broker-backed status dependency before serving
-// requests or starting Run. It uses the same group and topic as the consumer.
+// SetLagReader 在处理请求或启动 Run 前配置从 broker 读取状态的依赖，
+// 使用与消费者相同的消费组和主题。
 func (d *Dispatcher) SetLagReader(reader func(context.Context, string, string) (int64, error)) {
 	d.lagReader = reader
 }
@@ -80,7 +80,7 @@ func (d *Dispatcher) ListenTasks(r *executorv1.ListenTasksRequest, stream execut
 		case <-stream.Context().Done():
 			return stream.Context().Err()
 		case q := <-c.queue:
-			// Returning the handler on timeout cancels the gRPC transport and releases Send.
+			// 超时后退出处理函数会取消 gRPC 传输，使阻塞的 Send 返回。
 			sent := make(chan error, 1)
 			go func() { sent <- stream.Send(q.command) }()
 			timer := time.NewTimer(5 * time.Second)
@@ -219,8 +219,8 @@ func (d *Dispatcher) HandleEvent(ctx context.Context, raw []byte) error {
 		return e
 	}
 	defer tx.Rollback()
-	// Updating every attempt keeps GetDispatch status current while preserving old
-	// timeout/DLQ delivery facts. Only increasing status versions can update a row.
+	// 更新每次尝试，使 GetDispatch 状态保持最新，同时保留历史
+	// timeout/DLQ 投递事实。只有更高的状态版本才能更新记录。
 	if e = mirrorTask(ctx, tx, t); e != nil {
 		return e
 	}
@@ -353,9 +353,9 @@ func (d *Dispatcher) RetryDLQ(ctx context.Context, r *dispatcherv1.RetryDLQReque
 	if Terminal(t.Status) || t.Deadline == nil || !t.Deadline.AsTime().After(time.Now()) {
 		return &dispatcherv1.RetryDLQResponse{Message: "task is terminal or deadline elapsed"}, nil
 	}
-	// Keep the attempt row lock without RR range/gap locks: concurrent scans of
-	// the latest attempt must not block the winner from appending its successor.
-	// Unique dispatch/attempt keys still allow only one persisted retry round.
+	// 保留尝试记录的行锁，但不使用可重复读的范围锁或间隙锁：并发扫描
+	// 最新尝试不能阻止获胜者追加下一次尝试。
+	// dispatch/attempt 唯一键仍保证只能持久化一个重试轮次。
 	tx, e := d.db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 	if e != nil {
 		return nil, unavailable(e)
@@ -371,9 +371,9 @@ func (d *Dispatcher) RetryDLQ(ctx context.Context, r *dispatcherv1.RetryDLQReque
 	if a.kind == "execute" && t.CancelRequested {
 		return &dispatcherv1.RetryDLQResponse{Message: "execute is superseded by cancellation"}, nil
 	}
-	// DLQ is historical delivery evidence and survives a late ACK. Neither a
-	// fresh Task lookup nor a newer locked mirror may authorize another execute
-	// round after acknowledged progress. Cancellation still needs its own retry.
+	// DLQ 是历史投递凭据，晚到的 ACK 不会将其清除。进度已获确认后，
+	// 无论重新查询 Task，还是读取加锁后的更新镜像，都不能授权新一轮 execute。
+	// 取消命令仍需单独重试。
 	if a.kind == "execute" && (t.Status == commonv1.TaskStatus_TASK_STATUS_ACKED || t.Status == commonv1.TaskStatus_TASK_STATUS_EXECUTING || a.lastStatus == commonv1.TaskStatus_TASK_STATUS_ACKED || a.lastStatus == commonv1.TaskStatus_TASK_STATUS_EXECUTING) {
 		return &dispatcherv1.RetryDLQResponse{Message: "execution already acknowledged; no transport retry needed"}, nil
 	}

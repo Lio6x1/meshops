@@ -57,8 +57,8 @@ func TestPendingPageExclusiveBoundarySurvivesDeletionAndRestart(t *testing.T) {
 			seen[key] = true
 			after = key
 		}
-		// The next seek must still include its first greater key after removal
-		// of the previous boundary; blindly Seek+Next would skip that key.
+		// 删除上一边界后，下次查找仍须包含首个更大的键；
+		// 盲目执行 Seek+Next 会跳过该键。
 		if err = i.db.Update(func(tx *bolt.Tx) error {
 			v, e := getEntry(tx, after)
 			if e != nil {

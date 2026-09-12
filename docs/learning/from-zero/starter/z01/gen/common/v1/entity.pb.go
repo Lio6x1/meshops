@@ -20,7 +20,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// A snapshot describes state; the response envelope identifies the entity.
+// 快照描述状态，外层响应负责标识实体。
 type EntitySnapshot struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -139,7 +139,7 @@ func (x *Location) GetLongitude() float64 {
 	return 0
 }
 
-// Missing power means not applicable or unknown, not an empty battery.
+// 缺失 power 表示不适用或未知，不表示电池耗尽。
 type PowerState struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

@@ -49,7 +49,7 @@ func TestKafkaShadowMissingManifestDoesNotSwitch(t *testing.T) {
 			}
 		}
 	}()
-	// DB14 is reserved for this recovery test; application/demo uses DB0.
+	// DB14 专供本恢复测试使用；应用与演示使用 DB0。
 	cache := redis.NewClient(&redis.Options{Addr: redisAddr, DB: 14})
 	defer cache.Close()
 	initial := newID()

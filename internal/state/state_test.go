@@ -86,8 +86,8 @@ func TestSamplingPriorityAndCircularHeading(t *testing.T) {
 	}
 }
 
-// This test uses only uniquely named shadow keys. It does not flush Redis or
-// change meshops:view:active. Set MESHOPS_TEST_REDIS_ADDR to a test instance.
+// 本测试只使用唯一命名的影子键，不清空 Redis，也不
+// 修改 meshops:view:active。请将 MESHOPS_TEST_REDIS_ADDR 设为测试实例。
 func TestRedisOrderingTombstoneAndManifest(t *testing.T) {
 	addr := os.Getenv("MESHOPS_TEST_REDIS_ADDR")
 	if addr == "" {

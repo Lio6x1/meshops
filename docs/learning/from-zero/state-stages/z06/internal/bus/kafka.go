@@ -1,5 +1,5 @@
-// Package bus makes the durable boundary explicit: publish waits for broker ACK,
-// and consumption commits only after application work succeeds.
+// Package bus 明确持久化边界：发布等待 broker 确认，
+// 消费只在应用处理成功后提交。
 package bus
 
 import (
@@ -37,20 +37,20 @@ func (k *Kafka) Publish(ctx context.Context, topic, key string, value []byte) er
 	return k.writer.WriteMessages(ctx, kafka.Message{Topic: topic, Key: []byte(key), Value: append([]byte(nil), value...)})
 }
 
-// Consume runs one serial worker per assigned partition. Handlers must honor
-// cancellation: a generation cannot surrender its assignments until they exit.
-// Each reader has a bounded prefetch queue; a failed record stalls only its own
-// partition, and a later offset never commits past that record.
+// Consume 为每个已分配分区运行一个串行工作协程。处理函数必须响应
+// 取消：只有这些协程全部退出，本代消费者才能交还分区分配。
+// 每个 reader 的预取队列都有容量上限；失败记录只阻塞自身所在
+// 分区，后续偏移量不能越过该记录提交。
 func (k *Kafka) Consume(ctx context.Context, group, topic string, handler func(context.Context, []byte) error) error {
 	return k.consume(ctx, group, topic, handler, false, func(int) int64 { return 0 })
 }
 
-// ConsumeStrict refuses retained suffix recovery. Use it for complete projections.
+// ConsumeStrict 拒绝仅用保留后缀恢复，适用于需要完整数据的投影。
 func (k *Kafka) ConsumeStrict(ctx context.Context, group, topic string, handler func(context.Context, []byte) error) error {
 	return k.ConsumeStrictFrom(ctx, group, topic, 0, handler)
 }
 
-// ConsumeStrictFrom preserves the scalar snapshot boundary used by Search.
+// ConsumeStrictFrom 保留 Search 使用的单一快照边界。
 func (k *Kafka) ConsumeStrictFrom(ctx context.Context, group, topic string, start int64, handler func(context.Context, []byte) error) error {
 	if start < 0 {
 		return errors.New("negative snapshot replay boundary")
@@ -58,9 +58,9 @@ func (k *Kafka) ConsumeStrictFrom(ctx context.Context, group, topic string, star
 	return k.consume(ctx, group, topic, handler, true, func(int) int64 { return start })
 }
 
-// ConsumeStrictPartitions uses independently verified snapshot boundaries. A
-// missing partition has no waiver and must replay from zero. Copy the map so a
-// caller cannot change the recovery contract while partition workers run.
+// ConsumeStrictPartitions 使用分别验证过的快照边界。
+// 未列出的分区没有跳过历史的豁免，必须从零重放。复制映射，防止调用者
+// 在分区工作协程运行期间改变恢复约定。
 func (k *Kafka) ConsumeStrictPartitions(ctx context.Context, group, topic string, floors map[int]int64, handler func(context.Context, []byte) error) error {
 	copy := make(map[int]int64, len(floors))
 	for partition, offset := range floors {
@@ -190,8 +190,8 @@ func (k *Kafka) consumePartition(ctx context.Context, generation *kafka.Generati
 				applicationRetry.recovered(ctx)
 				break
 			}
-			// Holding this record is deliberate: application errors cannot authorize
-			// losing a durable fact. Repair the dependency and the same record retries.
+			// 保留当前记录是有意为之：应用错误不能成为
+			// 丢弃持久化事实的理由。修复依赖后，仍重试同一条记录。
 			if ctx.Err() != nil {
 				return nil
 			}
@@ -207,8 +207,8 @@ func (k *Kafka) consumePartition(ctx context.Context, generation *kafka.Generati
 				commitRetry.recovered(ctx)
 				break
 			}
-			// Returning surrenders this generation; kafka-go joins a new one only
-			// after all registered workers stop. These are not terminal failures.
+			// 返回即交还本代消费者的分配；kafka-go 仅在所有已注册工作协程
+			// 停止后才加入新一代消费者。这些错误不属于终止性故障。
 			if errors.Is(err, kafka.IllegalGeneration) || errors.Is(err, kafka.UnknownMemberId) || errors.Is(err, kafka.RebalanceInProgress) {
 				return nil
 			}
@@ -225,8 +225,8 @@ func (k *Kafka) consumePartition(ctx context.Context, generation *kafka.Generati
 	return nil
 }
 
-// Only explicit permanent broker rejections terminate a worker. Network,
-// leader-election and storage failures remain retryable; no retry skips data.
+// 只有 broker 明确的永久性拒绝才终止工作协程。网络、
+// 选主和存储故障仍可重试；任何重试都不能跳过数据。
 func terminalBrokerError(err error) bool {
 	for _, permanent := range []error{kafka.TopicAuthorizationFailed, kafka.GroupAuthorizationFailed, kafka.ClusterAuthorizationFailed, kafka.SASLAuthenticationFailed, kafka.UnsupportedSASLMechanism, kafka.InvalidTopic} {
 		if errors.Is(err, permanent) {
@@ -249,8 +249,8 @@ func (r *consumerRetry) failed(ctx context.Context, err error) {
 	if r.attempts == 1 {
 		r.began = time.Now()
 	}
-	// Error text may contain application payloads or credentials. Types and
-	// numeric Kafka codes are safe diagnostics without copying arbitrary text.
+	// 错误文本可能包含应用载荷或凭据。使用错误类型和
+	// Kafka 数字错误码即可安全诊断，无需复制任意错误文本。
 	if r.attempts == 1 || r.attempts%30 == 0 {
 		var code kafka.Error
 		errors.As(err, &code)

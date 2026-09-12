@@ -51,8 +51,8 @@ func BenchmarkInboxBacklogFullScan(b *testing.B) {
 	}
 }
 
-// Page measures one scheduler read (maximum worker count four => eight keys),
-// not the time to consume an entire backlog or perform remote task execution.
+// Page 测量调度器的一次读取（最多四个工作协程，对应八个键），
+// 不测量消费全部积压或远程执行任务的耗时。
 func BenchmarkInboxBacklogPage(b *testing.B) {
 	for _, count := range []int{10, 10000} {
 		b.Run(fmt.Sprint(count), func(b *testing.B) {

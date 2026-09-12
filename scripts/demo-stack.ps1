@@ -13,8 +13,8 @@ $demoRoot = Split-Path $PSScriptRoot -Parent
 $demoCompose = Join-Path $demoRoot 'compose.demo.yml'
 
 function Invoke-DemoCompose([string[]]$Arguments) {
-    # Fixed project and absolute manifest isolate this stack from course/lab
-    # containers even if COMPOSE_PROJECT_NAME is set in the user's terminal.
+    # 固定项目名和绝对配置路径，使本演示栈与学习环境容器隔离，
+    # 即使用户终端设置了 COMPOSE_PROJECT_NAME 也不会混用。
     & docker compose -p meshops-demo -f $demoCompose @Arguments
     if ($LASTEXITCODE -ne 0) { throw ('Demo Compose failed: ' + ($Arguments -join ' ') + '; inspect -Action Logs. Existing volumes were preserved.') }
 }
@@ -43,8 +43,8 @@ try {
     switch ($Action) {
         'Up' {
             if (-not $NoBuild) {
-                # All application services share one image. Build it once via
-                # init, plus the two distinct Canal and frontend image targets.
+                # 所有应用服务共享同一镜像，只通过 init 构建一次；
+                # Canal 和前端使用各自独立的镜像构建目标。
                 $buildArgs = @('build')
                 if ($BuildProxy) { $buildArgs += @('--build-arg',"HTTPS_PROXY=$BuildProxy",'--build-arg',"HTTP_PROXY=$BuildProxy") }
                 $buildArgs += @('init','canal','web')
@@ -52,13 +52,13 @@ try {
             }
             Invoke-DemoCompose @('run','--rm','--no-deps','init','secrets')
             Invoke-DemoCompose @('up','-d','--wait','--wait-timeout','240','mysql','redis','kafka','elasticsearch')
-            # A maintenance startup may run migrations. Keep Canal and all
-            # writers stopped until migration/bootstrap has been validated.
+            # 维护启动可能执行迁移；迁移和初始化验证完成前，
+            # 保持 Canal 与所有写入进程停止。
             Invoke-DemoCompose @('stop','web','gateway','search','canal','source-person','source-drone','source-vehicle','source-robot','source-sensor','source-facility','executor-person','executor-drone','executor-vehicle','executor-robot','task','dispatcher','entity','ingest')
             Invoke-DemoCompose @('run','--rm','--no-deps','init','initialize')
             Invoke-DemoCompose @('up','-d','--wait','--wait-timeout','240')
-            # Container health runs inside Docker. Also verify the published
-            # host entrypoint, which can fail independently of private routing.
+            # 容器健康检查在 Docker 内执行；还必须验证主机公开入口，
+            # 因为内部路由正常时，主机入口仍可能单独故障。
             foreach ($probeURI in @('http://127.0.0.1:18090/healthz','http://127.0.0.1:18090/')) {
                 try {
                     $probeResponse = Invoke-WebRequest -Uri $probeURI -UseBasicParsing -TimeoutSec 5
@@ -82,23 +82,23 @@ try {
         'Stop' { Invoke-DemoCompose @('stop') }
         'Down' { Invoke-DemoCompose @('down') }
         'RebuildSearch' {
-            # Search is derived data. Task/Outbox writers remain available;
-            # the snapshot implementation holds its read lock only briefly.
+            # 搜索属于派生数据，Task/Outbox 写入继续可用；
+            # 快照实现只在建立一致性边界时短暂持有读锁。
             try {
                 Invoke-DemoCompose @('stop','search','canal')
                 Invoke-DemoCompose @('run','--rm','--no-deps','init','invalidate-search')
                 Invoke-DemoCompose @('run','--rm','--no-deps','init','rebuild-search')
-                # A fresh container also discards its writable TSDB layer.
-                # The named volume is retained and only validated cursor/H2
-                # files inside the fixed meshops destination are removed.
+                # 新建容器也会丢弃旧容器可写层中的 TSDB。
+                # 保留命名卷，只移除固定 meshops 目标目录中
+                # 经过验证的游标和 H2 文件。
                 Invoke-DemoCompose @('rm','-f','canal')
                 Invoke-DemoCompose @('run','--rm','--no-deps','--entrypoint','/app/demo-init','canal','reset-canal-meta')
                 Invoke-DemoCompose @('up','-d','--no-deps','--force-recreate','--wait','--wait-timeout','180','canal','search')
                 Write-Host 'Search projection rebuilt. Create a new task and confirm CDC search convergence; other service data was preserved.'
             } catch {
                 $rebuildFailure = $_
-                # Do not restart against a partial import or old Canal cursor,
-                # including when container startup failed after import success.
+                # 不能基于不完整导入或旧 Canal 游标重新启动，
+                # 导入成功后容器启动失败的情况也必须遵守此规则。
                 try { Invoke-DemoCompose @('stop','search','canal') } catch { Write-Warning 'Could not confirm Search/Canal stopped; inspect Status before continuing.' }
                 try { Invoke-DemoCompose @('run','--rm','--no-deps','init','invalidate-search') } catch { Write-Warning 'Could not invalidate bootstrap marker; keep Search stopped and inspect storage permissions.' }
                 throw $rebuildFailure

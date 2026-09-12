@@ -129,8 +129,8 @@ func (s *Index) closePIT(pit string) {
 	_, _, _ = s.request(ctx, http.MethodDelete, "/_pit", map[string]any{"id": pit})
 }
 
-// Search's tenant argument must come from the authenticated principal, never
-// from a public request field. PIT cursors retain a fixed five minute lifetime.
+// Search 的 tenant 参数必须来自已认证的主体，不能取自公开请求字段。
+// PIT 游标的生命周期固定为五分钟。
 func (s *Index) Search(ctx context.Context, tenant string, f Filter, token string, key []byte) (page Page, err error) {
 	if tenant == "" || len(tenant) > 64 || len(key) < 32 {
 		return page, ErrInvalidSearch
@@ -161,8 +161,8 @@ func (s *Index) Search(ctx context.Context, tenant string, f Filter, token strin
 		}
 		cursor = searchCursor{Version: 1, Tenant: tenant, Filter: hash, PIT: opened.ID, Expires: time.Now().Add(5 * time.Minute).Unix()}
 	}
-	// Errors and terminal pages close the PIT. Successful intermediate pages
-	// transfer its ownership to the next signed cursor; abandoned PITs expire.
+	// 发生错误或到达末页时关闭 PIT。成功的中间页会将其所有权
+	// 移交给下一个签名游标；被放弃的 PIT 会自动过期。
 	keep := false
 	defer func() {
 		if !keep {

@@ -1,4 +1,4 @@
-# Dot-source this file in each new terminal: . ./scripts/env.ps1
+# 每个新终端都要点加载此文件：. ./scripts/env.ps1
 $ErrorActionPreference = 'Stop'
 $courseRoot = Split-Path $PSScriptRoot -Parent
 $localPath = Join-Path $courseRoot '.local'
@@ -19,7 +19,7 @@ if (-not (Test-Path -LiteralPath $secretPath)) {
 }
 $secrets = Get-Content -LiteralPath $secretPath -Raw | ConvertFrom-Json
 foreach ($property in $secrets.PSObject.Properties) { [Environment]::SetEnvironmentVariable($property.Name, [string]$property.Value, 'Process') }
-# These are dedicated local teaching-container credentials, never production accounts.
+# 这些是专用本地教学容器的凭证，不能作为生产账户使用。
 $env:MESHOPS_MYSQL_DSN = 'root:course_local_root@tcp(127.0.0.1:13306)/meshops_course?parseTime=true&loc=UTC'
 $env:MESHOPS_KAFKA_BROKERS = 'localhost:19092'
 $env:MESHOPS_REDIS_ADDR = 'localhost:16379'

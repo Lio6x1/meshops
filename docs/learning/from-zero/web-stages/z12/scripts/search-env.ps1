@@ -1,11 +1,11 @@
-# Dot-source after every new terminal. Secrets stay in ignored .local storage.
+# 每个新终端都需点加载；凭证保存在被 Git 忽略的 .local 存储中。
 param([switch]$AllowIncomplete)
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'env.ps1')
 $searchSecretPath = Join-Path $courseRoot '.local/search-secrets.json'
 if (-not (Test-Path -LiteralPath $searchSecretPath)) {
-    # Canal forwards this credential in COM_REGISTER_SLAVE, whose MySQL 8.0
-    # report-password field accepts 32 characters. 24 random bytes => 192 bits.
+    # Canal 在 COM_REGISTER_SLAVE 中发送此凭证；MySQL 8.0 的
+    # report-password 字段最多容纳 32 字符，24 个随机字节提供 192 位熵。
     $bytes = New-Object byte[] 24
     $rng = [Security.Cryptography.RandomNumberGenerator]::Create()
     try { $rng.GetBytes($bytes) } finally { $rng.Dispose() }

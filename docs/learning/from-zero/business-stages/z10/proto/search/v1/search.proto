@@ -5,7 +5,7 @@ option go_package = "example.com/meshops-course/gen/search/v1;searchv1";
 import "common/v1/task.proto";
 import "google/protobuf/timestamp.proto";
 
-// A read-only eventual projection. GetTask remains the authority for actions.
+// 只读的最终一致投影；执行操作仍以 GetTask 查询到的任务事实为准。
 service SearchService {
   rpc SearchTasks(SearchTasksRequest) returns (SearchTasksResponse);
 }
@@ -18,7 +18,7 @@ message SearchTasksRequest {
   google.protobuf.Timestamp created_before = 5; // Exclusive.
   int32 page_size = 6; // 0 defaults to 20; otherwise 1..100.
   string page_token = 7;
-  // Tenant is deliberately absent: it comes from the trusted identity.
+  // 有意不接收租户参数，租户来自可信身份。
 }
 
 message TaskSearchHit {

@@ -264,8 +264,8 @@ func (i *Inbox) Accept(c *executorv1.ListenTasksResponse) (bool, error) {
 	return i.AcceptWithLimit(c, 4, false)
 }
 
-// Cancellation is committed before the caller signals a running timer. The same
-// write transaction serializes it against CommitResult, including after restart.
+// 调用者通知运行中的计时器前，先提交取消。同一个
+// 写事务将其与 CommitResult 串行化，重启后也保持此约束。
 func (i *Inbox) AcceptWithLimit(c *executorv1.ListenTasksResponse, capacity int, reject bool) (bool, error) {
 	if capacity < 1 || capacity > 4 {
 		return false, errors.New("executor capacity must be 1..4")
@@ -356,17 +356,17 @@ func (i *Inbox) PendingKeys() ([]string, error) {
 	return keys, err
 }
 
-// PendingPage copies at most limit keys after an exclusive, caller-owned cursor.
-// Cursor bytes never escape the read transaction. If the preceding key has been
-// completed/deleted, Seek already points at its successor and must not skip it.
-// Pages are live views rather than a snapshot: the scheduler wraps at the end so
-// newly inserted smaller keys are revisited without keeping a long read lock.
+// PendingPage 从调用者持有的游标之后复制最多 limit 个键，不包含游标本身。
+// 数据库游标的字节不会逃逸出读事务。若前一个键已完成或
+// 被删除，Seek 已指向其后继，不能再跳过该键。
+// 分页读取的是实时视图，并非快照：调度器到末尾后回绕，
+// 这样无需长期持有读锁，也能再次访问新插入的较小键。
 func (i *Inbox) PendingPage(after string, limit int) ([]string, error) {
 	return i.pendingPage(after, "", limit)
 }
 
-// A fixed upper key gives each scheduler round a finite end even while newer,
-// higher keys arrive continuously. Lower-key arrivals are served next round.
+// 固定的键上界确保即使更大的新键持续到达，每轮调度
+// 也有明确终点。新到达的较小键留到下一轮处理。
 func (i *Inbox) pendingBoundary() (string, error) {
 	var end string
 	err := i.db.View(func(tx *bolt.Tx) error {
@@ -545,9 +545,9 @@ func (i *Inbox) Report(key string) (*taskv1.ReportTaskStatusRequest, error) {
 	return r, err
 }
 
-// RetireRejectedReport requires an explicit FAILED_PRECONDITION response for
-// this report followed by an authoritative GetTask. It does not resolve an
-// uncertain delivery, nor discard a locally committed result or cancellation.
+// RetireRejectedReport 要求先收到该报告明确的 FAILED_PRECONDITION 响应，
+// 再执行权威 GetTask 查询。它不能消除交付状态不确定性，
+// 也不能丢弃本地已提交的结果或取消。
 func (i *Inbox) RetireRejectedReport(key string, r *taskv1.ReportTaskStatusRequest, current *commonv1.Task) error {
 	if r == nil || (r.Status != commonv1.TaskStatus_TASK_STATUS_ACKED && r.Status != commonv1.TaskStatus_TASK_STATUS_EXECUTING) || current == nil || current.Status < commonv1.TaskStatus_TASK_STATUS_SUCCEEDED || current.Status > commonv1.TaskStatus_TASK_STATUS_REJECTED {
 		return status.Error(codes.FailedPrecondition, "only a rejected nonterminal report against a terminal task can be retired")
@@ -580,8 +580,8 @@ func (i *Inbox) RetireRejectedReport(key string, r *taskv1.ReportTaskStatusReque
 	})
 }
 
-// ResolveReport discards identity only after a received response, or an explicit
-// ABORTED response which guarantees the server did not accept this report.
+// ResolveReport 只有收到确认已接收的响应，或明确保证服务端未接受
+// 该报告的 ABORTED 响应后，才丢弃报告身份。
 func (i *Inbox) ResolveReport(key string, r *taskv1.ReportTaskStatusRequest, aborted bool) error {
 	return i.db.Update(func(tx *bolt.Tx) error {
 		v, e := getEntry(tx, key)

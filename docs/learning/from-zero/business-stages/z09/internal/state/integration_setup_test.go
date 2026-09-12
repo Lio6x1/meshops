@@ -13,8 +13,8 @@ import (
 	"time"
 )
 
-// An explicitly supplied administrator DSN creates a new, isolated database.
-// Cleanup only drops that generated database; never the configured default DB.
+// 显式提供的管理员 DSN 用于创建全新且隔离的数据库。
+// 清理只删除该自动创建的数据库，绝不删除配置中的默认数据库。
 func TestMain(m *testing.M) {
 	adminDSN := os.Getenv("MESHOPS_TEST_MYSQL_ADMIN_DSN")
 	if adminDSN == "" {

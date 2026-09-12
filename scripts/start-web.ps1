@@ -1,4 +1,4 @@
-# Starts only the HTTP gateway. Start the backend separately, then run the Vue dev server.
+# 只启动 HTTP 网关；后端需另行启动，之后再运行 Vue 开发服务器。
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 . (Join-Path $PSScriptRoot 'processes.ps1')

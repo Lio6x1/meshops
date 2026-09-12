@@ -1,4 +1,4 @@
-// Package cli implements the real operator client. It never fabricates RPC results.
+// Package cli 实现真实的操作员客户端，不伪造 RPC 返回结果。
 package cli
 
 import (
@@ -113,7 +113,7 @@ func Opctl(ctx context.Context, args []string, out, diagnostics io.Writer) int {
 	if fs.NArg() != 0 {
 		return usage("unexpected positional arguments")
 	}
-	// Validate required CLI arguments before connecting.
+	// 连接服务前先校验必需的命令行参数。
 	switch command {
 	case "snapshot", "history", "task create":
 		if strings.TrimSpace(*entity) == "" {
@@ -364,8 +364,8 @@ func subscribe(parent context.Context, client entityv1.EntityServiceClient, ids 
 					if old != nil && (old.SourceGeneration > frame.SourceGeneration || old.SourceGeneration == frame.SourceGeneration && old.Version >= frame.Version) {
 						continue
 					}
-					// Keep delete versions until the next complete snapshot, so an
-					// older upsert cannot resurrect a removed entity.
+					// 保留删除版本直到收到下一份完整快照，防止
+					// 延迟到达的旧 upsert 使已删除实体重新出现。
 					versions[frame.EntityId] = frame
 					if frame.Kind == entityv1.EntityUpdateKind_ENTITY_UPDATE_KIND_DELETE {
 						delete(view, frame.EntityId)

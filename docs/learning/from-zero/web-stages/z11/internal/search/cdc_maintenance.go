@@ -8,9 +8,9 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
-// CDC maintenance keeps the dedicated topic intact. With Canal stopped, its
-// end offset separates obsolete CDC from the new snapshot's incremental input.
-// The snapshot covers all earlier database changes. Never reset a live group.
+// CDC 维护保留专用主题的完整内容。停止 Canal 后，主题末尾位点
+// 将过时 CDC 与新快照的增量输入分隔开。
+// 快照覆盖此前所有数据库变更。绝不能重置仍在运行的消费组。
 type cdcMaintenance struct {
 	k            *kafka.Client
 	topic, group string

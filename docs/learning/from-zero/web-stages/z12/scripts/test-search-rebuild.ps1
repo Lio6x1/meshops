@@ -1,5 +1,5 @@
-# Explicit recovery drill. Requires course applications stopped. Deletes only
-# the derived task index and makes its marker incomplete, then rebuilds it.
+# 显式恢复演练，要求先停止学习应用。只删除派生任务索引，
+# 并将其标记置为未完成，然后执行重建。
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'search-env.ps1') -AllowIncomplete
 . (Join-Path $PSScriptRoot 'processes.ps1')
@@ -13,8 +13,8 @@ Assert-CoursePortsAvailable @(Get-CourseServicePorts $courseRoot @('entity','tas
 Push-Location $courseRoot
 try {
     function Get-BusinessChecksums {
-        # Read-only checksum across every business table, including Outbox and
-        # execution reports. The password stays inside the MySQL container.
+        # 只读计算全部业务表的校验和，包含 Outbox 和执行回报。
+        # 口令始终留在 MySQL 容器内部。
         $rows = & docker compose exec -T mysql sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot -N -B meshops_course -e "CHECKSUM TABLE integration_sources,entities,entity_history_samples,tasks,task_status_history,outbox_events,consumer_dedup,task_dispatches,task_execution_reports,history_sample_keys,course_bindings EXTENDED;"'
         if ($LASTEXITCODE) { throw 'Could not read business checksums.' }
         if (@($rows).Count -ne 11 -or ($rows -join "`n") -match '\bNULL\b') { throw 'Incomplete business checksum response.' }

@@ -30,8 +30,8 @@ func retryable(err error) bool {
 	return false
 }
 
-// RunExecutor uses a bounded pool, and an independent listener so cancellation
-// can durably overtake a worker's timer or result transaction.
+// RunExecutor 使用有界工作池与独立监听器，使取消能够在
+// 工作协程的计时器到期或结果事务提交前完成持久化。
 func RunExecutor(ctx context.Context, inbox *Inbox, commands executorv1.ExecutorServiceClient, tasks taskv1.TaskServiceClient, executor, mode string, concurrency int, stats *ExecutorStats) error {
 	if concurrency < 1 || concurrency > 4 {
 		return errors.New("concurrency must be 1..4")
@@ -45,9 +45,9 @@ func RunExecutor(ctx context.Context, inbox *Inbox, commands executorv1.Executor
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 	active := map[string]bool{}
-	// Notifications are hints, not the queue: bbolt remains authoritative. One
-	// buffered wake coalesces command bursts and worker completions; startup and
-	// the slow fallback recover work even when no new command arrives.
+	// 通知只起提示作用，队列仍以 bbolt 为准。一个带缓冲的
+	// 唤醒信号合并突发命令与工作协程完成事件；启动扫描和
+	// 低频兜底扫描确保没有新命令到达时也能恢复工作。
 	wake := make(chan struct{}, 1)
 	notify := func() {
 		select {
@@ -130,9 +130,9 @@ loop:
 		if full {
 			continue
 		}
-		// At most two small pages (including a wrap) per wake. Advance after
-		// each examined key, not the copied page's end: unused entries must not
-		// be skipped when the pool fills midway through a page.
+		// 每次唤醒最多读取两个小页（含回绕）。游标在每个已检查的键后
+		// 推进，不能直接推进到复制页末尾：如果工作池在页中途填满，
+		// 尚未使用的条目不能被跳过。
 		pageSize := concurrency * 2
 		var e error
 		if through == "" {
@@ -185,9 +185,9 @@ loop:
 		spare := len(active) < concurrency
 		mu.Unlock()
 		if spare {
-			// A worker may finish between the capacity break and this check.
-			// Continue the same page/round then; resetting its cursor would let
-			// a stream of lower keys repeatedly jump ahead of its unread tail.
+			// 工作协程可能在容量不足导致跳出之后、此次检查之前完成。
+			// 此时继续当前页和轮次；重置游标会让持续到来的
+			// 较小键反复插队，阻碍当前页未读取尾部的处理。
 			if examined < len(keys) || len(keys) == pageSize {
 				notify()
 			} else {
@@ -233,10 +233,10 @@ func executeOne(ctx context.Context, inbox *Inbox, tasks taskv1.TaskServiceClien
 				continue
 			}
 			if status.Code(e) == codes.FailedPrecondition && (pending.Status == commonv1.TaskStatus_TASK_STATUS_ACKED || pending.Status == commonv1.TaskStatus_TASK_STATUS_EXECUTING) {
-				// This explicit rejection proves the pending nonterminal report was
-				// not accepted: Task checks duplicate receipts before its terminal
-				// barrier. Confirm the authoritative identity and terminal state
-				// before retiring it; an unavailable reconciliation keeps it intact.
+				// 此明确拒绝证明待发送的非终态报告未被接受：
+				// Task 在终态屏障之前检查重复回执。
+				// 退役报告前，须确认权威身份与终态；
+				// 若对账暂不可用，则完整保留报告。
 				rpcCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 				current, queryErr := tasks.GetTask(rpcCtx, &taskv1.GetTaskRequest{TaskId: pending.TaskId})
 				cancel()
@@ -275,7 +275,7 @@ func executeOne(ctx context.Context, inbox *Inbox, tasks taskv1.TaskServiceClien
 		if current.Task == nil {
 			return errors.New("GetTask returned no task")
 		}
-		// Re-read local cancellation after the network call, before selecting a report.
+		// 网络调用后、选择报告前，重新读取本地取消状态。
 		v, e = inbox.Entry(key)
 		if e != nil {
 			return e

@@ -123,8 +123,8 @@ func (d *Dispatcher) dispatchOne(ctx context.Context) (bool, error) {
 		}
 		return true, tx.Commit()
 	}
-	// Durable transport intent precedes stream send; interruption consumes this
-	// attempt after its ACK deadline and creates the next immutable attempt.
+	// 先持久化传输意图，再通过流发送；若中途发生中断，则在 ACK 截止时间后
+	// 耗尽本次尝试，并创建下一次不可变尝试。
 	command := &executorv1.ListenTasksResponse{}
 	if len(a.payload) == 0 || protojson.Unmarshal(a.payload, command) != nil {
 		return false, errors.New("legacy dispatch has no valid command_payload; explicit migration review required")

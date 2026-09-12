@@ -1,4 +1,4 @@
-// Package tasks implements the durable task fact and transport attempt stores.
+// Package tasks 实现任务事实与传输尝试的持久化存储。
 package tasks
 
 import (

@@ -19,11 +19,11 @@ service IngestService {
 
 message ReportEntityStatesRequest {
   repeated meshops.common.v1.EntityStateEvent events = 1;
-  // Persisted upload queue identity; survives reconnects/process restarts.
+  // 持久化上传队列的身份，重连和进程重启后保持不变。
   string gateway_epoch = 2;
-  // events[i] has upload sequence first_sequence+i, starting at 1.
+  // events[i] 的上传序号为 first_sequence+i，序号从 1 开始。
   int64 first_sequence = 3;
-  // Client's last durably stored server ACK, used to resume a stream.
+  // 客户端最后一次持久化的服务端 ACK，用于恢复上传流。
   int64 resume_after_sequence = 4;
 }
 

@@ -30,8 +30,8 @@ import (
 	"time"
 )
 
-// These tests require a real MySQL8 server. Missing infrastructure is a failure
-// of this explicit integration target, never a skipped acceptance pass.
+// 这些测试需要真实的 MySQL8 服务。基础设施缺失应使显式运行的
+// 集成测试目标失败，不能跳过后算作验收通过。
 func isolatedDB(t *testing.T) *sql.DB {
 	t.Helper()
 	dsn := os.Getenv("MESHOPS_TEST_MYSQL_DSN")
@@ -361,8 +361,8 @@ func TestA15A16A17TaskTransactionsAndIsolation(t *testing.T) {
 	if n != 1 {
 		t.Fatal("competing reports both advanced")
 	}
-	// Whichever report was accepted can be replayed with its original expected
-	// version. The receipt lookup must precede old-version validation.
+	// 无论最终接受了哪份回报，都能使用其原始预期版本重放。
+	// 必须先查询回执，再校验旧版本。
 	var winner string
 	f.db.QueryRow(`SELECT event_id FROM task_execution_reports WHERE disposition='applied' AND task_id=?`, id).Scan(&winner)
 	accepted := report
@@ -461,8 +461,8 @@ func TestA18OutboxOrderFailureAndExpiredLease(t *testing.T) {
 	}
 }
 
-// Release all callers after reading the same task so network latency cannot
-// accidentally turn the concurrent retry check into ten sequential requests.
+// 所有调用者读取同一任务后才同时放行，防止网络延迟
+// 意外将并发重试检查变成十次顺序请求。
 type gatedTaskReadClient struct {
 	taskv1.TaskServiceClient
 	waiting atomic.Int32
@@ -592,7 +592,7 @@ func TestA22TerminalResultAndLateAudit(t *testing.T) {
 	}
 }
 
-// Ensure source-relative fixture paths remain valid when executed by go test.
+// 确保 go test 执行时，相对于源文件的测试夹具路径仍然有效。
 func TestIntegrationFixtureFiles(t *testing.T) {
 	if _, e := os.Stat(filepath.Join("..", "..", "testdata", "migrations", "001_existing_task.sql")); e != nil {
 		t.Fatal(e)

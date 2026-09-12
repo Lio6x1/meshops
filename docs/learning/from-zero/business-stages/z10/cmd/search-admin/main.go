@@ -1,4 +1,4 @@
-// search-admin performs local maintenance; it is not a public RPC service.
+// search-admin 执行本地维护操作，不提供公共 RPC 服务。
 package main
 
 import (
@@ -69,7 +69,7 @@ func run() error {
 	if enabled != 1 || format != "ROW" || image != "FULL" {
 		return fmt.Errorf("MySQL requires binlog ROW/FULL")
 	}
-	// Password alphabet is validated above; no arbitrary SQL text is accepted.
+	// 上面已校验口令允许使用的字符，不接受任意 SQL 文本。
 	for _, statement := range []string{
 		"CREATE USER IF NOT EXISTS 'meshops_canal'@'%' IDENTIFIED BY '" + password + "'",
 		"ALTER USER 'meshops_canal'@'%' IDENTIFIED BY '" + password + "'",
@@ -100,8 +100,8 @@ func run() error {
 		return fmt.Errorf("CDC topic must have one healthy partition")
 	}
 	start, err := search.CDCBoundary(ctx, k)
-	// Windows stops a process abruptly; its Kafka membership may take a session
-	// timeout to expire. Never bypass the idle check with an unfenced reset.
+	// Windows 会直接终止进程，其 Kafka 成员资格可能要等会话超时才失效。
+	// 必须等待消费组空闲，不能在缺少隔离保障时重置并绕过该检查。
 	idleDeadline := time.Now().Add(40 * time.Second)
 	for err != nil && ctx.Err() == nil && time.Now().Before(idleDeadline) {
 		timer := time.NewTimer(time.Second)

@@ -100,8 +100,8 @@ def main():
     finally:
         restored = []
         try:
-            # Attempt every restore even if one source fails. Never mask an
-            # incomplete restoration with a success report.
+            # 某个来源恢复失败时，仍要尝试恢复其余全部来源；
+            # 不能用成功报告掩盖恢复不完整。
             for source in original:
                 try:
                     set_count(source['sourceId'], source['count'])

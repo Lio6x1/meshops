@@ -63,7 +63,7 @@ func TestDispatcherStatusPropagatesLagFailure(t *testing.T) {
 	if status.Code(err) != codes.Unavailable || response != nil {
 		t.Fatalf("failed lag returned response=%v error=%v", response, err)
 	}
-	// Authorization must precede dependency access.
+	// 必须先鉴权，再访问依赖。
 	f.dispatcher.SetLagReader(func(context.Context, string, string) (int64, error) {
 		t.Error("unauthorized caller queried lag")
 		return 0, nil

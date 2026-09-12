@@ -88,8 +88,8 @@ func (e *Entity) unregisterSubscription(tenant string, sub *subscription) {
 		e.reconcileDone = nil
 	}
 	e.mu.Unlock()
-	// A racing new subscriber may start its own sweep. Join only the old worker,
-	// outside the mutex it needs to finish; never cancel the replacement worker.
+	// 并发加入的新订阅者可能启动自己的扫描。只等待旧工作协程退出，
+	// 等待时须释放它退出所需的互斥锁；不能取消替代它的新工作协程。
 	if done != nil {
 		<-done
 	}
@@ -107,15 +107,15 @@ func (e *Entity) reconcileLoop(ctx context.Context) {
 			return
 		case <-timer.C:
 		}
-		_ = e.reconcileSubscribers(ctx) // Each affected stream receives the read error.
+		_ = e.reconcileSubscribers(ctx) // 每个受影响的流都会收到读取错误。
 	}
 }
 
 func (e *Entity) readVersions(ctx context.Context, keys map[entityAddress]struct{}) (string, map[entityAddress]int64, error) {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
-	// Read the active generation once, then verify it in the metadata pipeline.
-	// A concurrent maintenance switch must never validate another namespace.
+	// 先读取一次活动代次，再在元数据流水线中验证。
+	// 并发的维护切换不能导致误验证另一个命名空间。
 	current, err := e.generation(ctx)
 	if err != nil {
 		return "", nil, err

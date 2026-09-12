@@ -1,5 +1,5 @@
-// Package verification drives isolated real processes and dependencies. It is
-// verification tooling, not an alternative implementation of business rules.
+// Package verification 驱动隔离的真实进程与依赖，
+// 仅作为验证工具，不提供业务规则的另一套实现。
 package verification
 
 import (
@@ -68,7 +68,7 @@ func address() (net.Listener, error) {
 	return l, nil
 }
 
-// NewEnvironment keeps the historical single-type fixture used by fault probes.
+// NewEnvironment 保留故障探测沿用的单类型测试夹具。
 func NewEnvironment(ctx context.Context, root string, entities, sourceCount int) (*Environment, error) {
 	return newEnvironment(ctx, root, entities, sourceCount, "person")
 }
@@ -128,7 +128,7 @@ func newEnvironment(ctx context.Context, root string, entities, sourceCount int,
 	if e = os.WriteFile(env.Manifest, raw, 0600); e != nil {
 		return env, e
 	}
-	// These variables belong only to this short-lived verification process.
+	// 这些变量仅属于当前短生命周期的验证进程。
 	for k, v := range env.env {
 		if e = os.Setenv(k, v); e != nil {
 			return env, e
@@ -226,8 +226,8 @@ func (e *Environment) Start(ctx context.Context, role string) error {
 	}
 	command.Stdout = log
 	command.Stderr = log
-	// Hold every future service port until its child is ready to bind. Without
-	// reservations, earlier services can use these ports for outbound sockets.
+	// 预留后续每个服务的端口，直到对应子进程准备绑定。
+	// 若不预留，先启动的服务可能将这些端口用于出站连接。
 	for _, l := range p.reservations {
 		l.Close()
 	}
@@ -277,8 +277,8 @@ func (e *Environment) Connect() error {
 	}
 	e.Connections = append(e.Connections, c)
 	e.Entity = entityv1.NewEntityServiceClient(c)
-	// Cache the namespace while Redis is healthy. Fault probes deliberately query
-	// Kafka lag during a Redis outage, when resolving the namespace would fail.
+	// 在 Redis 正常时缓存命名空间。故障探测会刻意在 Redis 中断期间查询
+	// Kafka 积压量，此时重新解析命名空间会失败。
 	ctx, cancel := context.WithTimeout(platform.Outgoing(context.Background(), e.Operator), 5*time.Second)
 	defer cancel()
 	ids := sourceRawIDs(e.Sources[0])
@@ -331,6 +331,6 @@ func (e *Environment) Close() {
 	if e.admin != nil {
 		e.admin.Close()
 	}
-	// Namespaced facts are intentionally kept for inspection; never clear a
-	// shared Redis active pointer or another run's database/topic.
+	// 刻意保留命名空间内的事实供检查；绝不能清除共享的
+	// Redis 活动指针，或其他运行使用的数据库和主题。
 }

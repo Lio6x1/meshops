@@ -1,5 +1,5 @@
-// Only the latest request for the current screen may publish rows, cursors or
-// errors. Invalidating also suppresses finally callbacks from previous screens.
+// 只有当前页面的最新请求可以更新列表、游标或错误信息。
+// 使请求失效时，也会阻止旧页面请求的 finally 回调更新状态。
 export class LatestRequest {
   private generation = 0
   invalidate() {

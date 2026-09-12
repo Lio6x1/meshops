@@ -17,7 +17,7 @@ service TaskService {
   rpc GetTask      (GetTaskRequest)       returns (GetTaskResponse);
   rpc ListTasks    (ListTasksRequest)     returns (ListTasksResponse);
   rpc GetTaskHistory(GetTaskHistoryRequest) returns (GetTaskHistoryResponse);
-  // Authenticated execution feedback; status/audit/outbox update atomically.
+  // 经过身份校验的执行回报；状态、审计与 outbox 在同一事务中更新。
   rpc ReportTaskStatus(ReportTaskStatusRequest) returns (ReportTaskStatusResponse);
 }
 

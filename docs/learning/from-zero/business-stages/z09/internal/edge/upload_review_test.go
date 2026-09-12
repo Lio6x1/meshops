@@ -45,8 +45,8 @@ func TestUploadPreservesFatalFailureDuringShutdown(t *testing.T) {
 				close(client.release)
 				t.Fatal("Upload did not enter stream setup")
 			}
-			// The generator ends while stream setup already has a concrete failure.
-			// Exercise Upload's error selection before the CLI joins its result.
+			// 生成器结束时，流建立过程已发生明确错误。
+			// 验证 CLI 等待上传结果前，Upload 的错误选择逻辑。
 			cancel()
 			close(client.release)
 			select {

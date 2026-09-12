@@ -12,8 +12,8 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-// stream keeps the upstream flow-control boundary: no unbounded fanout queue is
-// added here. A slow browser gets a write deadline and cancellation reaches gRPC.
+// stream 保留上游的流量控制边界，不在此引入无界的扇出队列。
+// 慢浏览器受写入截止时间约束，取消信号会继续传递到 gRPC。
 func (s *Server) stream(w http.ResponseWriter, r *http.Request) {
 	p := r.Context().Value(sessionKey{}).(*session)
 	ids := strings.Split(r.URL.Query().Get("entity_ids"), ",")

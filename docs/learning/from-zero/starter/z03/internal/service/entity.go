@@ -28,7 +28,7 @@ func (s *EntityServer) GetSnapshot(ctx context.Context, req *entityv1.GetSnapsho
 	return &entityv1.GetSnapshotResponse{EntityId: id, Snapshot: row, Found: found}, nil
 }
 
-// PutSnapshot is a teaching-only RPC; final ingestion replaces it.
+// PutSnapshot 仅用于教学，最终由正式接入链路替代。
 func (s *EntityServer) PutSnapshot(ctx context.Context, req *entityv1.PutSnapshotRequest) (*entityv1.PutSnapshotResponse, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, status.FromContextError(err).Err()
@@ -36,6 +36,6 @@ func (s *EntityServer) PutSnapshot(ctx context.Context, req *entityv1.PutSnapsho
 	if err := s.repo.Put(req.GetEntityId(), req.GetSnapshot()); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
-	// This acknowledges an in-process memory write only.
+	// 此处只确认已写入当前进程的内存。
 	return &entityv1.PutSnapshotResponse{EntityId: req.GetEntityId()}, nil
 }

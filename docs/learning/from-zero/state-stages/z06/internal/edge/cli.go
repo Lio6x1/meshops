@@ -259,7 +259,7 @@ generation:
 	return 0
 }
 
-// joinUpload keeps a concrete uploader failure visible when generation ends.
+// joinUpload 在生成结束时仍保留上传器的明确错误，避免把失败当作正常退出。
 func joinUpload(result <-chan error) error {
 	err := <-result
 	if errors.Is(err, context.Canceled) || status.Code(err) == codes.Canceled {

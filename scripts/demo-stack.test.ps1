@@ -1,5 +1,5 @@
-# Pure orchestration contract tests. The docker function below records arguments;
-# no Docker engine, containers, volumes, or external commands are invoked.
+# 仅验证编排契约；下面的 docker 函数只记录参数，
+# 不会调用 Docker 引擎、容器、数据卷或外部命令。
 $ErrorActionPreference = 'Stop'
 $testState = [pscustomobject]@{
     Calls = [Collections.Generic.List[object]]::new()

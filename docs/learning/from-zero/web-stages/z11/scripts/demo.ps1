@@ -39,7 +39,7 @@ try {
         $dispatch = Invoke-CourseCommand @('dispatch','get','--task',$created.taskId)
         $completed += @{entityId="$type-001";taskId=$created.taskId;status=$status;result=$effect;dispatch=$dispatch;history=$history}
     }
-    # A finite real subscription verifies the initial snapshot boundary and streaming path.
+    # 使用有界的真实订阅，验证初始快照边界和流式传输链路。
     $stream = @(& $opctl subscribe --entities person-001,drone-001,vehicle-001,robot-001,sensor-001,facility-001 --duration 3s)
     if ($LASTEXITCODE -ne 0) { throw 'subscription failed' }
     $frames = @($stream | ForEach-Object { $_ | ConvertFrom-Json })

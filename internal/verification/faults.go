@@ -45,8 +45,8 @@ func recoverDependency(stop, restore func() error, work func(func() error) error
 			err = errors.Join(err, recoverNow())
 		}
 	}()
-	// A failed stop can mean the dependency stopped but its response was lost.
-	// Install recovery first, and preserve both primary and restoration errors.
+	// 停止操作报错可能意味着依赖已停止，只是响应丢失。
+	// 先注册恢复操作，同时保留原始错误与恢复错误。
 	if err = stop(); err != nil {
 		return err
 	}
@@ -122,8 +122,8 @@ func (e *Environment) waitVersion(ctx context.Context, version int64) error {
 	}
 }
 
-// Faults intentionally stops the three dedicated reference Compose services.
-// Run serially, with no demo or integration suite using this Compose project.
+// Faults 会主动停止参考 Compose 项目中的三个专用服务。
+// 必须串行运行，期间不能有演示或集成测试使用此 Compose 项目。
 func Faults(ctx context.Context, root string) (report FaultReport, err error) {
 	env, err := NewEnvironment(ctx, root, 1, 1)
 	if err != nil {
@@ -189,9 +189,9 @@ func Faults(ctx context.Context, root string) (report FaultReport, err error) {
 				if dependency == "entity-process" {
 					return env.Start(c, "entity")
 				}
-				// Restart the exact container stopped above. Base-only `up` can
-				// recreate an instance configured by an overlay (for example the
-				// Search MySQL binlog flags), changing the environment under test.
+				// 重启上面停止的原容器。仅使用基础配置执行 `up`，可能
+				// 重建原先使用叠加配置的实例（例如搜索用 MySQL 的 binlog 参数），
+				// 从而改变被测环境。
 				return env.compose(c, "start", "--wait", dependency)
 			}
 			return recoverDependency(stopDependency, restore, func(restore func() error) error {

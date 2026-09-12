@@ -9,8 +9,8 @@ import (
 	"time"
 )
 
-// ProjectorGroup binds Kafka progress to the Redis namespace it describes. A
-// lost namespace must replay from a fresh group instead of reusing lost progress.
+// ProjectorGroup 将 Kafka 进度绑定到其对应的 Redis 命名空间。
+// 命名空间丢失后必须使用新消费组重放，不能复用已失去对应视图的进度。
 func (e *Entity) ProjectorGroup(ctx context.Context) (string, error) {
 	generation, err := e.generation(ctx)
 	if err != nil {
@@ -19,14 +19,14 @@ func (e *Entity) ProjectorGroup(ctx context.Context) (string, error) {
 	return ProjectorGroupName(e.cfg.ConsumerGroupPrefix, generation), nil
 }
 
-// ProjectorGroupName lets observation tooling retain the group identity before
-// a Redis outage. Generation must be the active view ID observed from Entity.
+// ProjectorGroupName 让观测工具能在 Redis 故障前保存消费组身份。
+// Generation 必须是从 Entity 观测到的活动视图 ID。
 func ProjectorGroupName(prefix, generation string) string {
 	return prefix + "entity-projector-v1-" + generation
 }
 
-// Bounds alone are not authority: a failed rebuild also writes them. Activation
-// publishes the verified marker atomically with the namespace pointer.
+// 只有边界不足以构成恢复授权：失败的重建也会写入边界。激活时
+// 会将已验证标记与命名空间指针原子发布。
 var activateVerifiedView = redis.NewScript(`
 if redis.call('GET',KEYS[1])~=ARGV[1] then return 0 end
 if redis.call('GET',KEYS[2])~='building' or redis.call('EXISTS',KEYS[3])~=1 or redis.call('EXISTS',KEYS[4])~=1 then return -1 end

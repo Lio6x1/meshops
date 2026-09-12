@@ -1,12 +1,12 @@
-# Stops/restarts only the dedicated meshops-course dependencies. Run serially,
-# after stopping the demo; never concurrently with tests or the benchmark.
+# 仅停止和重启专用 meshops-course 依赖。先停止演示，再串行执行；
+# 不得与测试或压测同时运行。
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'env.ps1')
 Push-Location $courseRoot
 try {
-    # Recovery must restart these existing instances. Recreating from only the
-    # base Compose file can silently remove settings supplied by an override
-    # (for example Search's MySQL binlog options).
+    # 恢复时必须重启原有实例。若只用基础 Compose 文件重建，
+    # 可能悄悄丢失覆盖配置提供的设置，
+    # 例如搜索链路使用的 MySQL binlog 选项。
     $before = @{}
     foreach ($dependency in @('kafka','redis','mysql')) {
         $ids = @(& docker compose -f docker-compose.yml ps -q $dependency)

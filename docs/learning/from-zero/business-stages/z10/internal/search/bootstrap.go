@@ -14,8 +14,8 @@ const TaskIndexName = "meshops-tasks-v1"
 const CDCTopic = "meshops-task-search-cdc-v1"
 const CDCGroup = "meshops-task-search-v1"
 
-// Bound returns a runtime client tied to the bootstrap's actual index. Recreating
-// an empty index with the same name must not silently pass as recovered data.
+// Bound 返回绑定到引导记录中实际索引的运行时客户端。重新创建的
+// 同名空索引不能被静默当作已恢复的数据。
 func (s *Index) Bound(uuid string) *Index { clone := *s; clone.expectedUUID = uuid; return &clone }
 
 func (s *Index) checkIdentity(ctx context.Context) error {

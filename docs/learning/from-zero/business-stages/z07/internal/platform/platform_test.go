@@ -55,7 +55,7 @@ func TestAuthBoundary(t *testing.T) {
 	}
 }
 
-// The course transport has no TLS; configuration must not expose Bearer tokens off-host.
+// 教学传输未启用 TLS，配置必须防止 Bearer 令牌传出本机。
 func TestPlaintextRPCRejectsNonLoopback(t *testing.T) {
 	for _, endpoint := range []string{"0.0.0.0:50052", "192.0.2.1:50052", "[::]:50052", "example.com:50052", "dns:///127.0.0.1:50052", "127.0.0.1:0", "127.0.0.1:65536"} {
 		t.Run("dial_"+endpoint, func(t *testing.T) {

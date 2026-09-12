@@ -24,7 +24,7 @@ func courseCredentials(t *testing.T) {
 	}
 }
 
-// A12/A24: execute the real CLI functions against disk and a real TCP gRPC peer.
+// A12/A24：使用磁盘和真实 TCP gRPC 对端执行实际 CLI 函数。
 func TestGatewayCLIHundredOfflineEventsRestartAndDrain(t *testing.T) {
 	courseCredentials(t)
 	path := filepath.Join(t.TempDir(), "person.db")

@@ -28,11 +28,11 @@ type ReportEntityStatesRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	Events []*v1.EntityStateEvent `protobuf:"bytes,1,rep,name=events,proto3" json:"events,omitempty"`
-	// Persisted upload queue identity; survives reconnects/process restarts.
+	// 持久化上传队列的身份，重连和进程重启后保持不变。
 	GatewayEpoch string `protobuf:"bytes,2,opt,name=gateway_epoch,json=gatewayEpoch,proto3" json:"gateway_epoch,omitempty"`
-	// events[i] has upload sequence first_sequence+i, starting at 1.
+	// events[i] 的上传序号为 first_sequence+i，序号从 1 开始。
 	FirstSequence int64 `protobuf:"varint,3,opt,name=first_sequence,json=firstSequence,proto3" json:"first_sequence,omitempty"`
-	// Client's last durably stored server ACK, used to resume a stream.
+	// 客户端最后一次持久化的服务端 ACK，用于恢复上传流。
 	ResumeAfterSequence int64 `protobuf:"varint,4,opt,name=resume_after_sequence,json=resumeAfterSequence,proto3" json:"resume_after_sequence,omitempty"`
 }
 

@@ -20,7 +20,7 @@ type session struct {
 	id, csrf, role, actor, tenant, token string
 	expires                              time.Time
 	streams                              atomic.Int32
-	// Closing done also cancels streams already running when the user logs out.
+	// 关闭 done 也会取消用户退出登录时仍在运行的流。
 	done chan struct{}
 }
 

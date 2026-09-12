@@ -6,9 +6,9 @@ import (
 	"math/rand"
 )
 
-// simulateMotion adds bounded, reproducible movement and battery variation to
-// the normalized fixture. It never invents missing components or capabilities.
-// Observation clocks and event identities intentionally remain real/fresh.
+// simulateMotion 为归一化测试数据加入有界、可复现的运动与电量变化，
+// 不会凭空补出缺失的组件或能力。
+// 观测时间仍使用真实时钟，事件标识仍按每次观测新生成。
 func simulateMotion(event *commonv1.EntityStateEvent, rng *rand.Rand) {
 	if event == nil || event.Snapshot == nil {
 		return

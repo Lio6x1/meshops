@@ -33,7 +33,7 @@ async function search(more = false) {
   busy.value = true
   error.value = ''
   expired.value = false
-  // Freeze both filters and the opaque cursor together before sending.
+  // 发送前同时固定筛选条件和不透明游标，避免请求期间发生变化。
   const path =
     '/api/v1/search/tasks' +
     query({

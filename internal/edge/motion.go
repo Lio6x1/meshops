@@ -2,9 +2,9 @@ package edge
 
 import "math"
 
-// demoRoute returns metres in the 1000 x 640 schematic. Periods are deliberately
-// accelerated for a short demonstration, not a navigation or physics model.
-// Time, rather than version, keeps speed independent of the active entity count.
+// demoRoute 返回 1000 x 640 示意图中的米制坐标。为便于简短演示，
+// 运动周期被刻意加快，不作为导航或物理模型。
+// 基于时间而非版本计算位置，使速度不受活动实体数量影响。
 func demoRoute(kind string, seconds, offset float64) (x, y float64) {
 	period := 60.0
 	switch kind {
@@ -26,15 +26,15 @@ func demoRoute(kind string, seconds, offset float64) (x, y float64) {
 	case "person":
 		return rectangleRoute(phase, 45, 40, 330, 270)
 	case "vehicle":
-		// Main horizontal and vertical roads plus the south/east perimeter road.
+		// 主要横纵道路，以及南侧和东侧的外围道路。
 		return rectangleRoute(phase, 450, 340, 940, 590)
 	default:
 		return rectangleRoute(phase, 45, 405, 325, 590)
 	}
 }
 
-// Walk each edge at constant speed; using perimeter distance avoids different
-// apparent speeds on the long and short sides of a rectangle.
+// 沿每条边匀速移动；用周长距离计算，避免矩形长边与短边
+// 看起来速度不同。
 func rectangleRoute(phase, left, top, right, bottom float64) (float64, float64) {
 	width, height := right-left, bottom-top
 	distance := phase * 2 * (width + height)

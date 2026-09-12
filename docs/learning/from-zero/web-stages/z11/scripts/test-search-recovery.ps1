@@ -1,5 +1,5 @@
-# Requires running Task/Search and simulators. Only stops this Compose project's
-# Canal/ES containers; source task data and all named volumes are preserved.
+# 要求 Task/Search 和模拟器已启动。仅停止此 Compose 项目的
+# Canal/ES 容器，保留任务源数据和全部命名卷。
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'search-env.ps1')
 Push-Location $courseRoot

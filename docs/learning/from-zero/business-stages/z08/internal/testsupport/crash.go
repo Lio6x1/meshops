@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-// Barrier is reached only after the test child has performed the specified
-// durable operation. The parent uses Process.Kill, so no deferred Close runs.
+// Barrier 只在测试子进程完成指定的持久化操作后到达。
+// 父进程使用 Process.Kill 终止子进程，因此不会执行延迟调用的 Close。
 func Barrier(t *testing.T) {
 	t.Helper()
 	if err := os.WriteFile(filepath.Join(os.Getenv("MESHOPS_CRASH_DIR"), "barrier"), []byte("durable boundary reached"), 0600); err != nil {

@@ -8,8 +8,8 @@ import (
 	"go.yaml.in/yaml/v3"
 )
 
-// These checks guard the actual deployable configuration: an accidental ports
-// entry must not turn the explicit plaintext demo mode into an exposed API.
+// 这些检查保护实际部署配置，防止意外添加 ports 映射，
+// 把明确限定在内部网络的明文演示接口暴露出去。
 func TestDemoComposePublishesOnlyLocalWebAndKeepsSeparateProject(t *testing.T) {
 	raw, err := os.ReadFile("../../compose.demo.yml")
 	if err != nil {
@@ -46,8 +46,8 @@ func TestDemoComposePublishesOnlyLocalWebAndKeepsSeparateProject(t *testing.T) {
 			t.Errorf("%s overrides network mode", name)
 		}
 		if name == "web" {
-			// Only nginx joins both bridges. All application and storage
-			// containers remain on the internal network without host ports.
+			// 只有 nginx 同时加入两个网桥；所有应用和存储
+			// 容器都留在内部网络，不向主机发布端口。
 			if len(service.Networks) != 2 || !((service.Networks[0] == "frontend" && service.Networks[1] == "private") || (service.Networks[0] == "private" && service.Networks[1] == "frontend")) {
 				t.Error("web must join exactly the frontend and private networks")
 			}

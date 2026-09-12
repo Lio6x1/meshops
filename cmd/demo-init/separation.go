@@ -23,9 +23,9 @@ func runtimeSecretNames() []string {
 	return names
 }
 
-// The common volume does not imply common read privileges. Full bootstrap
-// secrets belong to root; the application group sees only the trusted Registry
-// subset. Gateway's separate UID can additionally read browser access codes.
+// 共享数据卷不代表共享读取权限。完整初始化凭证
+// 归 root 所有；应用组只能读取可信 Registry 的必要子集。
+// 网关使用独立 UID，额外获得浏览器访问码的读取权限。
 func ensureDerivedSecrets(dir string, full map[string]string) error {
 	for _, item := range []struct {
 		name     string

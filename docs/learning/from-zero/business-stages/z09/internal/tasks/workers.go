@@ -20,7 +20,7 @@ type Bus interface {
 }
 
 func (s *Service) Run(ctx context.Context, b Bus) error {
-	// A stalled Kafka publication must never postpone the deadline barrier.
+	// Kafka 发布阻塞不能推迟截止时间屏障的执行。
 	var workers sync.WaitGroup
 	start := func(name string, period time.Duration, work func(context.Context) error) {
 		workers.Add(1)
@@ -47,8 +47,8 @@ func (s *Service) Run(ctx context.Context, b Bus) error {
 	return ctx.Err()
 }
 
-// PublishOutbox claims only the smallest unpublished ID of each task. An expired
-// lease may duplicate publication; it can never authorize publishing a later ID.
+// PublishOutbox 只领取每个任务中 ID 最小的未发布记录。租约过期
+// 可能导致重复发布，但绝不能据此越过该记录发布更大的 ID。
 func (s *Service) PublishOutbox(ctx context.Context, b Bus) error {
 	for i := 0; i < 100; i++ {
 		ok, e := s.publishOne(ctx, b)

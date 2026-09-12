@@ -5,8 +5,8 @@ foreach ($tool in @('entity', 'query', 'put')) {
     go build -o ".local/$tool.exe" "./cmd/$tool"
     if ($LASTEXITCODE -ne 0) { throw "build $tool failed" }
 }
-# Let the OS choose a free port. A different process could still claim it
-# between Stop and server start; rerun the script if that rare race occurs.
+# 让操作系统选择空闲端口；释放监听器到服务启动之间，其他进程仍可能抢占它。
+# 如果发生这种低概率竞争，重新运行脚本即可。
 $probe = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback, 0)
 $probe.Start()
 $port = $probe.LocalEndpoint.Port

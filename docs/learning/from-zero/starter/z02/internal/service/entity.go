@@ -20,7 +20,7 @@ func (s *EntityServer) GetSnapshot(ctx context.Context, req *entityv1.GetSnapsho
  if err := ctx.Err(); err != nil { return nil, status.FromContextError(err).Err() }
  id := req.GetEntityId()
  if strings.TrimSpace(id) == "" { return nil, status.Error(codes.InvalidArgument, "entity_id is required") }
- // This fixed row exists only to observe the first query round trip.
+ // 这条固定记录仅用于观察第一次查询请求的完整往返。
  if id != "person-001" { return &entityv1.GetSnapshotResponse{EntityId:id, Found:false}, nil }
  return &entityv1.GetSnapshotResponse{
   EntityId:id, Found:true,

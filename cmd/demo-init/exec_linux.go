@@ -7,7 +7,7 @@ import (
 	"syscall"
 )
 
-// Replace the wrapper so the actual server receives Docker's SIGTERM as PID1.
+// 替换启动包装进程，使真正的服务作为 PID 1 接收 Docker 的 SIGTERM。
 func replaceProcess(args []string) error { return syscall.Exec(args[0], args, os.Environ()) }
 func ownSecret(path string) error {
 	if os.Geteuid() == 0 {

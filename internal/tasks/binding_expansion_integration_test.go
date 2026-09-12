@@ -11,8 +11,8 @@ import (
 	"example.com/meshops-course/internal/platform"
 )
 
-// Exercise the exact persisted six-to-thirty manifest upgrade in an isolated
-// database. The old task/outbox facts and machine credential hashes survive.
+// 在隔离数据库中验证清单从六个实体升级到三十个实体的实际持久化过程。
+// 原有任务/outbox 事实和机器凭据哈希均应保留。
 func TestDemoEntityExpansionIsAdditiveAndAtomic(t *testing.T) {
 	ctx := context.Background()
 	db := isolatedDB(t)
@@ -65,7 +65,7 @@ func TestDemoEntityExpansionIsAdditiveAndAtomic(t *testing.T) {
 		}
 	}
 	checkCount(6)
-	// A conflicting credential must roll back source JSON expansion and inserts.
+	// 凭据冲突必须使来源 JSON 扩展及插入操作全部回滚。
 	corrupt := load()
 	corrupt.Credentials["demo_tenant:personnel_sim"] = strings.Repeat("z", 40)
 	if err := SeedWithEntityExpansion(ctx, db, corrupt); err == nil {

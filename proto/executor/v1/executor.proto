@@ -6,8 +6,8 @@ option go_package = "example.com/meshops-course/gen/executor/v1;executorv1";
 
 import "common/v1/task.proto";
 
-// Hosted by the Dispatcher process, not a fifth central service.
-// Feedback goes to TaskService.ReportTaskStatus.
+// 由 Dispatcher 进程承载，不另设第五个中心服务。
+// 执行反馈发送到 TaskService.ReportTaskStatus。
 service ExecutorService {
   rpc ListenTasks(ListenTasksRequest) returns (stream ListenTasksResponse);
 }

@@ -22,10 +22,10 @@ message EntityStateEvent {
   google.protobuf.Timestamp received_at = 7;
   int32 schema_version = 8;
   EntitySnapshot snapshot = 9;
-  // Explicit lifecycle; UNSPECIFIED is invalid once business handling is enabled.
+  // 显式生命周期；启用业务处理后不允许使用 UNSPECIFIED。
   EntityOperation operation = 10;
   google.protobuf.Timestamp expires_at = 11;
-  // Assigned by ownership configuration, not by arbitrary client timestamps.
+  // 由归属配置分配，不能取自任意客户端时间戳。
   int64 source_generation = 12;
 }
 
@@ -51,7 +51,7 @@ message EntitySnapshot {
   FacilityState facility = 13;
 }
 
-// Optional components: absent means unknown/not applicable, not zero.
+// 可选组件：缺失表示未知或不适用，不表示数值为零。
 message PowerState {
   optional double battery_percent = 1;
 }

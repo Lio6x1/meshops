@@ -8,8 +8,8 @@ import (
 	"example.com/meshops-course/internal/platform"
 )
 
-// A profile changes the input mix, not the tested services or offered rate.
-// Each source still owns one adapter and an equal number of authoritative IDs.
+// 配置方案仅改变输入构成，被测服务和输入速率保持不变。
+// 每个来源仍对应一个适配器，并拥有相同数量的权威 ID。
 type benchmarkSource struct {
 	Adapter    string
 	IDs        []string
@@ -53,8 +53,8 @@ type loadTarget struct {
 	rawID, entityID string
 }
 
-// Materialize the registry once. Hot-path generation must not sort or scan a
-// thousand-entry map for each event. Raw IDs need not equal canonical IDs.
+// 一次性构建注册表。热路径生成事件时，不能为每个事件
+// 排序或扫描上千条目的映射。原始 ID 无需与规范 ID 相同。
 func newLoadDriver(env *Environment) (*loadDriver, error) {
 	if len(env.Sources) == 0 {
 		return nil, errors.New("load driver requires sources")
@@ -98,6 +98,6 @@ func sourceRawIDs(source platform.Source) []string {
 	return ids
 }
 
-// Taking indices 0,50,100 with ten round-robin sources only samples source 0.
-// Rotate the one-in-50 observation slot so all ten adapters/sources are seen.
+// 十个来源轮询输入时，采样索引 0、50、100 只能采到来源 0。
+// 轮换每 50 条中的观测位置，确保十个适配器及来源均被观测。
 func observeScheduled(index, sources int) bool { return index%50 == (index/50)%sources }

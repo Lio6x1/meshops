@@ -2,7 +2,7 @@ package config
 
 import "github.com/zeromicro/go-zero/zrpc"
 
-// Embedding exposes Name, ListenOn and the framework configuration fields.
+// 嵌入配置类型，使 Name、ListenOn 及框架配置字段可直接使用。
 type Config struct {
  zrpc.RpcServerConf
 }

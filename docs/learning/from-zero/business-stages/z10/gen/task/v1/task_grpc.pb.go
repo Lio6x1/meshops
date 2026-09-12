@@ -27,7 +27,7 @@ type TaskServiceClient interface {
 	GetTask(ctx context.Context, in *GetTaskRequest, opts ...grpc.CallOption) (*GetTaskResponse, error)
 	ListTasks(ctx context.Context, in *ListTasksRequest, opts ...grpc.CallOption) (*ListTasksResponse, error)
 	GetTaskHistory(ctx context.Context, in *GetTaskHistoryRequest, opts ...grpc.CallOption) (*GetTaskHistoryResponse, error)
-	// Authenticated execution feedback; status/audit/outbox update atomically.
+	// 经过身份校验的执行回报；状态、审计与 outbox 在同一事务中更新。
 	ReportTaskStatus(ctx context.Context, in *ReportTaskStatusRequest, opts ...grpc.CallOption) (*ReportTaskStatusResponse, error)
 }
 
@@ -102,7 +102,7 @@ type TaskServiceServer interface {
 	GetTask(context.Context, *GetTaskRequest) (*GetTaskResponse, error)
 	ListTasks(context.Context, *ListTasksRequest) (*ListTasksResponse, error)
 	GetTaskHistory(context.Context, *GetTaskHistoryRequest) (*GetTaskHistoryResponse, error)
-	// Authenticated execution feedback; status/audit/outbox update atomically.
+	// 经过身份校验的执行回报；状态、审计与 outbox 在同一事务中更新。
 	ReportTaskStatus(context.Context, *ReportTaskStatusRequest) (*ReportTaskStatusResponse, error)
 	mustEmbedUnimplementedTaskServiceServer()
 }

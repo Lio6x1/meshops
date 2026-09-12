@@ -51,8 +51,8 @@ func emitReport(out, diagnostics io.Writer, report any, err error) int {
 	return 0
 }
 
-// Parse and reject invalid options before starting processes or allocating a
-// temporary database. Fault probes retain their independent person fixture.
+// 在启动进程或创建临时数据库之前解析并拒绝无效选项。
+// 故障探针仍使用独立的人员样例，不随压测类型配置变化。
 type options struct {
 	mode, profile string
 	seconds       int

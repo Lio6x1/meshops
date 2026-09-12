@@ -31,7 +31,7 @@ message TaskPayload {
 message TaskDefinition {
   string task_type = 1;
   string description = 2;
-  // Declarative parameter schema only; never executable code.
+  // 仅描述参数结构，不包含可执行代码。
   string parameter_schema_json = 3;
 }
 
@@ -56,9 +56,9 @@ message Task {
   string cancelled_reason = 14;
   string failure_reason = 15;
   string executor_id = 16;
-  // Stable across all delivery attempts for this business operation.
+  // 同一次业务操作的全部投递尝试共用此稳定键。
   string execution_key = 17;
-  // A cancellation request does not prove execution has stopped.
+  // 发出取消请求不代表执行已经停止。
   bool cancel_requested = 18;
   string result_json = 19;
   google.protobuf.Timestamp completed_at = 20;

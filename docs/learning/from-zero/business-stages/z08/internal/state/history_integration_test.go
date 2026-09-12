@@ -122,7 +122,7 @@ func TestMySQLSampleIdempotencePagingAgeAndBudget(t *testing.T) {
 	if err = db.QueryRowContext(ctx, "SELECT COUNT(*) FROM entity_history_samples WHERE tenant_id=?", tenant).Scan(&count); err != nil || count != 3 {
 		t.Fatal("age/budget must drop only candidates", count, err)
 	}
-	// A restart hydrates the last persisted sample and still rejects its replay.
+	// 重启后加载最后一个持久化样本，并继续拒绝其重放。
 	e.historyLast = map[string]*commonv1.EntityStateEvent{}
 	sample(third)
 	if err = db.QueryRowContext(ctx, "SELECT COUNT(*) FROM history_sample_keys WHERE tenant_id=?", tenant).Scan(&count); err != nil || count != 3 {

@@ -11,8 +11,8 @@ import (
 	"time"
 )
 
-// One pending slot per entity coalesces only data frames. SNAPSHOT_END and
-// HEARTBEAT are sent by the sole stream owner and never enter this map.
+// 每个实体只有一个待发送槽位，且仅合并数据帧。SNAPSHOT_END 与
+// HEARTBEAT 由唯一的流管理协程发送，绝不进入此映射。
 type subscription struct {
 	mu                        sync.Mutex
 	ids                       map[string]bool
@@ -83,8 +83,8 @@ func (e *Entity) notify(tenant, generation string, update *entityv1.EntityUpdate
 	e.mu.Lock()
 	interested := make([]*subscription, 0, len(e.subscribers[tenant]))
 	for sub := range e.subscribers[tenant] {
-		// IDs are immutable after registration. Filter before allocating a payload
-		// clone, and do expensive fanout work without the registration mutex.
+		// ID 注册后不可变。先过滤再分配载荷
+		// 副本，并在不持有注册互斥锁时执行开销较大的扇出操作。
 		if sub.ids[update.EntityId] {
 			interested = append(interested, sub)
 		}
@@ -124,16 +124,16 @@ func (e *Entity) Subscribe(r *entityv1.SubscribeRequest, stream entityv1.EntityS
 	for _, id := range r.EntityIds {
 		sub.ids[id] = true
 	}
-	// Registration precedes all reads. Notification racing a read is retained and
-	// version-filtered after SNAPSHOT_END rather than being lost.
+	// 先注册再执行所有读取。与读取并发的通知会保留，
+	// 并在 SNAPSHOT_END 之后按版本过滤，不会丢失。
 	e.registerSubscription(tenant, sub)
 	defer e.unregisterSubscription(tenant, sub)
 	sendCtx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	frames := make(chan *entityv1.EntityUpdate)
 	sentResult := make(chan error, 1)
-	// grpc-go cancels a blocked Send when this RPC handler returns. There is one
-	// sender goroutine per RPC, never one goroutine per pending frame.
+	// 此 RPC 处理函数返回时，grpc-go 会取消阻塞中的 Send。每个
+	// RPC 只有一个发送协程，不会为每个待发送帧创建协程。
 	go func() {
 		for {
 			select {

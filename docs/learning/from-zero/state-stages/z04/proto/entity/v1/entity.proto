@@ -19,7 +19,7 @@ service EntityService {
   rpc GetSnapshot(GetSnapshotRequest) returns (GetSnapshotResponse);
   // 批量获取快照（一元）
   rpc BatchGetSnapshots(BatchGetSnapshotsRequest) returns (BatchGetSnapshotsResponse);
-  // Bounded sampled history, not a complete raw event archive.
+  // 有界的采样历史，不是完整原始事件归档。
   rpc ListHistorySamples(ListHistorySamplesRequest) returns (ListHistorySamplesResponse);
 }
 

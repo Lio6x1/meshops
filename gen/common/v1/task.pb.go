@@ -221,7 +221,7 @@ type TaskDefinition struct {
 
 	TaskType    string `protobuf:"bytes,1,opt,name=task_type,json=taskType,proto3" json:"task_type,omitempty"`
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	// Declarative parameter schema only; never executable code.
+	// 仅描述参数结构，不包含可执行代码。
 	ParameterSchemaJson string `protobuf:"bytes,3,opt,name=parameter_schema_json,json=parameterSchemaJson,proto3" json:"parameter_schema_json,omitempty"`
 }
 
@@ -346,9 +346,9 @@ type Task struct {
 	CancelledReason string                 `protobuf:"bytes,14,opt,name=cancelled_reason,json=cancelledReason,proto3" json:"cancelled_reason,omitempty"`
 	FailureReason   string                 `protobuf:"bytes,15,opt,name=failure_reason,json=failureReason,proto3" json:"failure_reason,omitempty"`
 	ExecutorId      string                 `protobuf:"bytes,16,opt,name=executor_id,json=executorId,proto3" json:"executor_id,omitempty"`
-	// Stable across all delivery attempts for this business operation.
+	// 同一次业务操作的全部投递尝试共用此稳定键。
 	ExecutionKey string `protobuf:"bytes,17,opt,name=execution_key,json=executionKey,proto3" json:"execution_key,omitempty"`
-	// A cancellation request does not prove execution has stopped.
+	// 发出取消请求不代表执行已经停止。
 	CancelRequested bool                   `protobuf:"varint,18,opt,name=cancel_requested,json=cancelRequested,proto3" json:"cancel_requested,omitempty"`
 	ResultJson      string                 `protobuf:"bytes,19,opt,name=result_json,json=resultJson,proto3" json:"result_json,omitempty"`
 	CompletedAt     *timestamppb.Timestamp `protobuf:"bytes,20,opt,name=completed_at,json=completedAt,proto3" json:"completed_at,omitempty"`

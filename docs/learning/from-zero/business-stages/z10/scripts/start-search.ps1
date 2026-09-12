@@ -1,4 +1,4 @@
-# Add only Search to an existing course run, or start it on its own.
+# 可向已运行的学习环境添加 Search，也可单独启动 Search。
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'search-env.ps1')
 . (Join-Path $PSScriptRoot 'processes.ps1')

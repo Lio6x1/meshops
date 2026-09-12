@@ -5,8 +5,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
-// Counts describe processing attempts, not unique business tasks. Replayed
-// records may increment duplicate or stale results after an interrupted commit.
+// 计数描述处理尝试次数，并非去重后的业务任务数。提交中断后，
+// 重放记录可能增加重复或过时结果的计数。
 var indexAttempts = promauto.NewCounterVec(prometheus.CounterOpts{Name: "meshops_search_index_attempts_total", Help: "Task projection attempts by bounded outcome."}, []string{"outcome"})
 var failedRecords = promauto.NewCounter(prometheus.CounterOpts{Name: "meshops_search_cdc_failed_attempts_total", Help: "Failed CDC handler attempts; Kafka offsets remain uncommitted."})
 var appliedRecords = promauto.NewCounter(prometheus.CounterOpts{Name: "meshops_search_cdc_records_total", Help: "CDC records fully applied, including replayed records."})

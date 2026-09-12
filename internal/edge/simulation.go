@@ -17,24 +17,24 @@ import (
 	"time"
 )
 
-// simulateMotion adds bounded, reproducible movement and battery variation to
-// the normalized fixture. It never invents missing components or capabilities.
-// Observation clocks and event identities intentionally remain real/fresh.
+// simulateMotion 为归一化测试数据加入有界、可复现的运动与电量变化，
+// 不会凭空补出缺失的组件或能力。
+// 观测时间仍使用真实时钟，事件标识仍按每次观测新生成。
 func simulateMotion(event *commonv1.EntityStateEvent, rng *rand.Rand) {
 	if event == nil || event.Snapshot == nil {
 		return
 	}
 	s := event.Snapshot
 	if s.Location != nil {
-		// Separate fixture positions without changing their source coordinate system.
-		// Static equipment keeps a stable anchor; moving types use event time.
+		// 在不改变来源坐标系的前提下，分开各组测试数据的位置。
+		// 静态设备保持固定锚点；移动类型使用事件时间。
 		h := fnv.New32a()
 		_, _ = h.Write([]byte(event.SourceId + ":" + event.EntityId))
 		bearing := float64(h.Sum32()%360) * math.Pi / 180
 		lat, lon := .0015*math.Sin(bearing), .0015*math.Cos(bearing)
-		// Six demonstration sites form two rows, leaving enough room for map
-		// markers and labels. Hash-only anchors can collide even for these six IDs.
-		// Unknown types retain a deterministic fallback around their own fixture.
+		// 六个演示站点排成两行，为地图标记与标签
+		// 留出足够空间。即使只有这六个 ID，纯哈希锚点也可能碰撞。
+		// 未知类型在自身测试数据附近保留确定性的兜底位置。
 		switch s.EntityType {
 		case "person":
 			lat, lon = .0015, -.003
@@ -49,9 +49,9 @@ func simulateMotion(event *commonv1.EntityStateEvent, rng *rand.Rand) {
 		case "facility":
 			lat, lon = -.0015, .003
 		}
-		// Each type has five separately registered fixture entities. Keep -001 at
-		// its original site and place -002..005 around it in real coordinates.
-		// This offset is independent of version, so fixed facilities never move.
+		// 每种类型有五个独立注册的测试实体。将 -001 保留在
+		// 原站点，并按真实坐标将 -002..005 放置在周围。
+		// 此偏移与版本无关，因此固定设施不会移动。
 		if suffix := strings.LastIndexByte(event.EntityId, '-'); suffix >= 0 {
 			if n, err := strconv.Atoi(event.EntityId[suffix+1:]); err == nil && n >= 2 && n <= simulation.MaxEntitiesPerSource {
 				angle := float64(n-2)*math.Pi/2 + math.Pi/4
@@ -60,7 +60,7 @@ func simulateMotion(event *commonv1.EntityStateEvent, rng *rand.Rand) {
 			}
 		}
 		if s.EntityType != "sensor" && s.EntityType != "facility" {
-			seconds := float64(event.EntityVersion%120000) / 2 // deterministic fallback for timeless unit fixtures
+			seconds := float64(event.EntityVersion%120000) / 2 // 无时间戳单元测试数据的确定性兜底值
 			if event.OccurredAt != nil && event.OccurredAt.CheckValid() == nil {
 				seconds = float64(event.OccurredAt.AsTime().UnixMilli()) / 1000
 			}
@@ -97,9 +97,9 @@ type simulationControlStore interface {
 	Observe(context.Context, string, string, simulation.Observation) error
 }
 
-// runControlledSimulation owns the sole upload worker. Transition acknowledgements
-// are published only after the old stream is cancelled and joined. Paused stops
-// both generation and transport; offline keeps the durable queue growing.
+// runControlledSimulation 管理唯一的上传工作协程。状态切换确认
+// 只在旧流取消且退出后发布。暂停状态停止
+// 生成与传输；离线状态则让持久化队列继续增长。
 func runControlledSimulation(ctx context.Context, store simulationControlStore, tenant, source string, capacity int, pollInterval, generateInterval time.Duration, generate func(int) error, upload func(context.Context) error, observation func() simulation.Observation, diagnostic io.Writer) (runErr error) {
 	mode := simulation.Paused
 	activeCount := 0
@@ -145,8 +145,8 @@ func runControlledSimulation(ctx context.Context, store simulationControlStore, 
 		if count < 0 || count > simulation.MaxEntitiesPerSource {
 			return fmt.Errorf("invalid desired simulation count %d", count)
 		}
-		// A custom opt-in manifest may contain fewer than five IDs. Acknowledge
-		// only the subset actually selected; never pretend missing IDs exist.
+		// 显式启用的自定义清单可能不足五个 ID。只确认
+		// 实际选中的子集，不能假装缺失的 ID 存在。
 		activeCount = min(count, capacity)
 		if desired != mode {
 			if err := stop(); err != nil {
@@ -190,8 +190,8 @@ func runControlledSimulation(ctx context.Context, store simulationControlStore, 
 			stopUpload()
 			stopUpload = nil
 			uploadDone = nil
-			// Cancellation and the worker result may both be ready. The select
-			// ordering must not turn a normal count/duration stop into a failure.
+			// 取消与工作协程结果可能同时就绪。select 的
+			// 选择顺序不能把正常的 count/duration 停止变成失败。
 			return shutdownResult(err)
 		case <-controlTick.C:
 			if err := refresh(); err != nil {

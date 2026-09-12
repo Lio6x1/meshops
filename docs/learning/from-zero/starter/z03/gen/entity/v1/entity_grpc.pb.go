@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type EntityServiceClient interface {
 	GetSnapshot(ctx context.Context, in *GetSnapshotRequest, opts ...grpc.CallOption) (*GetSnapshotResponse, error)
-	// Temporary teaching RPC. Later lessons replace it with Ingest.
+	// 临时教学 RPC，后续课程会用 Ingest 接入替换。
 	PutSnapshot(ctx context.Context, in *PutSnapshotRequest, opts ...grpc.CallOption) (*PutSnapshotResponse, error)
 }
 
@@ -58,7 +58,7 @@ func (c *entityServiceClient) PutSnapshot(ctx context.Context, in *PutSnapshotRe
 // for forward compatibility
 type EntityServiceServer interface {
 	GetSnapshot(context.Context, *GetSnapshotRequest) (*GetSnapshotResponse, error)
-	// Temporary teaching RPC. Later lessons replace it with Ingest.
+	// 临时教学 RPC，后续课程会用 Ingest 接入替换。
 	PutSnapshot(context.Context, *PutSnapshotRequest) (*PutSnapshotResponse, error)
 	mustEmbedUnimplementedEntityServiceServer()
 }

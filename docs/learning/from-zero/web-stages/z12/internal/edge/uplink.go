@@ -45,8 +45,8 @@ func reconnectDelay(attempt int) time.Duration {
 	return delay
 }
 
-// Upload maintains one in-flight contiguous batch. The ten-second timer cancels
-// this stream on a stuck Send/Recv; there is no unary deadline on stream life.
+// Upload 保持单个在途连续批次。若 Send/Recv 卡住，十秒计时器会取消
+// 该流；流生命周期不受一元调用截止时间约束。
 // drain=false 的生命周期由调用者 context 控制：队列暂时为空只等待下一批生成，
 // 不代表流已完成。每次重连从本地已确认水位重发，只有 ACK 才能删除持久化前缀。
 func Upload(ctx context.Context, q *Queue, client ingestv1.IngestServiceClient, batch, rate int, drain bool, stats *UplinkStats) error {
@@ -156,7 +156,7 @@ func uploadStream(ctx context.Context, q *Queue, client ingestv1.IngestServiceCl
 	}
 }
 
-// CopyEvent is used for intentional duplicates without allocating a new version.
+// CopyEvent 用于构造刻意重复的事件，不分配新版本。
 func CopyEvent(e *commonv1.EntityStateEvent) *commonv1.EntityStateEvent {
 	return proto.Clone(e).(*commonv1.EntityStateEvent)
 }

@@ -22,8 +22,8 @@ import (
 
 const activeKey = "meshops:view:active"
 
-// No EXPIRE is intentional: deletion and old-version rejection must survive
-// arbitrary offline replay. Redis is configured noeviction in the course.
+// 有意不设置 EXPIRE：删除标记和旧版本拒绝机制必须能抵御
+// 任意离线重放。课程中的 Redis 配置为 noeviction。
 var applyView = redis.NewScript(`
 local old=redis.call('HMGET',KEYS[1],'source_id','source_generation','version','event_id','payload_hash')
 if old[1] then
@@ -107,8 +107,8 @@ func NewEntity(cfg platform.Settings, r *platform.Registry, cache *redis.Client,
 	return e, nil
 }
 
-// Active namespaces are isolated with their input topic. Empty prefix preserves
-// the normal demo key; disposable verification topics cannot adopt its view.
+// 活动命名空间按输入主题隔离。空前缀保留
+// 常规演示键；临时验证主题不能借用该视图。
 func (e *Entity) activeKey() string {
 	if e.cfg.TopicPrefix == "" {
 		return activeKey
@@ -264,8 +264,8 @@ func (e *Entity) BatchGetSnapshots(ctx context.Context, r *entityv1.BatchGetSnap
 	return out, nil
 }
 
-// Rejected records are explicitly quarantined, while storage errors propagate so
-// the Kafka wrapper does not commit the record. Content is never logged.
+// 被拒绝的记录会明确隔离，存储错误则向上传递，确保
+// Kafka 封装层不会提交该记录。日志不记录消息内容。
 func (e *Entity) decode(raw []byte) (*commonv1.EntityStateEvent, error) {
 	v := &commonv1.EntityStateEvent{}
 	if err := proto.Unmarshal(raw, v); err != nil {
@@ -359,8 +359,8 @@ func (e *Entity) Run(ctx context.Context, b Consumer) error {
 		})
 	}()
 	go func() {
-		// Sampling intentionally drops age/budget candidates. A latest-view snapshot
-		// cannot restore historical samples, so it never grants this group a floor.
+		// 采样会按年龄与预算约定丢弃候选。最新视图快照
+		// 无法恢复历史样本，因此不会授予该消费组恢复下界。
 		slog.InfoContext(ctx, "history sampler uses lossy retained-history recovery", "group", e.cfg.ConsumerGroupPrefix+"entity-history-v1")
 		out <- b.Consume(ctx, e.cfg.ConsumerGroupPrefix+"entity-history-v1", e.cfg.TopicPrefix+"entity-state-events.v1", e.Sample)
 	}()

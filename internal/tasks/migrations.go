@@ -13,8 +13,8 @@ import (
 	"strings"
 )
 
-// SplitSQL understands the DELIMITER directives in the unchanged historical
-// migrations. It never sends a mysql-client directive to the SQL server.
+// SplitSQL 能解析未作修改的历史迁移脚本中的 DELIMITER 指令，
+// 不会把 mysql 客户端指令发送给 SQL 服务端。
 func SplitSQL(raw string) ([]string, error) {
 	var result []string
 	var b strings.Builder
@@ -50,9 +50,9 @@ func SplitSQL(raw string) ([]string, error) {
 	return result, nil
 }
 
-// Migrate serializes migrations with a MySQL advisory lock. Since MySQL DDL is
-// not transactional, each step is journaled before execution. An interrupted
-// uncertain step fails explicitly on restart for operator inspection.
+// Migrate 使用 MySQL 咨询锁串行执行迁移。由于 MySQL DDL 不支持事务，
+// 每一步执行前都先写入日志。若中断导致某一步结果不确定，
+// 重启时会明确报错，交由运维人员检查。
 func Migrate(ctx context.Context, db *sql.DB, dir string) error {
 	conn, e := db.Conn(ctx)
 	if e != nil {
@@ -80,8 +80,8 @@ func Migrate(ctx context.Context, db *sql.DB, dir string) error {
 			return fmt.Errorf("migration sequence gap: %s", filepath.Base(file))
 		}
 	}
-	// Adopt externally applied 001/002 only when their distinguishing tables and
-	// columns exist; pending facts are never rewritten or removed.
+	// 仅当用于识别 001/002 的特征表和列存在时，才接纳外部已执行的迁移；
+	// 不重写或删除待处理事实。
 	for _, file := range files {
 		raw, e := os.ReadFile(file)
 		if e != nil {
@@ -194,10 +194,10 @@ func Seed(ctx context.Context, db *sql.DB, reg *platform.Registry) error {
 	return syncBindings(ctx, db, reg, true, false)
 }
 
-// SeedWithEntityExpansion is an explicit maintenance operation used when the
-// demo upgrades from one to five registered entities per source. Only additive
-// raw-ID mappings may change. Entity ownership, source settings, credentials,
-// existing task history and every other persisted binding remain immutable.
+// SeedWithEntityExpansion 是显式维护操作，用于演示环境将每个来源的
+// 注册实体从一个扩展到五个。只允许追加原始 ID 映射。
+// 实体归属、来源配置、凭据、现有任务历史及其他所有
+// 已持久化的绑定均保持不变。
 func SeedWithEntityExpansion(ctx context.Context, db *sql.DB, reg *platform.Registry) error {
 	return syncBindings(ctx, db, reg, true, true)
 }
@@ -218,7 +218,7 @@ func additiveSourceEntities(old, next string) bool {
 	}
 	delete(a, "Entities")
 	delete(b, "Entities")
-	// Compare every remaining field, including fields added by future releases.
+	// 比较所有其余字段，包括未来版本新增的字段。
 	var left, right any
 	if json.Unmarshal([]byte(canonical(a)), &left) != nil || json.Unmarshal([]byte(canonical(b)), &right) != nil {
 		return false
@@ -237,8 +237,8 @@ func syncBindings(ctx context.Context, db *sql.DB, reg *platform.Registry, seed,
 	defer tx.Rollback()
 	wanted := bindingValues(reg)
 	if expand {
-		// Removing a whole source/entity must not escape the per-value subset
-		// check. Other tenants sharing a database are outside this manifest.
+		// 删除整个来源或实体也必须接受逐值的子集检查，不能绕过校验。
+		// 共用数据库的其他租户不属于本清单的范围。
 		tenants := map[string]bool{}
 		for _, source := range reg.Sources {
 			tenants[source.TenantID] = true

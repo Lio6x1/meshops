@@ -1,4 +1,4 @@
-// Package web adapts browser sessions to the existing, authenticated RPC APIs.
+// Package web 将浏览器会话适配到现有的鉴权 RPC 接口。
 package web
 
 import (
@@ -124,8 +124,8 @@ func New(cfg Config) (*Server, error) {
 	return s, nil
 }
 
-// Handler authenticates once, strips client-controlled RPC metadata and keeps the
-// selected actor identity in the server context. Generated handlers only translate.
+// Handler 统一鉴权，剥离客户端可控制的 RPC 元数据，并将选定的
+// 调用者身份保存在服务端 context 中；生成的处理函数只负责协议转换。
 func (s *Server) Handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
@@ -167,9 +167,9 @@ func (s *Server) Handler() http.Handler {
 			return
 		}
 		ctx := context.WithValue(r.Context(), sessionKey{}, p)
-		// grpc-gateway has special handling for Authorization even when a custom
-		// header matcher rejects it. Remove all caller RPC credentials first; only
-		// the session-derived metadata callback may populate the upstream token.
+		// 即使自定义请求头匹配器拒绝 Authorization，grpc-gateway 仍会对它
+		// 进行特殊处理。先移除调用方提供的所有 RPC 凭证；只有依据会话
+		// 生成元数据的回调可以设置发往上游的令牌。
 		r = r.Clone(ctx)
 		for name := range r.Header {
 			if strings.EqualFold(name, "Authorization") || strings.HasPrefix(strings.ToLower(name), "grpc-metadata-") {

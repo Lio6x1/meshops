@@ -218,7 +218,7 @@ func TestSixFixturesThroughAuthenticatedRPCAndKafka(t *testing.T) {
 		case <-time.After(10 * time.Millisecond):
 		}
 	}
-	// Exercise both stream-role and resource-scope rejection on real transport.
+	// 通过真实传输验证流角色与资源范围两种权限拒绝。
 	for _, token := range []string{os.Getenv("MESHOPS_OPERATOR_TOKEN"), os.Getenv("MESHOPS_PERSON_SOURCE_TOKEN")} {
 		c, stop := context.WithCancel(platform.Outgoing(ctx, token))
 		stream, err := ingest.ReportEntityStates(c)

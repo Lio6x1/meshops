@@ -1,4 +1,4 @@
-// web-gateway holds browser sessions and reuses authenticated internal RPCs.
+// web-gateway 管理浏览器会话，复用已有的鉴权内部 RPC。
 package main
 
 import (
@@ -37,9 +37,9 @@ func main() {
 	}
 }
 func newHTTPServer(ctx context.Context, handler http.Handler) *http.Server {
-	// ReadTimeout also bounds partial JSON bodies. A context timeout only bounds
-	// RPC work; it cannot unblock net/http's Body.Read on a slow client socket.
-	// Leave the global WriteTimeout unset: each SSE write has its own deadline.
+	// ReadTimeout 也限制未读完的 JSON 请求体。context 超时只约束 RPC 工作，
+	// 无法解除慢客户端连接上 net/http 的 Body.Read 阻塞。
+	// 不设置全局 WriteTimeout；每次 SSE 写入单独设置截止时间。
 	return &http.Server{Handler: handler, ReadTimeout: 10 * time.Second, ReadHeaderTimeout: 5 * time.Second, IdleTimeout: 60 * time.Second, MaxHeaderBytes: 16 << 10, BaseContext: func(net.Listener) context.Context { return ctx }}
 }
 func run() error {

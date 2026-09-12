@@ -11,9 +11,9 @@ import (
 	"time"
 )
 
-// A context deadline alone does not interrupt an incomplete HTTP request body.
-// Use a real socket and deliberately withhold JSON bytes to verify that the
-// server's transport deadline releases the blocked handler.
+// 仅设置 context 截止时间无法中断尚未读完的 HTTP 请求体。
+// 测试使用真实连接并故意不发送剩余 JSON 字节，验证
+// 服务端的传输超时能够释放被阻塞的处理函数。
 func TestSlowRequestBodyIsBounded(t *testing.T) {
 	finished := make(chan error, 1)
 	server := newHTTPServer(context.Background(), http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -88,7 +88,7 @@ func TestPartitionFailureDoesNotBlockHealthyPartition(t *testing.T) {
 	case <-time.After(5 * time.Second):
 		t.Fatal("healthy partition blocked by failing partition")
 	}
-	// Only the healthy record may commit while partition zero keeps retrying.
+	// 零号分区持续重试期间，只有正常分区的记录可以提交。
 	deadline := time.Now().Add(5 * time.Second)
 	for {
 		lag, err := b.Lag(ctx, group, topic)

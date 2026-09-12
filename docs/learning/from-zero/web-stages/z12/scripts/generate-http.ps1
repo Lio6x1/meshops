@@ -1,4 +1,4 @@
-# The browser API is an explicit allowlist separate from the gRPC wire contract.
+# 浏览器接口采用显式允许列表，与 gRPC 线上协议定义分开维护。
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 Push-Location $root

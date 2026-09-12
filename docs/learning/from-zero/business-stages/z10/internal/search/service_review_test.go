@@ -19,8 +19,8 @@ func (q failingQuery) Search(context.Context, string, Filter, string, []byte) (P
 	return Page{}, q.err
 }
 
-// RPC callers must distinguish an expired pagination snapshot (restart search)
-// from an unavailable dependency (retry later), without exposing backend details.
+// RPC 调用者必须能区分分页快照过期（重新搜索）与依赖不可用（稍后重试），
+// 同时不能暴露后端细节。
 func TestSearchServiceErrorContract(t *testing.T) {
 	for _, test := range []struct {
 		name string

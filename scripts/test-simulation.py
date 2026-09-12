@@ -81,7 +81,7 @@ def main():
         growing = wait_for(lambda: (s if int((s := source())['observation']['pending']) > int(offline['pending']) + 3 else None))
         assert growing['observation']['sent'] == offline['sent']
         check('offline accumulates durable backlog without sends', {'pending': growing['observation']['pending']})
-        # More than configured stale_after=30s; final in-flight batch may project late.
+        # 等待时间超过 stale_after=30s，因为最后一批在途数据可能延迟完成投影。
         time.sleep(34)
         old = snapshot()
         expires = dt.datetime.fromisoformat(old['expiresAt'].replace('Z', '+00:00'))

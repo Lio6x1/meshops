@@ -25,7 +25,7 @@ func generate(t *testing.T, q *Queue) int64 {
 	return seq
 }
 
-// A06/A12: lost acknowledgements retain identical bytes, epoch and entity versions.
+// A06/A12：确认丢失后，保留完全相同的字节、epoch 和实体版本。
 func TestQueueRestartAndActualSentACK(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "queue.db")
 	q, e := OpenQueue(path)
@@ -90,7 +90,7 @@ func TestQueueRestartAndActualSentACK(t *testing.T) {
 	}
 }
 
-// A13: failed generation/capacity must roll back both allocators.
+// A13：生成失败或容量不足时，必须回滚两个分配器。
 func TestQueueCapacityAndGenerationRollback(t *testing.T) {
 	q, e := OpenQueue(filepath.Join(t.TempDir(), "queue.db"))
 	if e != nil {
@@ -143,7 +143,7 @@ func TestQueueDuplicateDoesNotAllocateVersion(t *testing.T) {
 	}
 }
 
-// A13: logical corruption is diagnosed without rewriting the original file.
+// A13：诊断逻辑损坏时不重写原文件。
 func TestQueueCorruptionPreservesFile(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "queue.db")
 	q, e := OpenQueue(path)

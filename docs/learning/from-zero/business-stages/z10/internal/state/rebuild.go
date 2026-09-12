@@ -70,8 +70,8 @@ func (e *Entity) loadExpected(path string) (map[string]ExpectedState, error) {
 	return expected, nil
 }
 
-// VerifyGeneration compares the shadow namespace with an independent fixture
-// manifest. It never derives expected versions from the old Redis namespace.
+// VerifyGeneration 将影子命名空间与独立的测试数据
+// 清单对比，绝不从旧 Redis 命名空间推导预期版本。
 func (e *Entity) VerifyGeneration(ctx context.Context, generation string, expected map[string]ExpectedState) error {
 	var missing []string
 	for key, want := range expected {
@@ -91,9 +91,9 @@ func (e *Entity) VerifyGeneration(ctx context.Context, generation string, expect
 	return nil
 }
 
-// Rebuild is a maintenance operation. Pause generation, drain gateway queues,
-// and stop the ordinary Entity process BEFORE invoking it. It uses independent
-// partition readers and never commits or resets the ordinary projector group.
+// Rebuild 是维护操作。调用前必须暂停生成、排空网关队列，
+// 并停止常规 Entity 进程。它使用独立的
+// 分区 reader，不会提交或重置常规投影消费组的偏移量。
 func (e *Entity) Rebuild(ctx context.Context, generation, manifestPath string) error {
 	if !generationPattern.MatchString(generation) {
 		return fmt.Errorf("generation must be a lower-case UUID")
@@ -144,7 +144,7 @@ func (e *Entity) Rebuild(ctx context.Context, generation, manifestPath string) e
 	}
 	sort.Slice(parts, func(i, j int) bool { return parts[i].ID < parts[j].ID })
 	bounds := make([]PartitionBounds, 0, len(parts))
-	// Capture every partition boundary before replay begins. End is exclusive.
+	// 重放开始前记录所有分区的边界，End 为不包含在内的上界。
 	for _, part := range parts {
 		bound, err := rebuildPartitionBounds(ctx, e.cfg.KafkaBrokers[0], topic, part.ID)
 		if err != nil {
@@ -235,8 +235,8 @@ func rebuildPartitionBounds(ctx context.Context, broker, topic string, partition
 	deadline, _ := ctx.Deadline()
 	dialer := &kafka.Dialer{Timeout: 10 * time.Second}
 	for {
-		// Metadata can name a leader before it serves offsets, or become stale
-		// during election. Reconnect through fresh metadata on each attempt.
+		// 元数据可能在主节点提供偏移量查询前就指向它，也可能在
+		// 选主过程中失效。每次尝试都通过最新元数据重新连接。
 		conn, err := dialer.DialLeader(ctx, "tcp", broker, topic, partition)
 		if err == nil {
 			_ = conn.SetDeadline(deadline)
@@ -265,7 +265,7 @@ func rebuildPartitionBounds(ctx context.Context, broker, topic string, partition
 	}
 }
 
-// OperationName is shared by input-manifest generators in tests and tooling.
+// OperationName 供测试与工具中的输入清单生成器共用。
 func OperationName(op commonv1.EntityOperation) string {
 	if op == commonv1.EntityOperation_ENTITY_OPERATION_DELETE {
 		return "DELETE"

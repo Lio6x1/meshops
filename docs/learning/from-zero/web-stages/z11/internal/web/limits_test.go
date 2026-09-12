@@ -89,8 +89,8 @@ func TestStreamCapacityAndClientDisconnect(t *testing.T) {
 }
 func TestStreamExpiresWithoutAnotherHTTPRequest(t *testing.T) {
 	s, cookie, server, probe := streamFixture(t)
-	// A short remaining lifetime avoids a minute-long test while exercising the
-	// real transport timer rather than triggering expiry with a second request.
+	// 缩短会话剩余有效期，避免测试等待一分钟，同时验证真实传输计时器，
+	// 而不是通过第二次请求触发会话过期。
 	s.mu.Lock()
 	s.sessions[cookie.Value].expires = time.Now().Add(150 * time.Millisecond)
 	s.mu.Unlock()

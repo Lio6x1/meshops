@@ -14,8 +14,8 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 
-# A test credential must never be posted to a remotely supplied endpoint or a
-# redirect. Validate the entire base authority before creating HTTP clients.
+# 测试凭证绝不能发送到外部指定的地址或重定向目标。
+# 创建 HTTP 客户端前，先完整校验基础地址的主机和端口。
 $base = $null
 $address = $null
 if (-not [Uri]::TryCreate($BaseURL,[UriKind]::Absolute,[ref]$base) -or
@@ -124,12 +124,12 @@ function Wait-Task($Actor,[string]$TaskID,[string]$ExpectedStatus,[int]$Seconds=
     } $Seconds
 }
 function Create-Inspection($Actor,[string]$EntityID,[int]$Duration,[string]$Keyword) {
-    # Keep one complete body for this operation; an uncertain HTTP write is not
-    # automatically retried with a different business idempotency key.
+    # 本次操作使用同一份完整请求体；HTTP 写入结果不确定时，
+    # 不能自动更换业务幂等键后重新发送。
     $body = [ordered]@{idempotencyKey=[Guid]::NewGuid().ToString('D');taskType='inspect';targetEntityId=$EntityID;priority=5;deadline=([DateTimeOffset]::UtcNow+$Actor.clockOffset).AddMinutes(5).ToString('o');payload=@{payloadJson=(@{duration_seconds=$Duration;note=$Keyword}|ConvertTo-Json -Compress)}}
     $created = (Invoke-Browser $Actor 'POST' '/api/v1/tasks' $body).data
     Assert-Fullstack ([string]$created.taskId -match '^[a-z0-9_-]{1,128}$') 'CreateTask returned no valid task ID.'
-    # A confirmed duplicate create must resolve to the same business task.
+    # 已确认成功的重复创建必须返回同一个业务任务。
     $again = (Invoke-Browser $Actor 'POST' '/api/v1/tasks' $body).data
     Assert-Fullstack ($again.taskId -ceq $created.taskId) 'Identical create request did not preserve task ID.'
     return [string]$created.taskId

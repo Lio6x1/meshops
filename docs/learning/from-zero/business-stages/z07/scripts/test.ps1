@@ -10,7 +10,7 @@ try {
     if ($Integration) {
         & docker compose --profile verification up -d --wait redis-fault
         if ($LASTEXITCODE -ne 0) { throw 'dedicated Redis fault instance failed to start' }
-        # initialize.ps1 must have completed; tasks tests create and clean only their own random databases.
+        # 必须先完成 initialize.ps1；任务测试只创建和清理自己的随机数据库。
         $env:MESHOPS_TEST_MYSQL_DSN = $env:MESHOPS_MYSQL_DSN
         $env:MESHOPS_TEST_MYSQL_ADMIN_DSN = $env:MESHOPS_MYSQL_DSN
         $env:MESHOPS_TEST_REDIS_ADDR = $env:MESHOPS_REDIS_ADDR

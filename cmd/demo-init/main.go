@@ -1,5 +1,5 @@
-// demo-init owns the isolated Compose demo's credentials and bootstrap ordering.
-// It never reads or changes the host course's .local directory or Docker project.
+// demo-init 负责独立 Compose 演示的凭证与初始化顺序。
+// 它不会读取或修改主机学习工程的 .local 目录或 Docker 项目。
 package main
 
 import (
@@ -149,8 +149,8 @@ func run(args []string) error {
 		if err != nil {
 			return err
 		}
-		// The image template consumes dotted environment names. Populate them
-		// immediately before exec, after validating the durable complete marker.
+		// 镜像模板需要名称中带点号的环境变量。先验证持久化的完成标记，
+		// 再在 exec 启动服务前立即填入这些变量。
 		values := map[string]string{"canal.instance.master.journal.name": marker.Position.File, "canal.instance.master.position": fmt.Sprint(marker.Position.Offset), "canal.instance.dbPassword": secrets["MESHOPS_CANAL_PASSWORD"]}
 		for k, v := range values {
 			if err = os.Setenv(k, v); err != nil {
@@ -245,8 +245,8 @@ func ensureSecrets(dir string) (map[string]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	// O_EXCL avoids replacing secrets if two launchers race. A partial write
-	// fails validation on the next run; it must not silently rotate identity.
+	// O_EXCL 防止两个启动器并发时覆盖已有凭证。如果只写入了部分内容，
+	// 下次运行必须校验失败，不能悄悄更换身份。
 	f, err := os.OpenFile(filepath.Join(dir, "secrets.json"), os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
 	if err != nil {
 		return nil, err
@@ -264,8 +264,8 @@ func ensureSecrets(dir string) (map[string]string, error) {
 	if err = protectFile(filepath.Join(dir, "secrets.json"), 0, 0, 0600); err != nil {
 		return nil, err
 	}
-	// MySQL's entrypoint supports PASSWORD_FILE. Its separate file is readable
-	// inside this dedicated volume; it is never published as a host port/file.
+	// MySQL 入口支持 PASSWORD_FILE；独立的口令文件仅在
+	// 专用卷内读取，不以主机端口或主机文件的形式公开。
 	if err = ensureDerivedSecrets(dir, values); err != nil {
 		return nil, err
 	}
@@ -329,8 +329,8 @@ func initialize(dir string, values map[string]string) error {
 	} else if !os.IsNotExist(err) {
 		return err
 	}
-	// Maintenance child alone receives the privileged DSN; normal exec uses
-	// the DML-only account above. Never log either DSN or child environment.
+	// 只有维护子进程接收高权限 DSN；普通服务使用上面的仅 DML 账户。
+	// 两类 DSN 和子进程环境变量都不得写入日志。
 	cmd := exec.CommandContext(ctx, "/app/search-admin", args...)
 	cmd.Env = withoutEnv(os.Environ(), "MESHOPS_MYSQL_DSN")
 	cmd.Env = append(cmd.Env, "MESHOPS_MYSQL_DSN="+rootDSN)

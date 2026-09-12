@@ -22,8 +22,8 @@ type Index struct {
 	expectedUUID string
 }
 
-// NewIndex supports local ES or the explicitly opted-in private demo service. A caller's
-// client is copied so redirects cannot forward requests to another destination.
+// NewIndex 支持本地 ES 或显式启用的私有演示服务。它会复制调用者的
+// 客户端，防止重定向将请求转发到其他目标。
 func NewIndex(endpoint, name string, client *http.Client) (*Index, error) {
 	u, err := url.Parse(endpoint)
 	if err != nil || u.Scheme != "http" || u.User != nil || u.RawQuery != "" || u.Fragment != "" || (u.Path != "" && u.Path != "/") {
@@ -47,8 +47,8 @@ func NewIndex(endpoint, name string, client *http.Client) (*Index, error) {
 	return &Index{endpoint: strings.TrimRight(endpoint, "/"), name: name, client: &c}, nil
 }
 
-// request bounds response memory and omits dependency bodies from errors: an
-// ES diagnostic may contain original task text or cluster configuration.
+// request 限制响应占用的内存，并在错误中省略依赖服务的响应正文：
+// ES 诊断信息可能包含原始任务文本或集群配置。
 func (s *Index) request(ctx context.Context, method, path string, body any) (int, []byte, error) {
 	var b []byte
 	var err error
@@ -83,8 +83,8 @@ const (
 	Stale     ApplyResult = "stale"
 )
 
-// Put uses external versioning rather than arrival order. A 409 is not by itself
-// proof of a safe duplicate: compare the stored canonical projection as well.
+// Put 使用外部版本号而非到达顺序。仅凭 409 不能证明这是
+// 可安全忽略的重复写入，还必须比较已存储的规范化投影。
 func (s *Index) Put(ctx context.Context, d Document) (ApplyResult, error) {
 	if err := s.checkIdentity(ctx); err != nil {
 		return "", err
@@ -135,8 +135,8 @@ func (s *Index) Put(ctx context.Context, d Document) (ApplyResult, error) {
 	return "", fmt.Errorf("ES task version/content conflict; repair required")
 }
 
-// Create is an explicit provisioning operation. Existing indices are not
-// accepted blindly: the caller must verify their schema before marking ready.
+// Create 是显式的资源创建操作。不能盲目接纳已有索引：
+// 调用者必须验证其模式，才能标记为就绪。
 func (s *Index) Create(ctx context.Context) error {
 	properties := map[string]any{}
 	for _, name := range []string{"tenant_id", "task_id", "target_entity_id", "task_type", "status"} {

@@ -1,4 +1,4 @@
-// Package search contains the task-only, eventually consistent search projection.
+// Package search 提供仅面向任务的最终一致搜索投影。
 package search
 
 import (
@@ -14,8 +14,8 @@ import (
 	"example.com/meshops-course/internal/tasks"
 )
 
-// Document is an explicit allowlist. Raw payloads, results and actor credentials
-// must not accidentally become searchable when the MySQL schema grows.
+// Document 明确定义可搜索字段白名单。MySQL 模式扩展时，
+// 不能意外将原始载荷、结果或操作方凭据纳入搜索。
 type Document struct {
 	TenantID        string `json:"tenant_id"`
 	TaskID          string `json:"task_id"`
@@ -30,7 +30,7 @@ type Document struct {
 	UpdatedAt       string `json:"updated_at"`
 }
 
-// JSON encodes the tuple unambiguously; raw URL base64 is safe in ES paths.
+// JSON 无歧义地编码元组；无填充的 URL 安全 Base64 编码可安全用于 ES 路径。
 func (d Document) ID() string {
 	b, _ := json.Marshal([2]string{d.TenantID, d.TaskID})
 	return base64.RawURLEncoding.EncodeToString(b)
@@ -38,9 +38,9 @@ func (d Document) ID() string {
 
 func (d Document) Version() int64 { return d.StatusVersion + 1 }
 
-// DecodeCanal accepts Canal flat JSON with MySQL binlog_row_image=FULL.
-// On any malformed row the entire message fails, so callers cannot commit a
-// Kafka offset after only a partial application. Errors deliberately omit values.
+// DecodeCanal 接收 MySQL binlog_row_image=FULL 配置下的 Canal 扁平 JSON。
+// 任一行格式错误都会使整条消息失败，防止调用者只应用部分数据后
+// 就提交 Kafka 位点。错误信息刻意省略字段值。
 func DecodeCanal(data []byte, database string) ([]Document, error) {
 	if len(data) == 0 || len(data) > 4<<20 || !utf8.Valid(data) || database == "" {
 		return nil, fmt.Errorf("invalid CDC message size, encoding or database")
@@ -56,9 +56,9 @@ func DecodeCanal(data []byte, database string) ([]Document, error) {
 	if err := json.Unmarshal(data, &event); err != nil {
 		return nil, fmt.Errorf("invalid Canal JSON")
 	}
-	// Canal forwards database-level QUERY/DDL events even with a tasks-only
-	// table filter. Foreign schema DDL cannot affect this projection. Foreign
-	// data rows and every DDL affecting the task database still fail closed.
+	// 即使表过滤器只包含任务表，Canal 仍会转发数据库级 QUERY/DDL 事件。
+	// 其他数据库的 DDL 不会影响本投影。其他数据库的数据行，
+	// 以及所有影响任务数据库的 DDL，仍一律拒绝处理。
 	if event.DDL && event.Database != "" && event.Database != database && len(event.Data) == 0 {
 		return []Document{}, nil
 	}
@@ -73,8 +73,8 @@ func DecodeCanal(data []byte, database string) ([]Document, error) {
 	}
 	docs := make([]Document, 0, len(event.Data))
 	for i, row := range event.Data {
-		// MySQL encodes ENUM as a 1-based ordinal in row events. Canal 1.1.8
-		// exposes that ordinal together with the column's enum declaration.
+		// MySQL 在行事件中将 ENUM 编码为从 1 开始的序号。Canal 1.1.8
+		// 同时提供该序号与列的枚举声明。
 		var rawStatus string
 		if json.Unmarshal(row["status"], &rawStatus) == nil {
 			if ordinal, e := strconv.Atoi(rawStatus); e == nil {
@@ -138,8 +138,8 @@ func decodeRow(row map[string]json.RawMessage) (Document, error) {
 		return d, fmt.Errorf("invalid inspect payload")
 	}
 	d.Note = p.Note
-	// MySQL connection/session and Canal are configured in UTC. A TIMESTAMP
-	// flat value carries no offset, so never use the machine's local timezone.
+	// MySQL 连接、会话及 Canal 均配置为 UTC。TIMESTAMP 的扁平值
+	// 不包含时区偏移，因此绝不能使用机器本地时区。
 	for _, value := range []*string{&d.CreatedAt, &d.UpdatedAt} {
 		t, err := time.ParseInLocation("2006-01-02 15:04:05.999999", *value, time.UTC)
 		if err != nil {

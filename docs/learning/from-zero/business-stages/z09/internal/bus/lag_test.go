@@ -11,8 +11,8 @@ import (
 	"time"
 )
 
-// A canceled handler must leave its record available to a new generation.
-// Lag must describe broker commits, including groups with no saved offsets.
+// 处理函数被取消后，必须保留记录供新一代消费者继续处理。
+// Lag 必须反映 broker 的提交状态，包括尚未保存偏移量的消费组。
 func TestLagAndReplayAfterCanceledHandler(t *testing.T) {
 	address := os.Getenv("MESHOPS_TEST_KAFKA_BROKERS")
 	if address == "" {

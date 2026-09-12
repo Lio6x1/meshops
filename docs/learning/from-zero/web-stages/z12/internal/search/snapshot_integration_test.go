@@ -65,7 +65,7 @@ func TestSnapshotEstablishesReadViewBeforeReleasingLock(t *testing.T) {
 	var point BinlogPosition
 	err = Snapshot(ctx, snapshotDB, index, func(p BinlogPosition) error {
 		point = p
-		// This write must complete: the global lock has already been released.
+		// 此次写入必须完成：全局锁此时已释放。
 		_, e := snapshotDB.ExecContext(ctx, `UPDATE tasks SET status='ACKED',status_version=2,payload='{"duration_seconds":1,"note":"after"}'`)
 		return e
 	})

@@ -19,8 +19,8 @@ import (
 	"time"
 )
 
-// This fixture uses real gRPC streams and concurrent unary calls; its mutex is
-// only server fixture state, never the implementation under test's persistence.
+// 此测试环境使用真实 gRPC 流与并发一元调用；其互斥锁只保护
+// 测试服务端状态，不参与被测实现的持久化。
 type executionServer struct {
 	executorv1.UnimplementedExecutorServiceServer
 	taskv1.UnimplementedTaskServiceServer

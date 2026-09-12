@@ -181,8 +181,8 @@ func TestRedisSubscriptionInitialRaceDeleteAndGap(t *testing.T) {
 		}
 		break
 	}
-	// Simulate the Redis-commit/process-notification crash window. Reconciliation
-	// closes the stream rather than pretending heartbeats guarantee delivery.
+	// 模拟 Redis 已提交但进程尚未通知时的崩溃窗口。对账
+	// 会关闭流，不能假装心跳可以保证交付。
 	missed := proto.Clone(newer).(*commonv1.EntityStateEvent)
 	missed.EntityVersion = 4
 	missed.EventId = "v4"
@@ -203,7 +203,7 @@ func TestRedisSubscriptionInitialRaceDeleteAndGap(t *testing.T) {
 	if subscribers != 0 {
 		t.Fatal("subscription not unregistered")
 	}
-	// A slow stream has an independent sender and cannot delay a healthy stream.
+	// 慢流有独立的发送协程，不能拖慢正常流。
 	e.cfg.SlowConsumerTimeout = "30ms"
 	slowCtx, slowCancel := context.WithCancel(stream.ctx)
 	defer slowCancel()
@@ -254,7 +254,7 @@ delivered:
 	case <-ctx.Done():
 		t.Fatal("slow consumer was not disconnected")
 	}
-	slowCancel() // Mirrors grpc-go cancelling the transport after handler return.
+	slowCancel() // 模拟 grpc-go 在处理函数返回后取消传输。
 	healthyCancel()
 	select {
 	case err = <-healthyDone:

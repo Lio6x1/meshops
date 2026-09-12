@@ -1,0 +1,9 @@
+{
+  "commentOnlySourceFiles": 758,
+  "changedCommentLines": 2636,
+  "allNonCommentPrefixesAndLineCountsUnchanged": true,
+  "toolDirectivesUnchanged": true,
+  "embeddedSourceCommentTemplates": [
+    "docs/learning/from-zero/materialize-checkpoints.ps1"
+  ]
+}

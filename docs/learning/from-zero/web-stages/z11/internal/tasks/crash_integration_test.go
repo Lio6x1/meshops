@@ -103,7 +103,7 @@ func TestOutboxAndDispatcherForceKillDurableBoundaries(t *testing.T) {
 		t.Fatal("unmarked publish fact lost", pending, err)
 	}
 	f.service.cfg.TopicPrefix = prefix
-	// Let the real lease expire; no SQL trigger or forced lease mutation here.
+	// 等待真实租约自然到期；此处不使用 SQL 触发器或强制修改租约。
 	deadline := time.Now().Add(5 * time.Second)
 	for pending == 1 {
 		if err = f.service.PublishOutbox(ctx, b); err != nil {

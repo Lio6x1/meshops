@@ -230,7 +230,7 @@ func (s *retryPendingStream) Recv() (*entityv1.EntityUpdate, error) {
 func TestSubscriptionDoesNotCountUnattemptedRetry(t *testing.T) {
 	client := &retryPendingClient{}
 	var out, diag bytes.Buffer
-	// The 200ms retry delay cannot finish within this observation window.
+	// 本次观测窗口短于 200ms 重试延迟，因此不可能已经完成重试等待。
 	if err := subscribe(context.Background(), client, []string{"e"}, 20*time.Millisecond, &out, &diag); err != nil {
 		t.Fatal(err)
 	}

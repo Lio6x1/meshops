@@ -30,8 +30,8 @@ func retryable(err error) bool {
 	return false
 }
 
-// RunExecutor uses a bounded pool, and an independent listener so cancellation
-// can durably overtake a worker's timer or result transaction.
+// RunExecutor 使用有界工作池与独立监听器，使取消能够在
+// 工作协程的计时器到期或结果事务提交前完成持久化。
 func RunExecutor(ctx context.Context, inbox *Inbox, commands executorv1.ExecutorServiceClient, tasks taskv1.TaskServiceClient, executor, mode string, concurrency int, stats *ExecutorStats) error {
 	if concurrency < 1 || concurrency > 4 {
 		return errors.New("concurrency must be 1..4")
@@ -172,10 +172,10 @@ func executeOne(ctx context.Context, inbox *Inbox, tasks taskv1.TaskServiceClien
 				continue
 			}
 			if status.Code(e) == codes.FailedPrecondition && (pending.Status == commonv1.TaskStatus_TASK_STATUS_ACKED || pending.Status == commonv1.TaskStatus_TASK_STATUS_EXECUTING) {
-				// This explicit rejection proves the pending nonterminal report was
-				// not accepted: Task checks duplicate receipts before its terminal
-				// barrier. Confirm the authoritative identity and terminal state
-				// before retiring it; an unavailable reconciliation keeps it intact.
+				// 此明确拒绝证明待发送的非终态报告未被接受：
+				// Task 在终态屏障之前检查重复回执。
+				// 退役报告前，须确认权威身份与终态；
+				// 若对账暂不可用，则完整保留报告。
 				rpcCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 				current, queryErr := tasks.GetTask(rpcCtx, &taskv1.GetTaskRequest{TaskId: pending.TaskId})
 				cancel()
@@ -214,7 +214,7 @@ func executeOne(ctx context.Context, inbox *Inbox, tasks taskv1.TaskServiceClien
 		if current.Task == nil {
 			return errors.New("GetTask returned no task")
 		}
-		// Re-read local cancellation after the network call, before selecting a report.
+		// 网络调用后、选择报告前，重新读取本地取消状态。
 		v, e = inbox.Entry(key)
 		if e != nil {
 			return e

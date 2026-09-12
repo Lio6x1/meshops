@@ -9,8 +9,8 @@ try {
         if ($LASTEXITCODE) { throw ('opctl failed: ' + ($Arguments -join ' ')) }
         return ($raw | ConvertFrom-Json)
     }
-    # RPC readiness does not mean restarted gateways have drained old telemetry
-    # and published a fresh snapshot yet. Do not weaken Task's freshness check.
+    # RPC 就绪不代表重启的网关已补传完旧遥测并生成新鲜快照。
+    # 应等待快照更新，不能放宽 Task 的新鲜度校验。
     $entityLimit = [DateTime]::UtcNow.AddSeconds(45)
     $entityReady = $false
     do {

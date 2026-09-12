@@ -33,7 +33,7 @@ func TestDerivedCredentialsSeparateRuntimeBrowserAndBootstrap(t *testing.T) {
 			t.Fatal("wrong browser scope")
 		}
 	}
-	// Ordinary exec must not depend on full/bootstrap or browser files existing.
+	// 普通服务启动不应依赖完整初始化凭证或浏览器访问码文件的存在。
 	if err = os.Remove(filepath.Join(dir, "secrets.json")); err != nil {
 		t.Fatal(err)
 	}

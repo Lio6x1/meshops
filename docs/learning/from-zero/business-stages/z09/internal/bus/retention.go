@@ -11,8 +11,8 @@ import (
 
 var retentionGaps = promauto.NewCounter(prometheus.CounterOpts{Name: "meshops_kafka_retention_gap_detections_total", Help: "Observed consumer retention gaps; rebalance can detect the same uncommitted gap again. Details are in structured logs; no entity or group labels."})
 
-// RetentionGap means a committed next offset no longer exists in the retained
-// log. Resuming at First is degraded recovery, not proof that no data was lost.
+// RetentionGap 表示已提交的下一偏移量已不在保留日志中。
+// 从 First 恢复属于降级恢复，不能证明数据没有丢失。
 type RetentionGap struct {
 	Group, Topic    string
 	Partition       int

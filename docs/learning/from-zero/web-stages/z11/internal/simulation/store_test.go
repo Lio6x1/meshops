@@ -48,7 +48,7 @@ func TestCountValueDefaultsOnlyWhenMissing(t *testing.T) {
 	}
 }
 
-// This test touches only three uniquely scoped keys and never flushes a database.
+// 本测试只访问三个具有唯一作用域的键，不清空数据库。
 func TestRedisDesiredAndObservedLifecycle(t *testing.T) {
 	addr := os.Getenv("MESHOPS_TEST_REDIS_ADDR")
 	if addr == "" {

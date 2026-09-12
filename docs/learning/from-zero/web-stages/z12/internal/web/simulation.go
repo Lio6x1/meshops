@@ -11,8 +11,8 @@ import (
 	"sort"
 )
 
-// SimulationControl is opt-in and separate from production entity/task RPCs.
-// The store records desired state; only a live simulator publishes applied state.
+// SimulationControl 需要显式启用，与生产实体和任务 RPC 分开。
+// 存储层记录期望状态；只有运行中的模拟器才能发布已应用状态。
 type SimulationControl interface {
 	Read(context.Context, string, string) (simulation.Status, error)
 	SetDesired(context.Context, string, string, simulation.Mode) error
@@ -125,8 +125,8 @@ func (s *Server) simulationHTTP(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(map[string]any{"sources": result, "serverTime": s.cfg.Now().UTC()})
 }
 
-// Active membership is presentation/generation configuration, not authorization.
-// Shrinking retains all registered identities, snapshots and existing task history.
+// 启用哪些实体属于显示和生成配置，不构成授权依据。
+// 缩减数量时保留全部已注册身份、快照和已有任务历史。
 func (s *Server) activeSimulationEntities(ctx context.Context) (map[string]bool, error) {
 	if s.cfg.Simulation == nil {
 		return nil, nil

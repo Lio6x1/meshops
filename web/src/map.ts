@@ -1,8 +1,8 @@
 import type { EntityRecord, Inventory, Snapshot } from './types.ts'
 
-// Fixed local tangent-plane approximation around the demo fixtures. The 1 km ×
-// 640 m drawing is schematic, not a surveyed basemap or a navigation coordinate API.
-// A fixed frame prevents the whole map from jumping when an entity moves.
+// 以演示样例为原点，采用固定局部切平面近似。图幅为 1 km ×
+// 640 m，仅作示意，不是测绘底图，也不是导航坐标接口。
+// 固定坐标范围，避免单个实体移动时整幅地图跟着跳动。
 export function projectLocation(location: Snapshot['location']): { x: number; y: number } | null {
   const lat = location?.latitude, lon = location?.longitude
   if (typeof lat !== 'number' || typeof lon !== 'number' || !Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return null

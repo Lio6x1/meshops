@@ -33,7 +33,7 @@ type SearchTasksRequest struct {
 	CreatedFrom    *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_from,json=createdFrom,proto3" json:"created_from,omitempty"`       // Inclusive.
 	CreatedBefore  *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=created_before,json=createdBefore,proto3" json:"created_before,omitempty"` // Exclusive.
 	PageSize       int32                  `protobuf:"varint,6,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`               // 0 defaults to 20; otherwise 1..100.
-	PageToken      string                 `protobuf:"bytes,7,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`             // Tenant is deliberately absent: it comes from the trusted identity.
+	PageToken      string                 `protobuf:"bytes,7,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`             // 有意不接收租户参数，租户来自可信身份。
 }
 
 func (x *SearchTasksRequest) Reset() {

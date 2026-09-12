@@ -64,8 +64,8 @@ func TestRetentionGapIsNotReportedAsHealthyLag(t *testing.T) {
 	if lag, err := b.Lag(ctx, group+"_new", topic); err != nil || lag != 1 {
 		t.Fatal("fresh group should start at retained beginning", lag, err)
 	}
-	// Search cannot rebuild a complete projection from a truncated log. Strict
-	// consumption must stop before applying or committing the retained suffix.
+	// Search 无法从截断日志重建完整投影。严格消费模式
+	// 必须在应用或提交保留后缀之前停止。
 	for _, strictGroup := range []string{group, group + "_new_strict"} {
 		strictCtx, strictStop := context.WithTimeout(ctx, 15*time.Second)
 		strictErr := b.ConsumeStrict(strictCtx, strictGroup, topic, func(context.Context, []byte) error {
@@ -79,8 +79,8 @@ func TestRetentionGapIsNotReportedAsHealthyLag(t *testing.T) {
 		}
 	}
 	consumed := make(chan Record, 3)
-	// A full snapshot replaces history before its recorded boundary. Even if
-	// group offsets expire, replay may start there, never at an older prefix.
+	// 完整快照替代其记录边界之前的历史。即使消费组
+	// 偏移量过期，也只能从该边界开始重放，不能从更早的前缀开始。
 	floorCtx, floorStop := context.WithTimeout(ctx, 15*time.Second)
 	floorSeen := make(chan Record, 1)
 	floorErr := b.ConsumeStrictFrom(floorCtx, group+"_snapshot", topic, 2, func(c context.Context, _ []byte) error {

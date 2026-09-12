@@ -11,7 +11,7 @@ import (
 	"sync"
 )
 
-// MemoryEntity is ONLY the Z04 teaching projection. An ACK is volatile here.
+// MemoryEntity 仅用于 Z04 教学投影，此阶段 ACK 对应的数据仍是易失的。
 type MemoryEntity struct {
 	entityv1.UnimplementedEntityServiceServer
 	registry *platform.Registry

@@ -31,8 +31,8 @@ func TestLinuxDerivedCredentialModesAndRootProvisionedOwners(t *testing.T) {
 		if info.Mode().Perm() != item.mode {
 			t.Errorf("%s mode %o want %o", item.name, info.Mode().Perm(), item.mode)
 		}
-		// CI may run unprivileged; UID assignment itself is additionally checked
-		// when this same test runs as the container's root provisioning account.
+		// CI 可能以非特权用户运行；当同一测试在容器中以
+		// root 初始化账户执行时，还会验证 UID 分配本身。
 		if os.Geteuid() == 0 {
 			s := info.Sys().(*syscall.Stat_t)
 			if s.Uid != item.uid || s.Gid != item.gid {

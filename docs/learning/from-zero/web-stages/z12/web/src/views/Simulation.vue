@@ -38,8 +38,8 @@ async function change(selected: Source[], mode: Mode) {
   ++revision
   let submitted = 0
   try {
-    // Each source is independent. Do not claim atomic all-source changes or
-    // switch applied-state indicators optimistically after an HTTP 202.
+    // 各来源独立更新，不保证全部来源原子切换；收到 HTTP 202 后，
+    // 也不能提前把实际状态指示器切换为已生效。
     for (const source of selected) {
       await api('/api/v1/simulation/' + encodeURIComponent(source.sourceId), { method: 'PUT', body: JSON.stringify({ mode }), signal: controller.signal })
       submitted++

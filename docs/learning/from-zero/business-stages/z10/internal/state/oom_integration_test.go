@@ -17,7 +17,7 @@ func TestRedisOOMDoesNotCommitKafkaOffset(t *testing.T) {
 	if addr == "" || brokers == "" {
 		t.Skip("requires dedicated disposable Redis fault instance and Kafka")
 	}
-	// Fixed fault port is intentionally different from normal reference Redis.
+	// 故障测试使用独立的固定端口，有意与正常参考环境的 Redis 区分。
 	if addr != "127.0.0.1:16380" {
 		t.Fatal("refusing CONFIG SET outside dedicated fault instance")
 	}

@@ -1,5 +1,5 @@
-# Equivalent to google.api.http annotations, kept separate from the wire schema.
-# Only browser-facing unary methods are exported. Executor/source APIs stay gRPC.
+# 等价于 google.api.http 注解，与线上协议定义分开维护。
+# 只导出供浏览器调用的一元方法，执行方和数据来源接口继续使用 gRPC。
 type: google.api.Service
 config_version: 3
 http:

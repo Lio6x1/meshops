@@ -14,7 +14,7 @@ var idPattern = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$`)
 
 func ValidID(id string) bool { return idPattern.MatchString(id) }
 
-// Memory owns its map and all messages stored inside it.
+// Memory 独占内部映射及存入其中的全部消息。
 type Memory struct {
 	mu   sync.RWMutex
 	rows map[string]*commonv1.EntitySnapshot
@@ -59,7 +59,7 @@ func (m *Memory) Put(id string, snapshot *commonv1.EntitySnapshot) error {
 	if err := Validate(id, snapshot); err != nil {
 		return err
 	}
-	// Clone prevents subsequent caller edits from changing our stored row.
+	// 深拷贝避免调用方后续修改原对象时改变仓库中的记录。
 	owned := proto.Clone(snapshot).(*commonv1.EntitySnapshot)
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -74,6 +74,6 @@ func (m *Memory) Get(id string) (*commonv1.EntitySnapshot, bool) {
 	if !found {
 		return nil, false
 	}
-	// Readers receive their own deep copy, including nested optional fields.
+	// 读取方获得独立深拷贝，包括嵌套的可选字段。
 	return proto.Clone(row).(*commonv1.EntitySnapshot), true
 }

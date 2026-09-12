@@ -1,4 +1,4 @@
-# Dot-source after backend environment setup. Browser codes are independent of RPC tokens.
+# 后端环境初始化后再点加载；浏览器访问码与 RPC 令牌相互独立。
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'env.ps1')
 $webSecretsPath = Join-Path $courseRoot '.local/web-secrets.json'

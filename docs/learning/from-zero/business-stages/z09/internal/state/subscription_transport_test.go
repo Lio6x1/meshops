@@ -91,7 +91,7 @@ func TestGRPCBlockedSubscriberReleasesSenderAndDoesNotBlockPeer(t *testing.T) {
 		}
 		return stream
 	}
-	_ = connect("slow") // Keep transport open, deliberately stop Recv after initialization.
+	_ = connect("slow") // 保持传输连接，在初始化后故意停止 Recv。
 	fast := connect("fast")
 	seen := make(chan int64, 100)
 	go func() {
@@ -107,8 +107,8 @@ func TestGRPCBlockedSubscriberReleasesSenderAndDoesNotBlockPeer(t *testing.T) {
 			}
 		}
 	}()
-	// Large transport fixtures force HTTP/2 stream flow control quickly. Domain
-	// input validation is tested separately; no service Send implementation is mocked.
+	// 大型传输测试数据会快速触发 HTTP/2 流控。领域
+	// 输入校验另行测试；服务端 Send 实现未被模拟替换。
 	payload := strings.Repeat("x", 256<<10)
 	for version := int64(1); version <= 20; version++ {
 		e.notify(tenant, generation, &entityv1.EntityUpdate{EntityId: "p", Kind: entityv1.EntityUpdateKind_ENTITY_UPDATE_KIND_UPSERT, Version: version, SourceId: payload})

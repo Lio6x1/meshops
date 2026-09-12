@@ -3,7 +3,7 @@ syntax = "proto3";
 package meshops.common.v1;
 option go_package = "example.com/meshops-course/gen/common/v1;commonv1";
 
-// A snapshot describes state; the response envelope identifies the entity.
+// 快照描述状态，外层响应负责标识实体。
 message EntitySnapshot {
   string entity_type = 1;
   Location location = 3;
@@ -15,7 +15,7 @@ message Location {
   double longitude = 2;
 }
 
-// Missing power means not applicable or unknown, not an empty battery.
+// 缺失 power 表示不适用或未知，不表示电池耗尽。
 message PowerState {
   optional double battery_percent = 1;
 }

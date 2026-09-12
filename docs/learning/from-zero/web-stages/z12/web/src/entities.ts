@@ -2,7 +2,7 @@ import { computed, onUnmounted, ref } from 'vue'
 import { api, calibrate, clockOffset, errorText, session } from './api'
 import { applyUpdate, newStreamState } from './domain'
 import type { EntityUpdate, Inventory } from './types'
-// A page owns one EventSource and one expiry clock; unmount closes both.
+// 每个页面持有一个 EventSource 和一个过期检查时钟，卸载时关闭两者。
 export function useEntities() {
   const inventory = ref<Inventory[]>([]),
     state = ref(newStreamState()),

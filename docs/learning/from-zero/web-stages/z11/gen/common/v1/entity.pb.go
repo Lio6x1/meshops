@@ -166,10 +166,10 @@ type EntityStateEvent struct {
 	ReceivedAt    *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=received_at,json=receivedAt,proto3" json:"received_at,omitempty"`
 	SchemaVersion int32                  `protobuf:"varint,8,opt,name=schema_version,json=schemaVersion,proto3" json:"schema_version,omitempty"`
 	Snapshot      *EntitySnapshot        `protobuf:"bytes,9,opt,name=snapshot,proto3" json:"snapshot,omitempty"`
-	// Explicit lifecycle; UNSPECIFIED is invalid once business handling is enabled.
+	// 显式生命周期；启用业务处理后不允许使用 UNSPECIFIED。
 	Operation EntityOperation        `protobuf:"varint,10,opt,name=operation,proto3,enum=meshops.common.v1.EntityOperation" json:"operation,omitempty"`
 	ExpiresAt *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
-	// Assigned by ownership configuration, not by arbitrary client timestamps.
+	// 由归属配置分配，不能取自任意客户端时间戳。
 	SourceGeneration int64 `protobuf:"varint,12,opt,name=source_generation,json=sourceGeneration,proto3" json:"source_generation,omitempty"`
 }
 
@@ -432,7 +432,7 @@ func (x *EntitySnapshot) GetFacility() *FacilityState {
 	return nil
 }
 
-// Optional components: absent means unknown/not applicable, not zero.
+// 可选组件：缺失表示未知或不适用，不表示数值为零。
 type PowerState struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

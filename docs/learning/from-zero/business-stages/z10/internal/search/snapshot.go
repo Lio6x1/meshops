@@ -14,10 +14,10 @@ type BinlogPosition struct {
 	Offset uint64 `json:"offset"`
 }
 
-// Snapshot establishes an InnoDB repeatable read view while writes are locked.
-// The lock is released before any ES or checkpoint I/O. saveStart must durably
-// save the returned coordinate for Canal; it is not a "bootstrap complete" flag.
-// Startup must refuse missing/purged binlogs rather than jump to the current end.
+// Snapshot 在写入被锁定期间建立 InnoDB 可重复读视图。
+// 在任何 ES 或检查点 I/O 前释放锁。saveStart 必须持久保存
+// 返回的坐标供 Canal 使用；它并不是“引导完成”标志。
+// 启动时遇到缺失或已清理的 binlog 必须拒绝启动，不能跳到当前末尾。
 func Snapshot(ctx context.Context, db *sql.DB, index TaskIndex, saveStart func(BinlogPosition) error) error {
 	if db == nil || index == nil || saveStart == nil {
 		return fmt.Errorf("snapshot dependencies required")
@@ -35,7 +35,7 @@ func Snapshot(ctx context.Context, db *sql.DB, index TaskIndex, saveStart func(B
 	if _, err = reader.ExecContext(ctx, "SET SESSION time_zone='+00:00'"); err != nil {
 		return err
 	}
-	// A failed UNLOCK cannot return a lock-owning session to database/sql's pool.
+	// UNLOCK 失败时，不能把仍持有锁的会话归还给 database/sql 连接池。
 	locked := false
 	unlock := func() error {
 		if !locked {
@@ -66,8 +66,8 @@ func Snapshot(ctx context.Context, db *sql.DB, index TaskIndex, saveStart func(B
 		return err
 	}
 	defer tx.Rollback()
-	// The first SELECT, not merely BEGIN, establishes the read view. Keep the
-	// global lock until QueryContext has begun this SELECT against InnoDB.
+	// 读视图由首次 SELECT 建立，仅执行 BEGIN 并不够。必须持有全局锁，
+	// 直到 QueryContext 已开始对 InnoDB 执行这条 SELECT。
 	names := []string{"tenant_id", "task_id", "target_entity_id", "task_type", "status", "status_version", "payload", "created_at", "updated_at", "cancelled_reason", "failure_reason"}
 	rows, err := tx.QueryContext(ctx, `SELECT tenant_id,task_id,target_entity_id,task_type,status,CAST(status_version AS CHAR),CAST(payload AS CHAR),CAST(created_at AS CHAR),CAST(updated_at AS CHAR),cancelled_reason,failure_reason FROM tasks ORDER BY task_id`)
 	if err != nil {

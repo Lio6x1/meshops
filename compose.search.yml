@@ -1,4 +1,4 @@
-# Optional search dependencies. The default Z09 compose path remains unchanged.
+# 可选搜索依赖；不改变 Z09 默认 Compose 启动方式。
 services:
   mysql:
     command: ["--default-time-zone=+00:00", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci", "--server-id=1", "--binlog-format=ROW", "--binlog-row-image=FULL"]

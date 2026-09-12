@@ -1,5 +1,5 @@
-// Package simulation stores the demo source control plane separately from entity
-// state. A requested mode is not an acknowledgement that a worker applied it.
+// Package simulation 单独存储演示来源的控制状态，与实体状态分开。
+// 请求切换某种模式，不代表工作进程已经应用该模式。
 package simulation
 
 import (
@@ -26,12 +26,12 @@ func (m Mode) Valid() bool { return m == Running || m == Paused || m == Offline 
 
 const HeartbeatTTL = 3 * time.Second
 
-// Demo sources pre-register five entities. Count selects a stable prefix without
-// deleting entity history, credentials, or any durable offline queue entries.
+// 演示来源预先注册五个实体，Count 选择固定排序的前若干个实体，
+// 不会删除实体历史、凭证或持久化离线队列中的记录。
 const MaxEntitiesPerSource = 5
 
-// Counters are decimal strings because JavaScript numbers cannot represent all
-// int64 values. They reset when a process restarts; pending is read from bbolt.
+// 计数器使用十进制字符串，因为 JavaScript 数字无法精确表示全部
+// int64 值。进程重启时计数器清零；pending 数量从 bbolt 读取。
 type Observation struct {
 	ActiveCount int       `json:"activeCount"`
 	Applied     Mode      `json:"applied"`
@@ -99,7 +99,7 @@ func (s *Store) DesiredCount(ctx context.Context, tenant, source string) (int, e
 	return countValue(value)
 }
 
-// SetCount only changes count: concurrent mode updates cannot be overwritten.
+// SetCount 只修改 count，避免覆盖并发进行的模式更新。
 func (s *Store) SetCount(ctx context.Context, tenant, source string, count int) error {
 	if tenant == "" || source == "" || count < 0 || count > MaxEntitiesPerSource {
 		return errors.New("tenant, source and simulation entity count 0..5 are required")
@@ -121,7 +121,7 @@ func (s *Store) Observe(ctx context.Context, tenant, source string, o Observatio
 	return s.client.Set(ctx, key(tenant, source, "observed"), payload, HeartbeatTTL).Err()
 }
 func (s *Store) Read(ctx context.Context, tenant, source string) (Status, error) {
-	// One Redis command reads the desired settings and expiring heartbeat together.
+	// 使用一条 Redis 命令同时读取期望配置和带过期时间的心跳。
 	values, err := s.client.MGet(ctx, key(tenant, source, "desired"), key(tenant, source, "observed"), key(tenant, source, "count")).Result()
 	if err != nil {
 		return Status{}, err

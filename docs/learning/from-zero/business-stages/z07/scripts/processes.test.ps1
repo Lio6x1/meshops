@@ -1,4 +1,4 @@
-# Isolated process tests: never reads course processes.json or stops course services.
+# 独立进程测试，不读取学习工程的 processes.json，也不停止学习服务。
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'processes.ps1')
 function Assert-True([bool]$Condition, [string]$Message) {

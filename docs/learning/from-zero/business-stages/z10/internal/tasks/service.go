@@ -254,9 +254,9 @@ func (s *Service) ReportTaskStatus(ctx context.Context, r *taskv1.ReportTaskStat
 	}
 	encoded, _ := proto.MarshalOptions{Deterministic: true}.Marshal(r)
 	hash := digest(encoded)
-	// Bindings are immutable during service lifetime. Verify the remote dispatch
-	// before acquiring the task lock, then recheck receipt/version under the lock.
-	// The first duplicate lookup preserves successful retries during RPC outages.
+	// 绑定在服务生命周期内保持不变。先验证远端投递，再获取任务锁，
+	// 随后在锁内重新检查回执和版本。
+	// 首次重复查询保证 RPC 故障期间，已成功请求的重试仍能成功。
 	pre, _, e := s.get(ctx, p.TenantID, r.TaskId)
 	if e != nil {
 		return nil, e
@@ -296,7 +296,7 @@ func (s *Service) ReportTaskStatus(ctx context.Context, r *taskv1.ReportTaskStat
 	if d.DispatchedAt == nil || d.DispatchedAt.CheckValid() != nil {
 		return nil, status.Error(codes.FailedPrecondition, "referenced dispatch has no durable send intent")
 	}
-	// Task row serializes receipts, transitions, cancellation and timeout. No accepted receipt survives rollback.
+	// Task 行锁串行化回执、状态迁移、取消和超时操作；回滚后不会保留任何已接收回执。
 	tx, e := s.db.BeginTx(ctx, nil)
 	if e != nil {
 		return nil, unavailable(e)

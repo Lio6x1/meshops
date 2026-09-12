@@ -79,7 +79,7 @@ export interface StreamState {
 export function newStreamState(): StreamState {
   return { syncId: '', generation: '', ready: false, entities: {}, versions: {} }
 }
-// An SSE reconnection is a new snapshot synchronization, never an offset resume.
+// SSE 重连必须重新同步完整快照，不能按旧位点续传。
 export function applyUpdate(current: StreamState, update: EntityUpdate): StreamState {
   let state = { ...current, entities: { ...current.entities }, versions: { ...current.versions } }
   if (update.syncId && update.syncId !== state.syncId)
@@ -92,7 +92,7 @@ export function applyUpdate(current: StreamState, update: EntityUpdate): StreamS
     return state
   }
   if (update.kind === 'ENTITY_UPDATE_KIND_HEARTBEAT' || !update.entityId) return state
-  // Keep a small per-subscribed-ID tombstone so delayed upserts cannot resurrect deletes.
+  // 为每个订阅 ID 保留少量删除标记，防止延迟 upsert 使已删除实体重新出现。
   const previousVersion = state.versions[update.entityId]
   if (previousVersion && update.version && BigInt(update.version) <= BigInt(previousVersion))
     return state

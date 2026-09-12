@@ -21,8 +21,8 @@ var idPattern = regexp.MustCompile(`^[a-z0-9_-]+$`)
 func ValidID(s string, max int) bool { return len(s) > 0 && len(s) <= max && idPattern.MatchString(s) }
 func NewID() string                  { return uuid.NewString() }
 func Hash(b []byte) string           { h := sha256.Sum256(b); return hex.EncodeToString(h[:]) }
-// Authenticate checks a random machine token, not a user password. SHA-256
-// is an identity lookup key; plaintext tokens remain available for local RPC.
+// Authenticate 校验随机机器令牌，不校验用户密码。SHA-256
+// 仅用作身份查找键；本机 RPC 调用仍可取得原始明文令牌。
 func (r *Registry) Authenticate(token string) (Principal, error) {
 	h := Hash([]byte(token))
 	p, ok := r.Principals[h]

@@ -203,8 +203,8 @@ services:
     build: {context: ., target: web}
     ports: ["127.0.0.1:18090:8080"]
     depends_on: {gateway: {condition: service_healthy}}
-    # A host-facing bridge is required for Docker Desktop to publish this port.
-    # Only Nginx joins it; RPC services and databases remain on private.
+    # Docker Desktop 发布此端口需要连接面向主机的网桥。
+    # 只有 Nginx 加入该网桥，RPC 服务和数据库继续留在 private 网络。
     networks: [frontend, private]
     restart: unless-stopped
     healthcheck:

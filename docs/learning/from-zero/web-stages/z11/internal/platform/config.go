@@ -109,8 +109,8 @@ func LoadConfig(path string) (Config, error) {
 	return c, nil
 }
 
-// Plaintext RPC is deliberately local-only. Do not resolve hostnames: an IP literal
-// makes the boundary explicit and prevents resolver/scheme overrides from bypassing it.
+// 明文 RPC 有意限制在本机，不解析主机名；要求直接使用 IP 地址，
+// 使访问边界明确，避免通过替换解析器或地址协议绕过限制。
 func localRPCAddress(address string, allowZeroPort bool) error {
 	host, port, err := net.SplitHostPort(address)
 	ip := net.ParseIP(host)

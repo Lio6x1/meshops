@@ -19,8 +19,8 @@ import (
 
 const activeKey = "meshops:view:active"
 
-// No EXPIRE is intentional: deletion and old-version rejection must survive
-// arbitrary offline replay. Redis is configured noeviction in the course.
+// 有意不设置 EXPIRE：删除标记和旧版本拒绝机制必须能抵御
+// 任意离线重放。课程中的 Redis 配置为 noeviction。
 var applyView = redis.NewScript(`
 local old=redis.call('HMGET',KEYS[1],'source_id','source_generation','version','event_id','payload_hash')
 if old[1] then
@@ -38,7 +38,7 @@ redis.call('HSET',KEYS[1],'source_id',ARGV[1],'source_generation',ARGV[2],
 return 1
 `)
 
-// Z07 has current state and subscriptions. State history enters in Z08.
+// Z07 只包含当前状态和订阅，状态历史在 Z08 中加入。
 type Entity struct {
 	entityv1.UnimplementedEntityServiceServer
 	cfg             platform.Settings
@@ -78,8 +78,8 @@ func NewEntity(cfg platform.Settings, r *platform.Registry, cache *redis.Client)
 	return e, nil
 }
 
-// Active namespaces are isolated with their input topic. Empty prefix preserves
-// the normal demo key; disposable verification topics cannot adopt its view.
+// 活动命名空间按输入主题隔离。空前缀保留
+// 常规演示键；临时验证主题不能借用该视图。
 func (e *Entity) activeKey() string {
 	if e.cfg.TopicPrefix == "" {
 		return activeKey
@@ -235,8 +235,8 @@ func (e *Entity) BatchGetSnapshots(ctx context.Context, r *entityv1.BatchGetSnap
 	return out, nil
 }
 
-// Rejected records are explicitly quarantined, while storage errors propagate so
-// the Kafka wrapper does not commit the record. Content is never logged.
+// 被拒绝的记录会明确隔离，存储错误则向上传递，确保
+// Kafka 封装层不会提交该记录。日志不记录消息内容。
 func (e *Entity) decode(raw []byte) (*commonv1.EntityStateEvent, error) {
 	v := &commonv1.EntityStateEvent{}
 	if err := proto.Unmarshal(raw, v); err != nil {
@@ -313,7 +313,7 @@ func (e *Entity) Run(ctx context.Context, b Consumer) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	out := make(chan error, 2)
-	// Verified snapshot waivers enter in Z09; earlier lessons replay from zero.
+	// Z09 才引入经过验证的快照恢复起点；此前课程从零位点重放。
 	go func() {
 		out <- b.ConsumeStrictPartitions(ctx, ProjectorGroupName(e.cfg.ConsumerGroupPrefix, generation), e.cfg.TopicPrefix+"entity-state-events.v1", nil, func(c context.Context, raw []byte) error {
 			event, err := e.decode(raw)

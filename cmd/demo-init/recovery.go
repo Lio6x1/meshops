@@ -18,9 +18,9 @@ func invalidateSearch(dir string) error {
 	return ownSecret(path)
 }
 
-// The orchestration owns service shutdown. This helper owns the durable marker:
-// any unsuccessful import (even after a child wrote complete=true) invalidates
-// it again, so a later ordinary Up cannot silently serve a partial projection.
+// 服务停止由编排层负责；此函数负责维护持久化标记：
+// 任何未成功的导入，即使子进程已写入 complete=true，也必须再次使标记失效，
+// 避免后续普通 Up 启动时悄悄对外提供不完整的投影。
 func rebuildSearchMarker(ctx context.Context, dir string, importSnapshot func(context.Context) error) (err error) {
 	if err = invalidateSearch(dir); err != nil {
 		return err
@@ -39,10 +39,10 @@ func rebuildSearchMarker(ctx context.Context, dir string, importSnapshot func(co
 	return ownSecret(filepath.Join(dir, "search-bootstrap.json"))
 }
 
-// Production passes one fixed mount path; no user-provided deletion path or
-// recursive delete is accepted. These are the files observed for the configured
-// CanalFileMetaManager and its H2 TSDB. Validate the entire directory before any
-// deletion, and reject new formats so maintenance cannot silently miss a cursor.
+// 实际调用只传入固定挂载路径，不接受用户提供的删除路径，
+// 也不递归删除。下列文件对应当前配置使用的
+// CanalFileMetaManager 及其 H2 TSDB。删除前先验证整个目录，
+// 遇到未知格式立即拒绝，防止维护操作漏掉未识别的游标文件。
 func resetCanalMeta(base string) error {
 	info, err := os.Lstat(base)
 	if err != nil {
@@ -85,6 +85,6 @@ func resetCanalMeta(base string) error {
 			return err
 		}
 	}
-	// Remove only an empty, validated directory; never RemoveAll a volume.
+	// 只删除经过验证的空目录，绝不对数据卷调用 RemoveAll。
 	return os.Remove(destination)
 }

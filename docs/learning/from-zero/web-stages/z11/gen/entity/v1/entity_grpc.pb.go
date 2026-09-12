@@ -28,7 +28,7 @@ type EntityServiceClient interface {
 	GetSnapshot(ctx context.Context, in *GetSnapshotRequest, opts ...grpc.CallOption) (*GetSnapshotResponse, error)
 	// 批量获取快照（一元）
 	BatchGetSnapshots(ctx context.Context, in *BatchGetSnapshotsRequest, opts ...grpc.CallOption) (*BatchGetSnapshotsResponse, error)
-	// Bounded sampled history, not a complete raw event archive.
+	// 有界的采样历史，不是完整原始事件归档。
 	ListHistorySamples(ctx context.Context, in *ListHistorySamplesRequest, opts ...grpc.CallOption) (*ListHistorySamplesResponse, error)
 }
 
@@ -109,7 +109,7 @@ type EntityServiceServer interface {
 	GetSnapshot(context.Context, *GetSnapshotRequest) (*GetSnapshotResponse, error)
 	// 批量获取快照（一元）
 	BatchGetSnapshots(context.Context, *BatchGetSnapshotsRequest) (*BatchGetSnapshotsResponse, error)
-	// Bounded sampled history, not a complete raw event archive.
+	// 有界的采样历史，不是完整原始事件归档。
 	ListHistorySamples(context.Context, *ListHistorySamplesRequest) (*ListHistorySamplesResponse, error)
 	mustEmbedUnimplementedEntityServiceServer()
 }

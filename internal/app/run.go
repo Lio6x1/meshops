@@ -1,4 +1,4 @@
-// Package app assembles processes. Business rules live in state/tasks packages.
+// Package app 负责进程装配，业务规则位于 state/tasks 包。
 package app
 
 import (
@@ -196,7 +196,7 @@ func Run(parent context.Context, role string, args []string, diagnostics io.Writ
 	if *rebuild {
 		return 2
 	}
-	// Workers and health share a lifetime; readiness tests direct dependencies only.
+	// 工作协程与健康检查共享生命周期；就绪检查只检测直接依赖。
 	var ready atomic.Bool
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", promhttp.Handler())
@@ -210,7 +210,7 @@ func Run(parent context.Context, role string, args []string, diagnostics io.Writ
 		checks = append(checks, func(ctx context.Context) error { return redisClient.Ping(ctx).Err() })
 	}
 	mux.HandleFunc("/readyz", readiness(&ready, checks...))
-	// Metrics/pprof bind to a loopback IP; they are local operational endpoints.
+	// Metrics/pprof 绑定回环 IP，作为本地运维端点。
 	host, _, e := net.SplitHostPort(cfg.MeshOps.MetricsAddr)
 	if e != nil || net.ParseIP(host) == nil || !net.ParseIP(host).IsLoopback() {
 		return fail(errors.New("MetricsAddr must use loopback IP"))
@@ -278,7 +278,7 @@ func Run(parent context.Context, role string, args []string, diagnostics io.Writ
 	ready.Store(false)
 	cancel()
 	httpServer.Close()
-	// go-zero installs process shutdown listeners. Trigger them for explicit cancellation too.
+	// go-zero 会安装进程关闭监听器，显式取消时也要触发这些监听器。
 	done := make(chan struct{})
 	go func() {
 		if s := grpcServer.Load(); s != nil {

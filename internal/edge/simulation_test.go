@@ -227,7 +227,7 @@ func TestSimulationLiveCountStopsShrinksAndResumes(t *testing.T) {
 	for _, n := range []int{5, 2, 0, 5} {
 		store.setCount(n)
 		waitCount(n)
-		// Observations precede the next generation; drain any prior ticks.
+		// 观测发生在下一次生成前；先排空之前的时钟信号。
 		for len(counts) > 0 {
 			<-counts
 		}

@@ -1,5 +1,5 @@
-// Package edge owns the durable state of the two simulators. A database has one
-// process owner; server acknowledgements never advance an unsent local sequence.
+// Package edge 管理两个模拟器的持久化状态。每个数据库只由一个
+// 进程持有；服务端确认不能推进到尚未发送的本地序号。
 package edge
 
 import (
@@ -239,7 +239,7 @@ func (q *Queue) enqueue(tx *bolt.Tx, event *commonv1.EntityStateEvent) (int64, e
 	return seq, m.Put([]byte("next_sequence"), key64(seq+1))
 }
 
-// Enqueue copies an existing event, preserving its entity version and identity.
+// Enqueue 复制已有事件，保留其实体版本与身份。
 func (q *Queue) Enqueue(event *commonv1.EntityStateEvent) (int64, error) {
 	var seq int64
 	err := q.db.Update(func(tx *bolt.Tx) error {
@@ -276,7 +276,7 @@ func (q *Queue) Pending(limit int) ([]QueuedEvent, error) {
 	return out, err
 }
 
-// BeginStream discards the previous connection's in-memory sent boundary.
+// BeginStream 丢弃上一连接保存在内存中的已发送边界。
 func (q *Queue) BeginStream() (QueueStats, error) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
@@ -334,8 +334,8 @@ func (q *Queue) Stats() (QueueStats, error) {
 	return s, err
 }
 
-// CompactQueue requires exclusive bbolt ownership. It keeps the original backup,
-// and restores its name if replacing the closed database fails.
+// CompactQueue 要求独占 bbolt。它保留原始备份，
+// 若替换已关闭的数据库失败，则恢复原文件名。
 func CompactQueue(path string) (string, error) {
 	if _, err := os.Stat(path); err != nil {
 		return "", err

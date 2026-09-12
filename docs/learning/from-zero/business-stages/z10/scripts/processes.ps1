@@ -1,4 +1,4 @@
-# Shared Windows process ownership checks. Never identify a process by PID alone.
+# 共享的 Windows 进程归属检查；不能只凭 PID 识别进程。
 function Get-CourseOwnedProcess($Record) {
     try {
         if (-not $Record.pid -or -not $Record.path) { return $null }
@@ -9,7 +9,7 @@ function Get-CourseOwnedProcess($Record) {
         if ($Record.startedTicks) {
             $expectedTicks = [Int64]::Parse([string]$Record.startedTicks, [Globalization.CultureInfo]::InvariantCulture)
         } elseif ($Record.started -is [DateTime]) {
-            # PowerShell 7 ConvertFrom-Json can turn ISO strings into DateTime.
+            # PowerShell 7 的 ConvertFrom-Json 可能将 ISO 字符串转换为 DateTime。
             $expectedTicks = $Record.started.ToUniversalTime().Ticks
         } elseif ($Record.started -is [DateTimeOffset]) {
             $expectedTicks = $Record.started.UtcDateTime.Ticks
@@ -19,14 +19,14 @@ function Get-CourseOwnedProcess($Record) {
         if ($candidate.StartTime.ToUniversalTime().Ticks -ne $expectedTicks) { return $null }
         return $candidate
     } catch {
-        # A vanished, inaccessible or malformed record is never permission to kill.
+        # 记录消失、无法访问或格式错误，都不构成终止进程的授权。
         return $null
     }
 }
 
 function New-CourseProcessRecord([string]$Name, [Diagnostics.Process]$Process) {
-    # Start-Process can return before the executable module path is readable.
-    # Do not persist a null path, which would make safe cleanup impossible.
+    # Start-Process 返回时，可执行模块路径可能还无法读取。
+    # 不能持久化空路径，否则后续无法安全确认进程归属并清理。
     $identityDeadline = [DateTime]::UtcNow.AddSeconds(3)
     $expectedTicks = $Process.StartTime.ToUniversalTime().Ticks
     do {
@@ -42,7 +42,7 @@ function New-CourseProcessRecord([string]$Name, [Diagnostics.Process]$Process) {
         pid = $Process.Id
         path = $Process.Path
         started = $Process.StartTime.ToUniversalTime().ToString('o')
-        # Store as a string to preserve all 100ns ticks through any JSON reader.
+        # 按字符串保存，避免 JSON 读取器丢失 100ns 刻度的精度。
         startedTicks = $Process.StartTime.ToUniversalTime().Ticks.ToString([Globalization.CultureInfo]::InvariantCulture)
     }
 }
@@ -50,7 +50,7 @@ function New-CourseProcessRecord([string]$Name, [Diagnostics.Process]$Process) {
 function Stop-CourseOwnedProcess($Record, [int]$TimeoutMilliseconds = 10000) {
     $owned = Get-CourseOwnedProcess $Record
     if (-not $owned) { return }
-    # Stop-Process is abrupt on Windows; persistent restart semantics must hold.
+    # Windows 的 Stop-Process 会直接终止进程，持久化重启语义仍必须成立。
     try { Stop-Process -InputObject $owned -Force -ErrorAction Stop }
     catch { if (-not $owned.HasExited) { throw } }
     if (-not $owned.WaitForExit($TimeoutMilliseconds)) {
@@ -71,7 +71,7 @@ function Get-CourseServicePorts([string]$Root, [string[]]$Roles = @('entity', 't
         $configPath = Join-Path $Root "configs/$role.yaml"
         $config = Get-Content -LiteralPath $configPath -Raw
         foreach ($field in @('ListenOn', 'MetricsAddr')) {
-            # These two scalar keys belong to the checked-in service YAML format.
+            # 这两个标量键对应仓库中固定的服务 YAML 格式。
             $matches = [regex]::Matches($config, ('(?m)^\s*' + $field + ':\s*["'']?(?:\[[^\]]+\]|[^\s:"'']+):(\d+)["'']?\s*(?:#.*)?$'))
             if ($matches.Count -ne 1) { throw "Expected one explicit $field address in $configPath." }
             $port = [int]$matches[0].Groups[1].Value

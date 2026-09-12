@@ -236,8 +236,8 @@ func (d *loadDriver) phase(ctx context.Context, rate, count int, warmup bool) (P
 				}
 				began := time.Now()
 				request := &ingestv1.ReportEntityStatesRequest{GatewayEpoch: epoch, FirstSequence: confirmed + 1, ResumeAfterSequence: resume, Events: []*commonv1.EntityStateEvent{job.event}}
-				// A source has one stream and one in-flight batch. Timeout cancels that
-				// transport; no goroutine is left blocked on a dead broker indefinitely.
+				// 每个来源只有一条流和一个在途批次。超时会取消该传输，
+				// 不会让 goroutine 因失效的 broker 而无限阻塞。
 				timeout := time.AfterFunc(10*time.Second, streamCancel)
 				err = stream.Send(request)
 				var response *ingestv1.ReportEntityStatesResponse
@@ -419,7 +419,7 @@ func BenchmarkWithProfile(ctx context.Context, root string, seconds int, profile
 	if warmup.Accepted != 10000 {
 		return report, fmt.Errorf("warmup accepted %d/10000; %v", warmup.Accepted, warmup.ErrorExamples)
 	}
-	// Wait for all warmup events to be applied before measuring a steady load.
+	// 等待所有预热事件应用完成后，再测量稳定负载。
 	limit := time.Now().Add(60 * time.Second)
 	for {
 		lag, x := env.Bus.Lag(ctx, env.projectorGroup, env.Prefix+"entity-state-events.v1")
@@ -434,8 +434,8 @@ func BenchmarkWithProfile(ctx context.Context, root string, seconds int, profile
 		}
 		time.Sleep(100 * time.Millisecond)
 	}
-	// Broker ACK plus zero lag alone cannot prove that every distinct entity
-	// was projected (a malformed record could have been quarantined).
+	// 仅凭 broker ACK 和零积压，无法证明每个不同实体都已投影，
+	// 因为格式错误的记录可能已被隔离。
 	for start := 0; start < 10000; start += 100 {
 		ids := make([]string, 100)
 		for i := range ids {

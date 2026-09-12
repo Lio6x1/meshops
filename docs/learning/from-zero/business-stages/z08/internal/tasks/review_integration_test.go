@@ -24,8 +24,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// With no executor stream, this still persists transport intent before send fails.
-// Reports can then refer to a real dispatched attempt without advancing Task status.
+// 即使没有执行器流，也会在发送失败前持久化传输意图。
+// 这样回报便可引用真实的投递尝试，而无需推进 Task 状态。
 func persistDispatchIntent(t *testing.T, f *fixture) {
 	t.Helper()
 	if e := f.dispatcher.DispatchDue(context.Background()); e != nil {
@@ -221,8 +221,8 @@ func TestDispatchWorkerDefersNewerCancellationMirror(t *testing.T) {
 	if e != nil {
 		t.Fatal(e)
 	}
-	// Only refresh the existing attempt's mirror. CANCEL_REQUESTED handling would
-	// create a second command too; the invariant here is the pending execute row.
+	// 只刷新现有尝试的镜像。处理 CANCEL_REQUESTED 还会创建第二条命令；
+	// 此处要验证的是处于 pending 状态的 execute 记录所应满足的不变量。
 	tx, e := f.db.BeginTx(context.Background(), nil)
 	if e != nil {
 		t.Fatal(e)
@@ -248,8 +248,8 @@ func TestDispatchWorkerDefersNewerCancellationMirror(t *testing.T) {
 	}
 }
 
-// The wrapper runs a real committed write after COUNT's rows close and before
-// ListTasks starts its page query. All SQL still executes against real MySQL.
+// 包装器在 COUNT 结果集关闭后、ListTasks 开始分页查询前，执行并提交一次真实写入。
+// 所有 SQL 仍在真实 MySQL 上执行。
 type afterCountConnector struct {
 	driver.Connector
 	after func()

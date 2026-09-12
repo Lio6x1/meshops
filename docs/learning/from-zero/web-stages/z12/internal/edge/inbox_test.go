@@ -55,7 +55,7 @@ func command(id string, cancel bool) *executorv1.ListenTasksResponse {
 	return &executorv1.ListenTasksResponse{CommandId: id + suffix, Kind: kind, DispatchId: id + suffix + "-1", Attempt: 1, Task: &commonv1.Task{TaskId: id, ExecutionKey: id, TenantId: "tenant", TargetEntityId: "person-001", ExecutorId: "executor", TaskType: "inspect", Payload: &commonv1.TaskPayload{PayloadJson: `{"duration_seconds":1}`}}}
 }
 
-// A21: the business effect, result, and exact report survive database reopen.
+// A21：重新打开数据库后，业务效果、结果与完整报告仍然保留。
 func TestInboxEffectAndReportSurviveRestart(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "inbox.db")
 	i, e := OpenInbox(path)
@@ -96,7 +96,7 @@ func TestInboxEffectAndReportSurviveRestart(t *testing.T) {
 	}
 }
 
-// A22: cancel-before-execute creates a durable tombstone without an effect.
+// A22：执行前取消会创建持久化墓碑，不产生业务效果。
 func TestInboxCancelBeforeExecuteSurvivesRestart(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "inbox.db")
 	i, e := OpenInbox(path)

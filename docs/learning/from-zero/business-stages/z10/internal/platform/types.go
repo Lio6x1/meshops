@@ -1,4 +1,4 @@
-// Package platform contains the shared configuration and trusted identities.
+// Package platform 提供共享配置与可信身份定义。
 //
 //lint:file-ignore SA5008 go-zero conf intentionally extends JSON tags with optional; LoadConfig tests exercise these tags.
 package platform
@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// MaxEntityVersion is the largest integer Redis Lua can compare exactly.
+// MaxEntityVersion 是 Redis Lua 能够精确比较的最大整数。
 // 版本号与来源代次都会经过 Lua number（IEEE 754 双精度）；超过 2^53-1
 // 后不同整数可能被当成同一个值，因此入口、磁盘队列和投影必须共用此上限。
 const MaxEntityVersion int64 = 1<<53 - 1
@@ -93,5 +93,5 @@ type Config struct {
 	MeshOps Settings
 }
 
-// Duration is used only after LoadConfig has validated configured values.
+// Duration 只能在 LoadConfig 已校验配置值后使用。
 func Duration(s string) time.Duration { d, _ := time.ParseDuration(s); return d }
