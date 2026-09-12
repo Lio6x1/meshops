@@ -71,3 +71,9 @@
 - [既有 Git 发布与 CI 记录](../../learning/from-zero/verification/2026-09-12-git-publication.md)
 - [问题与解决办法](../../troubleshooting/README.md)
 - 本轮原始临时输出位于工程 `.cache/review/`，不直接发布可能包含本机配置的原日志；最终保留可复现命令、脱敏结论及 [SQL/EXPLAIN](../../troubleshooting/evidence/README.md)。
+
+## 收尾补查 N10：故障恢复保留容器配置
+
+已修复基线就存在的 P2：基础 Compose 的 `up` 会重新收敛带搜索覆盖参数的 MySQL，造成容器替换。新增身份门禁在旧实现上实际退出 1，尽管四项恢复探针都成功；改为 `start --wait` 后四项恢复和三个依赖的身份门禁通过，MySQL Config.Cmd 前后一致。缺失容器的负例明确退出 1，没有新建容器。详见 [排错过程](../../troubleshooting/09-projection-recovery.md#故障演练恢复成功但容器被换了) 和 [脱敏结果](runtime-results.json)。
+
+此项是先前最终复审之外、主目录运行补查中新发现的已有缺陷。因此上文“此后的收尾提交只更新文档”仅描述当时的 `cfcae97`；N10 后续提交确实修改故障工具，需以该提交的 CI 结果为准。既有业务全包与压力结果保留其原始覆盖范围。

@@ -15,6 +15,7 @@
 | executor 越跑越慢、重启后任务消失或反复失败 | [inbox 索引与原始事实](07-inbox-recovery.md) |
 | 网关达到 count 后退出 0，但上传已失败 | [上传错误被取消覆盖](08-upload-shutdown.md) |
 | Redis 丢失后返回空状态、Kafka 截断后“恢复成功” | [投影世代与严格重放](09-projection-recovery.md) |
+| 故障演练显示成功，但 MySQL 容器或搜索参数变了 | [保留原容器的恢复方式](09-projection-recovery.md#故障演练恢复成功但容器被换了) |
 | 历史清理写了 LIMIT 500 仍慢 | [用实际 EXPLAIN 判断清理范围](10-history-explain.md) |
 | 本机能复制，Git 新检出指纹失败；CI 绿但场景被跳过 | [Git 原始字节与 CI 证据](11-git-ci.md) |
 

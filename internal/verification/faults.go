@@ -189,7 +189,10 @@ func Faults(ctx context.Context, root string) (report FaultReport, err error) {
 				if dependency == "entity-process" {
 					return env.Start(c, "entity")
 				}
-				return env.compose(c, "up", "-d", "--wait", dependency)
+				// Restart the exact container stopped above. Base-only `up` can
+				// recreate an instance configured by an overlay (for example the
+				// Search MySQL binlog flags), changing the environment under test.
+				return env.compose(c, "start", "--wait", dependency)
 			}
 			return recoverDependency(stopDependency, restore, func(restore func() error) error {
 				step.StoppedAt = time.Now().UTC().Format(time.RFC3339Nano)

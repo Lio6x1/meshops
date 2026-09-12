@@ -175,5 +175,66 @@
     "pass": 145,
     "skip": 3,
     "fail": 0
+  },
+  "faultConfigurationPreservation": {
+    "redRunID": "819ac37a1e1d47aeac7a8355b12f7e2f",
+    "redResult": "Four recovery probes passed, but wrapper exited 1 because MySQL container identity changed.",
+    "green": {
+      "RunID": "f83f6ece0cc24a7a978c1bedcfaa93ac",
+      "StartedAt": "2026-09-12T09:12:16Z",
+      "Steps": [
+        {
+          "Dependency": "kafka",
+          "StoppedAt": "2026-09-12T09:12:30.088596Z",
+          "RestoredAt": "2026-09-12T09:12:37.9378713Z",
+          "FailureObserved": "kafka publication not confirmed",
+          "FailureSeconds": 0.0023617,
+          "RecoverySeconds": 35.2709224,
+          "Recovered": true
+        },
+        {
+          "Dependency": "redis",
+          "StoppedAt": "2026-09-12T09:13:06.6289674Z",
+          "RestoredAt": "2026-09-12T09:13:12.608856Z",
+          "FailureObserved": "rpc error: code = Unavailable desc = active view unavailable",
+          "FailureSeconds": 1.7366002,
+          "RecoverySeconds": 4.245613,
+          "Recovered": true
+        },
+        {
+          "Dependency": "mysql",
+          "StoppedAt": "2026-09-12T09:13:16.3713309Z",
+          "RestoredAt": "2026-09-12T09:13:20.7377463Z",
+          "FailureObserved": "rpc error: code = Unavailable desc = persistent dependency unavailable",
+          "FailureSeconds": 0.0005444,
+          "RecoverySeconds": 4.3697896,
+          "Recovered": true
+        },
+        {
+          "Dependency": "entity-process",
+          "StoppedAt": "2026-09-12T09:13:20.7710271Z",
+          "RestoredAt": "2026-09-12T09:13:21.0381225Z",
+          "FailureObserved": "rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 127.0.0.1:2229: connectex: No connection could be made because the target machine actively refused it.\"",
+          "FailureSeconds": 0.0240657,
+          "RecoverySeconds": 29.4835253,
+          "Recovered": true
+        }
+      ],
+      "Passed": true
+    },
+    "wrapperExitCode": 0,
+    "containerIdentityGate": "kafka, redis and mysql unchanged",
+    "mysqlCommandBeforeAndAfter": [
+      "--default-time-zone=+00:00",
+      "--character-set-server=utf8mb4",
+      "--collation-server=utf8mb4_unicode_ci",
+      "--server-id=1",
+      "--binlog-format=ROW",
+      "--binlog-row-image=FULL"
+    ],
+    "missingContainerStart": {
+      "exitCode": 1,
+      "error": "service \"mysql\" has no container to start"
+    }
   }
 }

@@ -65,6 +65,16 @@ go test ./internal/state -run 'TestNewEntityAndRunStrictRecoveryLifecycle|TestVe
 
 [既有 Search 重建记录](../learning/from-zero/verification/2026-09-12-search-rebuild.md)说明专用维护顺序：停止 Search/Canal，先写 incomplete 标记，建立 MySQL 一致性读视图后及时释放全局写锁，构建 ES，确认 CDC end 未改变后提交起点，最后记录完整标记及新 index UUID。失败后保持停止/未完成状态；测试脚本中的删索引步骤不是日常初始化命令。
 
-本轮独立源码审查未再确认新的 Search 缺陷，但不等于重新跑过 Canal/ES 全部恢复。Search 是最终一致查询；PIT 或游标过期应重新发起第一页，不能通过改游标/绕过 HMAC 延长快照。租户、筛选与页大小绑定于游标；跨页看到的快照与当前任务事实可能不同。
+本轮独立课程已运行 Canal/ES 同步及未完成引导、索引丢失后的恢复，见 [验收记录](../review/2026-09-12/acceptance.md)。Search 是最终一致查询；PIT 或游标过期应重新发起第一页，不能通过改游标/绕过 HMAC 延长快照。租户、筛选与页大小绑定于游标；跨页看到的快照与当前任务事实可能不同。
+
+## 故障演练恢复成功，但容器被换了
+
+**现象与复现。** 启用 `compose.search.yml` 后执行旧版故障演练，四项恢复报告都是成功，新增的脚本验收却报 `mysql container changed`。原因是演练只使用基础 Compose 文件调用 `up -d --wait mysql`：Compose 会按基础配置重新收敛，可能替换带搜索覆盖配置的现有 MySQL。它改变的不仅是运行状态，还有容器身份、显式 binlog 参数及日志文件连续性条件。
+
+**解决办法。** `internal/verification/faults.go` 改用 `start --wait`，启动刚才停止的同一容器。`scripts/faults.ps1` 在执行前要求三个依赖各有一个运行实例，结束后比较容器 ID。外部配置不可变的同一实例得以保留；若容器已丢失，明确失败，不让恢复工具自行决定重建配置。需要重建时由操作者按原完整 Compose 文件组合处理，不删数据卷。
+
+**怎样验证。** 在专用课程依赖、演示进程已停止的情况下，先记录 `docker inspect meshops-course-mysql-1 --format '{{json .Config.Cmd}}'`，执行 `./scripts/faults.ps1`，再比较配置。要求脚本退出 0、四项 `Recovered=true`，且容器身份门禁和命令参数比较都通过。仅检查 SQL 的 `log_bin=ON` 不够：MySQL 8 默认也可能启用 binlog，不能由容器替换直接断言关闭了日志。
+
+本轮原始红绿输出在 `.cache/review/fault-preservation-red.txt` 与 `fault-preservation-green.txt`；旧版恢复报告的成功没有被改写成失败，而是新增验收揭示其未覆盖的条件。对一个不存在的隔离 Compose 项目实际执行 `start --wait`，退出 1，报告 `service "mysql" has no container to start`，未创建容器。本例是单实例故障演练工具的问题，不证明跨节点容灾能力。
 
 实现入口：[entity.go](../../internal/state/entity.go)、[kafka.go](../../internal/bus/kafka.go)、[search](../../internal/search)、[search-admin](../../cmd/search-admin/main.go)。
