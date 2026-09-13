@@ -1,0 +1,168 @@
+{
+  "Groups": [
+    {
+      "Error": null,
+      "GroupID": "verify_8de92ef391894be196c6500fd8ea2eae_entity-projector-v1-685e9915-044a-4e51-b5c1-68f89a5f4e1d",
+      "GroupState": "Stable",
+      "Members": [
+        {
+          "MemberID": "entity@34c5dc28ad95 (github.com/segmentio/kafka-go)-ff714810-9524-471c-8513-4b32fa008e88",
+          "ClientID": "entity@34c5dc28ad95 (github.com/segmentio/kafka-go)",
+          "ClientHost": "/172.30.0.5",
+          "MemberMetadata": {
+            "Version": 1,
+            "Topics": [
+              "verify_8de92ef391894be196c6500fd8ea2eae_entity-state-events.v1"
+            ],
+            "UserData": null,
+            "OwnedPartitions": null
+          },
+          "MemberAssignments": {
+            "Version": 1,
+            "Topics": [
+              {
+                "Topic": "verify_8de92ef391894be196c6500fd8ea2eae_entity-state-events.v1",
+                "Partitions": [
+                  0
+                ]
+              }
+            ],
+            "UserData": null
+          }
+        },
+        {
+          "MemberID": "entity@34c5dc28ad95 (github.com/segmentio/kafka-go)-d47a54cd-6723-4635-a0d3-d7db7d560d30",
+          "ClientID": "entity@34c5dc28ad95 (github.com/segmentio/kafka-go)",
+          "ClientHost": "/172.30.0.5",
+          "MemberMetadata": {
+            "Version": 1,
+            "Topics": [
+              "verify_8de92ef391894be196c6500fd8ea2eae_entity-state-events.v1"
+            ],
+            "UserData": null,
+            "OwnedPartitions": null
+          },
+          "MemberAssignments": {
+            "Version": 1,
+            "Topics": [
+              {
+                "Topic": "verify_8de92ef391894be196c6500fd8ea2eae_entity-state-events.v1",
+                "Partitions": [
+                  1
+                ]
+              }
+            ],
+            "UserData": null
+          }
+        },
+        {
+          "MemberID": "entity@34c5dc28ad95 (github.com/segmentio/kafka-go)-fd9680e8-6de5-478d-92e9-df93ca8ded3e",
+          "ClientID": "entity@34c5dc28ad95 (github.com/segmentio/kafka-go)",
+          "ClientHost": "/172.30.0.5",
+          "MemberMetadata": {
+            "Version": 1,
+            "Topics": [
+              "verify_8de92ef391894be196c6500fd8ea2eae_entity-state-events.v1"
+            ],
+            "UserData": null,
+            "OwnedPartitions": null
+          },
+          "MemberAssignments": {
+            "Version": 1,
+            "Topics": [
+              {
+                "Topic": "verify_8de92ef391894be196c6500fd8ea2eae_entity-state-events.v1",
+                "Partitions": [
+                  2
+                ]
+              }
+            ],
+            "UserData": null
+          }
+        }
+      ]
+    },
+    {
+      "Error": null,
+      "GroupID": "verify_8de92ef391894be196c6500fd8ea2eae_entity-history-v1",
+      "GroupState": "Stable",
+      "Members": [
+        {
+          "MemberID": "entity@34c5dc28ad95 (github.com/segmentio/kafka-go)-adda7417-d2fb-4a76-a8c0-5f62a2a78209",
+          "ClientID": "entity@34c5dc28ad95 (github.com/segmentio/kafka-go)",
+          "ClientHost": "/172.30.0.5",
+          "MemberMetadata": {
+            "Version": 1,
+            "Topics": [
+              "verify_8de92ef391894be196c6500fd8ea2eae_entity-state-events.v1"
+            ],
+            "UserData": null,
+            "OwnedPartitions": null
+          },
+          "MemberAssignments": {
+            "Version": 1,
+            "Topics": [
+              {
+                "Topic": "verify_8de92ef391894be196c6500fd8ea2eae_entity-state-events.v1",
+                "Partitions": [
+                  0
+                ]
+              }
+            ],
+            "UserData": null
+          }
+        },
+        {
+          "MemberID": "entity@34c5dc28ad95 (github.com/segmentio/kafka-go)-2b5bc7b7-6eea-4b36-8078-826763d6cc6c",
+          "ClientID": "entity@34c5dc28ad95 (github.com/segmentio/kafka-go)",
+          "ClientHost": "/172.30.0.5",
+          "MemberMetadata": {
+            "Version": 1,
+            "Topics": [
+              "verify_8de92ef391894be196c6500fd8ea2eae_entity-state-events.v1"
+            ],
+            "UserData": null,
+            "OwnedPartitions": null
+          },
+          "MemberAssignments": {
+            "Version": 1,
+            "Topics": [
+              {
+                "Topic": "verify_8de92ef391894be196c6500fd8ea2eae_entity-state-events.v1",
+                "Partitions": [
+                  1
+                ]
+              }
+            ],
+            "UserData": null
+          }
+        },
+        {
+          "MemberID": "entity@34c5dc28ad95 (github.com/segmentio/kafka-go)-aa3a1bbe-4b27-4295-8942-c8f5461f04ec",
+          "ClientID": "entity@34c5dc28ad95 (github.com/segmentio/kafka-go)",
+          "ClientHost": "/172.30.0.5",
+          "MemberMetadata": {
+            "Version": 1,
+            "Topics": [
+              "verify_8de92ef391894be196c6500fd8ea2eae_entity-state-events.v1"
+            ],
+            "UserData": null,
+            "OwnedPartitions": null
+          },
+          "MemberAssignments": {
+            "Version": 1,
+            "Topics": [
+              {
+                "Topic": "verify_8de92ef391894be196c6500fd8ea2eae_entity-state-events.v1",
+                "Partitions": [
+                  2
+                ]
+              }
+            ],
+            "UserData": null
+          }
+        }
+      ]
+    }
+  ]
+}

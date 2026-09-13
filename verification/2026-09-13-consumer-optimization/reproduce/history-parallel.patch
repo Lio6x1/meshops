@@ -1,0 +1,415 @@
+--- a/internal/state/entity.go
++++ b/internal/state/entity.go
+@@ -53,6 +53,7 @@
+ 	reconcileCancel             context.CancelFunc
+ 	reconcileDone               chan struct{}
+ 	historyMu                   sync.Mutex
++	historyLocks                map[string]*sync.Mutex
+ 	historyLast                 map[string]*commonv1.EntityStateEvent
+ 	historyAllowed              map[string]bool
+ 	budgetSecond                int64
+--- a/internal/state/history.go
++++ b/internal/state/history.go
+@@ -106,15 +106,21 @@
+ 		slog.InfoContext(ctx, "history candidate skipped", "reason", "age")
+ 		return nil
+ 	}
++	// 同一实体的采样决策和事务保持串行，不同实体不在数据库 I/O 期间互相阻塞。
++	entityLock := e.historyLock(key)
++	entityLock.Lock()
++	defer entityLock.Unlock()
+ 	e.historyMu.Lock()
+-	defer e.historyMu.Unlock()
+ 	previous, loaded := e.historyLast[key]
++	e.historyMu.Unlock()
+ 	if !loaded {
+ 		previous, err = e.lastSample(ctx, event.TenantId, event.EntityId)
+ 		if err != nil {
+ 			return err
+ 		}
++		e.historyMu.Lock()
+ 		e.historyLast[key] = previous
++		e.historyMu.Unlock()
+ 	}
+ 	if previous != nil && event.SourceGeneration == previous.SourceGeneration && event.EntityVersion <= previous.EntityVersion {
+ 		return nil
+@@ -123,17 +129,20 @@
+ 	if reason == "" {
+ 		return nil
+ 	}
+-	second := now.Unix()
+-	if e.budgetSecond != second {
+-		e.budgetSecond = second
+-		e.budgetTotal = 0
+-		e.budgetPeriodic = 0
+-	}
+-	if e.budgetTotal >= e.cfg.HistoryBudget || reason == "periodic" && e.budgetPeriodic >= 100 {
++	// 预算统计只持有短锁；先预留，再写库，失败/重复时退回原时间窗。
++	second := time.Now().Unix()
++	periodic := reason == "periodic"
++	if !e.reserveHistoryBudget(second, periodic) {
+ 		historyCandidates.WithLabelValues("budget").Inc()
+ 		slog.InfoContext(ctx, "history candidate skipped", "reason", "budget")
+ 		return nil
+ 	}
++	stored := false
++	defer func() {
++		if !stored {
++			e.refundHistoryBudget(second, periodic)
++		}
++	}()
+ 	payload, err := protojson.Marshal(event.Snapshot)
+ 	if err != nil {
+ 		return err
+@@ -168,11 +177,10 @@
+ 	if err = tx.Commit(); err != nil {
+ 		return err
+ 	}
+-	e.budgetTotal++
+-	if reason == "periodic" {
+-		e.budgetPeriodic++
+-	}
++	stored = true
++	e.historyMu.Lock()
+ 	e.historyLast[key] = event
++	e.historyMu.Unlock()
+ 	historyCandidates.WithLabelValues("stored").Inc()
+ 	return nil
+ }
+--- /dev/null
++++ b/internal/state/history_budget.go
+@@ -0,0 +1,55 @@
++package state
++
++import "sync"
++
++// historyLock 仅对 historyAllowed 中的有限实体创建锁，容量不随事件历史增长。
++// historyMu 保护锁表、缓存和预算；拿到实体锁后，数据库调用不持有 historyMu。
++func (e *Entity) historyLock(key string) *sync.Mutex {
++	e.historyMu.Lock()
++	defer e.historyMu.Unlock()
++	if e.historyLocks == nil {
++		e.historyLocks = make(map[string]*sync.Mutex)
++	}
++	l := e.historyLocks[key]
++	if l == nil {
++		l = &sync.Mutex{}
++		e.historyLocks[key] = l
++	}
++	return l
++}
++
++// 预算约束本实例每秒准入的采样候选（含正在写库的候选），不是集群全局限额。
++func (e *Entity) reserveHistoryBudget(second int64, periodic bool) bool {
++	e.historyMu.Lock()
++	defer e.historyMu.Unlock()
++	// 并发调用可能带着上一秒取得的时间稍晚进入短锁；不能倒退窗口重新发放额度。
++	if second < e.budgetSecond {
++		return false
++	}
++	if e.budgetSecond != second {
++		e.budgetSecond = second
++		e.budgetTotal = 0
++		e.budgetPeriodic = 0
++	}
++	if e.budgetTotal >= e.cfg.HistoryBudget || periodic && e.budgetPeriodic >= 100 {
++		return false
++	}
++	e.budgetTotal++
++	if periodic {
++		e.budgetPeriodic++
++	}
++	return true
++}
++
++func (e *Entity) refundHistoryBudget(second int64, periodic bool) {
++	e.historyMu.Lock()
++	defer e.historyMu.Unlock()
++	// 慢事务可能跨秒结束，不能扣减新一秒其他事务的预留。
++	if e.budgetSecond != second {
++		return
++	}
++	e.budgetTotal--
++	if periodic {
++		e.budgetPeriodic--
++	}
++}
+--- /dev/null
++++ b/internal/state/history_concurrency_test.go
+@@ -0,0 +1,63 @@
++package state
++
++import (
++	"sync"
++	"sync/atomic"
++	"testing"
++)
++
++// 并行候选先预留预算，防止不同实体同时写库时突破每秒上限。
++func TestHistoryBudgetConcurrentAdmissionAndRefund(t *testing.T) {
++	e := &Entity{}
++	e.cfg.HistoryBudget = 17
++	var allowed atomic.Int64
++	var wg sync.WaitGroup
++	for i := 0; i < 200; i++ {
++		wg.Add(1)
++		go func() {
++			defer wg.Done()
++			if e.reserveHistoryBudget(100, false) {
++				allowed.Add(1)
++			}
++		}()
++	}
++	wg.Wait()
++	if allowed.Load() != 17 {
++		t.Fatalf("admitted %d, want 17", allowed.Load())
++	}
++	e.refundHistoryBudget(100, false)
++	if !e.reserveHistoryBudget(100, false) || e.reserveHistoryBudget(100, false) {
++		t.Fatal("failed write did not refund exactly one reservation")
++	}
++	if !e.reserveHistoryBudget(101, false) {
++		t.Fatal("new second did not reset budget")
++	}
++	e.refundHistoryBudget(100, false)
++	for i := 0; i < 16; i++ {
++		if !e.reserveHistoryBudget(101, false) {
++			t.Fatal("old reservation changed new window")
++		}
++	}
++	if e.reserveHistoryBudget(101, false) {
++		t.Fatal("late refund exceeded new window budget")
++	}
++	if e.reserveHistoryBudget(100, false) {
++		t.Fatal("delayed admission reset a newer budget window")
++	}
++}
++
++func TestHistoryPeriodicBudgetLeavesCapacityForChanges(t *testing.T) {
++	e := &Entity{}
++	e.cfg.HistoryBudget = 200
++	for i := 0; i < 100; i++ {
++		if !e.reserveHistoryBudget(100, true) {
++			t.Fatal("periodic capacity missing")
++		}
++	}
++	if e.reserveHistoryBudget(100, true) {
++		t.Fatal("periodic cap exceeded")
++	}
++	if !e.reserveHistoryBudget(100, false) {
++		t.Fatal("state change lost reserved capacity")
++	}
++}
+--- /dev/null
++++ b/internal/state/history_parallel_integration_test.go
+@@ -0,0 +1,210 @@
++package state
++
++import (
++	"context"
++	"os"
++	"testing"
++	"time"
++
++	commonv1 "example.com/meshops-course/gen/common/v1"
++	"example.com/meshops-course/internal/platform"
++	"google.golang.org/protobuf/proto"
++	"google.golang.org/protobuf/types/known/timestamppb"
++)
++
++// 真实 MySQL 中阻塞实体 A 的去重键插入，实体 B 仍须完成；全局 I/O 锁会使此测试失败。
++func TestHistoryBlockedEntityDoesNotBlockAnotherEntity(t *testing.T) {
++	if os.Getenv("MESHOPS_TEST_MYSQL_DSN") == "" {
++		t.Skip("requires real MySQL")
++	}
++	db, err := platform.OpenDB("MESHOPS_TEST_MYSQL_DSN")
++	if err != nil {
++		t.Fatal(err)
++	}
++	defer db.Close()
++	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
++	defer cancel()
++	r, event := ingestFixture(t)
++	tenant := "history_parallel_" + newID()
++	source := r.Sources["t:s"]
++	source.TenantID = tenant
++	r.Sources = map[string]platform.Source{platform.Key(tenant, "s"): source}
++	binding := r.Bindings["t:p"]
++	binding.TenantID = tenant
++	r.Bindings = map[string]platform.Binding{}
++	for _, id := range []string{"p", "q"} {
++		b := binding
++		b.EntityID = id
++		r.Bindings[platform.Key(tenant, id)] = b
++	}
++	event.TenantId = tenant
++	event.EventId = newID()
++	event.OccurredAt = timestamppb.New(time.Now().UTC())
++	event.ExpiresAt = timestamppb.New(event.OccurredAt.AsTime().Add(30 * time.Second))
++	other := proto.Clone(event).(*commonv1.EntityStateEvent)
++	other.EntityId = "q"
++	other.EventId = newID()
++	e := &Entity{db: db, registry: r, cfg: platform.Settings{HistoryPeriod: "1s", HistoryBudget: 200}, historyLast: map[string]*commonv1.EntityStateEvent{}, historyAllowed: map[string]bool{platform.Key(tenant, "p"): true, platform.Key(tenant, "q"): true}}
++	defer func() {
++		c, stop := context.WithTimeout(context.Background(), 5*time.Second)
++		defer stop()
++		for _, table := range []string{"history_sample_keys", "entity_history_samples"} {
++			if _, err := db.ExecContext(c, "DELETE FROM "+table+" WHERE tenant_id=?", tenant); err != nil {
++				t.Error(err)
++			}
++		}
++	}()
++	block, err := db.BeginTx(ctx, nil)
++	if err != nil {
++		t.Fatal(err)
++	}
++	defer block.Rollback()
++	if _, err = block.ExecContext(ctx, `INSERT INTO history_sample_keys(tenant_id,source_id,source_generation,event_id,sampled_at,sample_id) VALUES(?,?,?,?,?,0)`, tenant, event.SourceId, event.SourceGeneration, event.EventId, time.Now().UTC()); err != nil {
++		t.Fatal(err)
++	}
++	if err := Validate(event, r); err != nil {
++		t.Fatal("invalid test fixture", err)
++	}
++	raw, err := proto.Marshal(event)
++	if err != nil {
++		t.Fatal(err)
++	}
++	done := make(chan error, 1)
++	go func() { done <- e.Sample(ctx, raw) }()
++	// 以数据库锁等待证据同步，不用固定 sleep 猜测 goroutine 是否进入事务。
++	for {
++		var waits int
++		err = db.QueryRowContext(ctx, `SELECT COUNT(*) FROM performance_schema.data_lock_waits w JOIN performance_schema.data_locks l ON w.REQUESTING_ENGINE_LOCK_ID=l.ENGINE_LOCK_ID WHERE l.OBJECT_SCHEMA=DATABASE() AND l.OBJECT_NAME='history_sample_keys'`).Scan(&waits)
++		if err != nil {
++			t.Fatal(err)
++		}
++		if waits > 0 {
++			break
++		}
++		select {
++		case err := <-done:
++			t.Fatalf("blocked sample exited early: %v", err)
++		case <-ctx.Done():
++			t.Fatal("sample did not reach blocked insert")
++		case <-time.After(10 * time.Millisecond):
++		}
++	}
++	otherRaw, err := proto.Marshal(other)
++	if err != nil {
++		t.Fatal(err)
++	}
++	// A 的第二个候选必须等待第一笔事务，再依据新样本判断无需重复采样。
++	second := proto.Clone(event).(*commonv1.EntityStateEvent)
++	second.EventId = newID()
++	second.EntityVersion++
++	secondRaw, err := proto.Marshal(second)
++	if err != nil {
++		t.Fatal(err)
++	}
++	secondDone := make(chan error, 1)
++	go func() { secondDone <- e.Sample(ctx, secondRaw) }()
++	otherCtx, stop := context.WithTimeout(ctx, 2*time.Second)
++	err = e.Sample(otherCtx, otherRaw)
++	stop()
++	if err != nil {
++		t.Errorf("unrelated entity blocked: %v", err)
++	}
++	select {
++	case err := <-secondDone:
++		t.Errorf("same-entity candidate crossed blocked transaction: %v", err)
++		secondDone = nil
++	default:
++	}
++	if err = block.Rollback(); err != nil {
++		t.Fatal(err)
++	}
++	select {
++	case err = <-done:
++		if err != nil {
++			t.Fatal(err)
++		}
++	case <-ctx.Done():
++		t.Fatal("blocked entity did not recover")
++	}
++	if secondDone != nil {
++		select {
++		case err := <-secondDone:
++			if err != nil {
++				t.Fatal(err)
++			}
++		case <-ctx.Done():
++			t.Fatal("second candidate did not finish")
++		}
++	}
++	// 重复调用仍只能有两份样本，独立实体并行不能破坏幂等。
++	if err = e.Sample(ctx, raw); err != nil {
++		t.Fatal(err)
++	}
++	var rows int
++	if err = db.QueryRowContext(ctx, "SELECT COUNT(*) FROM entity_history_samples WHERE tenant_id=?", tenant).Scan(&rows); err != nil || rows != 2 {
++		t.Fatalf("stored rows=%d err=%v", rows, err)
++	}
++}
++
++func TestHistorySampleRefundsFailedAndDuplicateWrites(t *testing.T) {
++	if os.Getenv("MESHOPS_TEST_MYSQL_DSN") == "" {
++		t.Skip("requires real MySQL")
++	}
++	db, err := platform.OpenDB("MESHOPS_TEST_MYSQL_DSN")
++	if err != nil {
++		t.Fatal(err)
++	}
++	defer db.Close()
++	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
++	defer cancel()
++	r, event := ingestFixture(t)
++	tenant := "history_refund_" + newID()
++	source := r.Sources["t:s"]
++	source.TenantID = tenant
++	binding := r.Bindings["t:p"]
++	binding.TenantID = tenant
++	r.Sources = map[string]platform.Source{platform.Key(tenant, "s"): source}
++	r.Bindings = map[string]platform.Binding{platform.Key(tenant, "p"): binding}
++	event.TenantId = tenant
++	event.EventId = newID()
++	event.OccurredAt = timestamppb.New(time.Now().UTC())
++	event.ExpiresAt = timestamppb.New(event.OccurredAt.AsTime().Add(30 * time.Second))
++	key := platform.Key(tenant, "p")
++	e := &Entity{db: db, registry: r, cfg: platform.Settings{HistoryPeriod: "1s", HistoryBudget: 1}, historyAllowed: map[string]bool{key: true}, historyLast: map[string]*commonv1.EntityStateEvent{key: nil}}
++	if err := Validate(event, r); err != nil {
++		t.Fatal("invalid test fixture", err)
++	}
++	raw, err := proto.Marshal(event)
++	if err != nil {
++		t.Fatal(err)
++	}
++	failed, stop := context.WithCancel(ctx)
++	stop()
++	if err = e.Sample(failed, raw); err == nil {
++		t.Fatal("cancelled write unexpectedly succeeded")
++	}
++	if e.budgetTotal != 0 || e.budgetPeriodic != 0 {
++		t.Fatal("failed transaction leaked reservation")
++	}
++	// 预置已持久化去重键，模拟重放落到插入冲突分支；不产生孤立样本。
++	if _, err = db.ExecContext(ctx, `INSERT INTO history_sample_keys(tenant_id,source_id,source_generation,event_id,sampled_at,sample_id) VALUES(?,?,?,?,?,0)`, tenant, event.SourceId, event.SourceGeneration, event.EventId, time.Now().UTC()); err != nil {
++		t.Fatal(err)
++	}
++	defer func() {
++		c, stop := context.WithTimeout(context.Background(), 5*time.Second)
++		defer stop()
++		if _, err := db.ExecContext(c, "DELETE FROM history_sample_keys WHERE tenant_id=?", tenant); err != nil {
++			t.Error(err)
++		}
++	}()
++	if err = e.Sample(ctx, raw); err != nil {
++		t.Fatal(err)
++	}
++	if e.budgetTotal != 0 || e.budgetPeriodic != 0 {
++		t.Fatal("duplicate write leaked reservation")
++	}
++	var rows int
++	if err = db.QueryRowContext(ctx, "SELECT COUNT(*) FROM entity_history_samples WHERE tenant_id=?", tenant).Scan(&rows); err != nil || rows != 0 {
++		t.Fatalf("duplicate created sample rows=%d err=%v", rows, err)
++	}
++}

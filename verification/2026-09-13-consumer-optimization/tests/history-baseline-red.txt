@@ -1,0 +1,8 @@
+=== RUN   TestHistoryBlockedEntityDoesNotBlockAnotherEntity
+[mysql] 2026/09/13 16:50:00 packets.go:58 read tcp 127.0.0.1:6932->127.0.0.1:13306: i/o timeout
+    history_parallel_integration_test.go:107: unrelated entity blocked: context deadline exceeded
+    history_parallel_integration_test.go:121: invalid connection
+--- FAIL: TestHistoryBlockedEntityDoesNotBlockAnotherEntity (5.07s)
+FAIL
+FAIL	example.com/meshops-course/internal/state	18.110s
+FAIL

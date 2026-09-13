@@ -2429,7 +2429,7 @@
       {
         "path": "compose.scale.yml",
         "source": "../../../compose.scale.yml",
-        "sha256": "f252903a95d992878128edbad3692129bdb2e33fd54a40cc4b733da320df212d"
+        "sha256": "1d3ceb06faa607cd02537e3dc5edbcf3b43a94a19e8d1aabba5eda1ac88e3842"
       },
       {
         "path": "deploy/demo/configs/dispatcher.yaml",
@@ -2465,6 +2465,21 @@
         "path": "deploy/scale/run.sh",
         "source": "../../../deploy/scale/run.sh",
         "sha256": "b27653a78f073e8b264f5dcc3f2c09920ab85011fc3b707443e1c3d502bdb073"
+      },
+      {
+        "path": "internal/bus/commit_batch.go",
+        "source": "../../../internal/bus/commit_batch.go",
+        "sha256": "d27af093c6d9792f3fd6ff394220404952eb87d07f292cc45a3f5b05fd5dbc1d"
+      },
+      {
+        "path": "internal/bus/commit_batch_test.go",
+        "source": "../../../internal/bus/commit_batch_test.go",
+        "sha256": "8e2de2cd81d98ea7261ff57b8ed56e2b3a786a646369bb54b0db51c3aa0e89b7"
+      },
+      {
+        "path": "internal/bus/replay_integration_test.go",
+        "source": "../../../internal/bus/replay_integration_test.go",
+        "sha256": "95c43ba5df2fefa1dc0826e2abe2ae1e2da560a10312ce635b28f4ca9d7d95da"
       },
       {
         "path": "internal/edge/motion.go",
@@ -2629,7 +2644,7 @@
       {
         "path": "README.md",
         "source": "../../../README.md",
-        "sha256": "2a74e188fc7b30cc85c1077ae5ea0a3b7bf223a1734c2267bfb092ded2b8ae6a"
+        "sha256": "ea8fa3f99a2c6b9fa9b650ebd406a3094f6874dce925e1a9992959ec522883cf"
       },
       {
         "path": "cmd/verify/main.go",
@@ -2645,6 +2660,11 @@
         "path": "configs/simulation.yaml",
         "source": "../../../configs/simulation.yaml",
         "sha256": "09aab6aec19ee9becca2187fde1741299686ae6bd149987b008227063af2f24f"
+      },
+      {
+        "path": "internal/bus/kafka.go",
+        "source": "../../../internal/bus/kafka.go",
+        "sha256": "9613d16f698a47056c7d948337d9a2f46d8186632d2fa6c5e5ea20a3e8058b7b"
       },
       {
         "path": "internal/cli/opctl.go",
@@ -2714,7 +2734,7 @@
       {
         "path": "scripts/check-test-results.py",
         "source": "../../../scripts/check-test-results.py",
-        "sha256": "1a05d80a155276b68ce363c4743b6825435795cdb2d40b2c9ed077cbb47a4da8"
+        "sha256": "ad91fc941be9fd1df2a4a9ddce776422e3bbe47ebbd38f2e48f6d1cd814b826e"
       },
       {
         "path": "scripts/start.ps1",

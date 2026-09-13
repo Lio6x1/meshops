@@ -158,71 +158,7 @@ func (k *Kafka) consumePartition(ctx context.Context, generation *kafka.Generati
 	if err := r.SetOffset(expected); err != nil {
 		return fmt.Errorf("set partition offset: %w", err)
 	}
-	fetchRetry := consumerRetry{phase: "fetch", group: group, topic: topic, partition: partition.ID, offset: expected}
-	for ctx.Err() == nil {
-		m, err := r.FetchMessage(ctx)
-		if err != nil {
-			if terminalBrokerError(err) {
-				return fmt.Errorf("fetch %s/%d: %w", topic, partition.ID, err)
-			}
-			if ctx.Err() != nil {
-				return nil
-			}
-			fetchRetry.failed(ctx, err)
-			if !wait(ctx, time.Second) {
-				return nil
-			}
-			continue
-		}
-		fetchRetry.recovered(ctx)
-		recordCtx := context.WithValue(ctx, metadataKey{}, Record{m.Topic, m.Partition, m.Offset})
-		if expected >= 0 && m.Offset > expected {
-			k.recordGap(ctx, group, topic, m.Partition, expected, m.Offset)
-			if strict {
-				return &RetentionGap{group, topic, m.Partition, expected, m.Offset}
-			}
-			slog.ErrorContext(ctx, "tolerant consumer continuing with incomplete retained history", "group", group, "topic", topic, "partition", partition.ID)
-		}
-		expected = m.Offset + 1
-		applicationRetry := consumerRetry{phase: "application", group: group, topic: topic, partition: m.Partition, offset: m.Offset}
-		for ctx.Err() == nil {
-			if err = handler(recordCtx, m.Value); err == nil {
-				applicationRetry.recovered(ctx)
-				break
-			}
-			// 保留当前记录是有意为之：应用错误不能成为
-			// 丢弃持久化事实的理由。修复依赖后，仍重试同一条记录。
-			if ctx.Err() != nil {
-				return nil
-			}
-			applicationRetry.failed(ctx, err)
-			if !wait(ctx, time.Second) {
-				return nil
-			}
-		}
-		commitRetry := consumerRetry{phase: "commit", group: group, topic: topic, partition: m.Partition, offset: m.Offset}
-		for ctx.Err() == nil {
-			err = generation.CommitOffsets(map[string]map[int]int64{topic: {m.Partition: m.Offset + 1}})
-			if err == nil {
-				commitRetry.recovered(ctx)
-				break
-			}
-			// 返回即交还本代消费者的分配；kafka-go 仅在所有已注册工作协程
-			// 停止后才加入新一代消费者。这些错误不属于终止性故障。
-			if errors.Is(err, kafka.IllegalGeneration) || errors.Is(err, kafka.UnknownMemberId) || errors.Is(err, kafka.RebalanceInProgress) {
-				return nil
-			}
-			if terminalBrokerError(err) {
-				return fmt.Errorf("commit %s/%d: %w", topic, partition.ID, err)
-			}
-			commitRetry.failed(ctx, err)
-			if !wait(ctx, time.Second) {
-				return nil
-			}
-		}
-		fetchRetry.offset = expected
-	}
-	return nil
+	return k.consumeRecords(ctx, r.FetchMessage, generation.CommitOffsets, group, topic, partition.ID, expected, handler, strict)
 }
 
 // 只有 broker 明确的永久性拒绝才终止工作协程。网络、

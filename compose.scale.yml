@@ -18,7 +18,8 @@ services:
     networks: [private]
     restart: "no"
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost --silent"]
+      # 初始化临时 mysqld 只有本地 socket；用 TCP 等待可供 runner 连接的正式服务。
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 --silent"]
       interval: 5s
       timeout: 4s
       retries: 60

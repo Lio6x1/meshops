@@ -1,0 +1,264 @@
+{
+  "baseCommit": "0f9589a",
+  "experimentImage": "meshops-consumer-compare:experiment",
+  "imageConfig": "sha256:2cd944f2f13be78748d7602b6b859e5133f098c932c753ec8e38bf5f91cc09b7",
+  "files": [
+    {
+      "file": "20260913T160351-6fb0cdf4/summary.json",
+      "source": "source/.local/scale/runs/20260913T160351-6fb0cdf4/summary.json",
+      "originalSHA256": "03fd3947eec8bc4a399a3c426f74d214ef0ac55352dcfbcb2a90886e1a2b136e",
+      "archivedSHA256": "3362dccb408967583e2eee44ac064faa9e59d20c13314fbd3898bf762f0cab23",
+      "bytes": 6815,
+      "transformation": "remove secret digest and absolute evidence paths"
+    },
+    {
+      "file": "20260913T160351-6fb0cdf4/resources.jsonl",
+      "source": "source/.local/scale/runs/20260913T160351-6fb0cdf4/resources.jsonl",
+      "originalSHA256": "782469b19dc3ca5784c05cb8d2389899669cfb35ad875a8afabfdb1167049d0b",
+      "archivedSHA256": "43749ed8ddaeacf11764f902c6eee69ad1129ef4648adf82997a99cbf7e2aed0",
+      "bytes": 9453,
+      "transformation": "normalize CRLF to LF"
+    },
+    {
+      "file": "20260913T160351-6fb0cdf4/benchmark.json",
+      "source": "source/.local/scale/runs/20260913T160351-6fb0cdf4/.local/verification/d04a10b2035a4469959bd49cd98eac8e/benchmark.json",
+      "originalSHA256": "f796c617d719d6212b23c1d041a74bc067c21c90b780fb803f4b81a806a087e9",
+      "archivedSHA256": "52d9822f8210273b7e244ee27949be85ddff3979f53c2f69639593b9ba8f8ea7",
+      "bytes": 2580,
+      "transformation": "remove secret digest and absolute evidence paths"
+    },
+    {
+      "file": "20260913T160434-316ee8d1/summary.json",
+      "source": "source/.local/scale/runs/20260913T160434-316ee8d1/summary.json",
+      "originalSHA256": "07d9ae228f57a09de1bea3d0114d82713abf69ce0dbbefabe4765b105a72766b",
+      "archivedSHA256": "0082e0a54e6d53095301188b6ae66866551cfab4f34f4e6c5999ddb2d8a49645",
+      "bytes": 9285,
+      "transformation": "remove secret digest and absolute evidence paths"
+    },
+    {
+      "file": "20260913T160434-316ee8d1/resources.jsonl",
+      "source": "source/.local/scale/runs/20260913T160434-316ee8d1/resources.jsonl",
+      "originalSHA256": "5cff5d0bfe192ee5042d9276d5b93453928372addfbb34aa0f5b2b63688deb78",
+      "archivedSHA256": "c93e27591d02b67e796da61dc0480e65c93012b6d371ccca22b2c3ee28e3f176",
+      "bytes": 35944,
+      "transformation": "normalize CRLF to LF"
+    },
+    {
+      "file": "20260913T160434-316ee8d1/benchmark.json",
+      "source": "source/.local/scale/runs/20260913T160434-316ee8d1/.local/verification/8de92ef391894be196c6500fd8ea2eae/benchmark.json",
+      "originalSHA256": "ef31b220c6860f6d826c3211f2fe7515f9837926fe2e17141072d67fe34c202a",
+      "archivedSHA256": "0b8cad0f4b69b74a800a8b6e19cc9e2c8f69e3ade18651342ad1ddde18922bb9",
+      "bytes": 4843,
+      "transformation": "remove secret digest and absolute evidence paths"
+    },
+    {
+      "file": "20260913T160434-316ee8d1/assignments.json",
+      "source": "source/.local/scale/runs/20260913T160434-316ee8d1/.local/verification/8de92ef391894be196c6500fd8ea2eae/assignments.json",
+      "originalSHA256": "0025f39af9448444e8a1d193778cdff5f5ac91bc9767285af8851c5371fc9fd3",
+      "archivedSHA256": "73afc23fda2b165e038d1a89a77cddec7fe383dc1044446ad0076e1391415ee5",
+      "bytes": 5412,
+      "transformation": "remove secret digest and absolute evidence paths"
+    },
+    {
+      "file": "20260913T160434-316ee8d1/phase-diagnostics.jsonl",
+      "source": "source/.local/scale/runs/20260913T160434-316ee8d1/.local/verification/8de92ef391894be196c6500fd8ea2eae/phase-diagnostics.jsonl",
+      "originalSHA256": "b4d8e8b8695251b53e6465e046616f0fdcf41e66f0104b944fb406e4a17d6519",
+      "archivedSHA256": "b4d8e8b8695251b53e6465e046616f0fdcf41e66f0104b944fb406e4a17d6519",
+      "bytes": 211331,
+      "transformation": "none"
+    },
+    {
+      "file": "20260913T160434-316ee8d1/diagnostics.jsonl",
+      "source": "source/.local/scale/runs/20260913T160434-316ee8d1/.local/verification/8de92ef391894be196c6500fd8ea2eae/diagnostics.jsonl",
+      "originalSHA256": "66c19240c8a3a417735bd590b4c4c0e23a5aa98ed53f7b9a50f6a19772d565f8",
+      "archivedSHA256": "66c19240c8a3a417735bd590b4c4c0e23a5aa98ed53f7b9a50f6a19772d565f8",
+      "bytes": 532177,
+      "transformation": "none"
+    },
+    {
+      "file": "20260913T160636-bc1c9b37/summary.json",
+      "source": "source/.local/scale/runs/20260913T160636-bc1c9b37/summary.json",
+      "originalSHA256": "a80e46ff81e4ae63260ed26b130775ee2492a72869f8c717dda2acefd780d552",
+      "archivedSHA256": "66c366b22efa88d4e35a1170c55dc75c1a12c90d991806f6df9f643e87d39aee",
+      "bytes": 9297,
+      "transformation": "remove secret digest and absolute evidence paths"
+    },
+    {
+      "file": "20260913T160636-bc1c9b37/resources.jsonl",
+      "source": "source/.local/scale/runs/20260913T160636-bc1c9b37/resources.jsonl",
+      "originalSHA256": "d6f3beca42cedf733bc4d4a19ae9efae971328e11f188eda0ece2cbd80ae64cc",
+      "archivedSHA256": "d0d1a40d3bc9a53543e85ef001c02b94190611b59839028ce1dca019e42d9404",
+      "bytes": 35999,
+      "transformation": "normalize CRLF to LF"
+    },
+    {
+      "file": "20260913T160636-bc1c9b37/benchmark.json",
+      "source": "source/.local/scale/runs/20260913T160636-bc1c9b37/.local/verification/ea812d36aa7a4cf6af65f24b98603518/benchmark.json",
+      "originalSHA256": "3447c149b318e865fab6bfacf1da5a3e066fc38fe9380244bc59bc687f7f181e",
+      "archivedSHA256": "696d54e7f79fbf8614d9ee3c9baf891a4e410e80cf32013fa80aac19f6e73d84",
+      "bytes": 4855,
+      "transformation": "remove secret digest and absolute evidence paths"
+    },
+    {
+      "file": "20260913T160636-bc1c9b37/assignments.json",
+      "source": "source/.local/scale/runs/20260913T160636-bc1c9b37/.local/verification/ea812d36aa7a4cf6af65f24b98603518/assignments.json",
+      "originalSHA256": "09d14eb0bcb4b0a83e014199b6bca3f1f1d967ddbfc0da9b1f2f97645361a6f3",
+      "archivedSHA256": "7a4cd1a506642f1357feaf0e83710ee98505e9c771b332a1a6c84675bf74f91a",
+      "bytes": 5412,
+      "transformation": "remove secret digest and absolute evidence paths"
+    },
+    {
+      "file": "20260913T160636-bc1c9b37/phase-diagnostics.jsonl",
+      "source": "source/.local/scale/runs/20260913T160636-bc1c9b37/.local/verification/ea812d36aa7a4cf6af65f24b98603518/phase-diagnostics.jsonl",
+      "originalSHA256": "48220286849fd5457f71c6c93fb508ffbd1b9f8307cde33caf8b2498559a8a29",
+      "archivedSHA256": "48220286849fd5457f71c6c93fb508ffbd1b9f8307cde33caf8b2498559a8a29",
+      "bytes": 211377,
+      "transformation": "none"
+    },
+    {
+      "file": "20260913T160636-bc1c9b37/diagnostics.jsonl",
+      "source": "source/.local/scale/runs/20260913T160636-bc1c9b37/.local/verification/ea812d36aa7a4cf6af65f24b98603518/diagnostics.jsonl",
+      "originalSHA256": "dbc5b7bcf8dca0fbeaccda275901ff9dcdd6862579215b2049f6785e307d2c88",
+      "archivedSHA256": "dbc5b7bcf8dca0fbeaccda275901ff9dcdd6862579215b2049f6785e307d2c88",
+      "bytes": 532249,
+      "transformation": "none"
+    },
+    {
+      "file": "20260913T160837-6a1508a9/summary.json",
+      "source": "source/.local/scale/runs/20260913T160837-6a1508a9/summary.json",
+      "originalSHA256": "323eb6cb986e0e2ad68a37664182ab29d7fc20f785af5f4b2b5054dc4dd3f854",
+      "archivedSHA256": "6bcacb501519f24e284d6a9619b2c0327f671e1db650f86ee36c6344b276160e",
+      "bytes": 9284,
+      "transformation": "remove secret digest and absolute evidence paths"
+    },
+    {
+      "file": "20260913T160837-6a1508a9/resources.jsonl",
+      "source": "source/.local/scale/runs/20260913T160837-6a1508a9/resources.jsonl",
+      "originalSHA256": "8becccef91d292bed2405f06eb8caf757000ea1345f0388d3e04c33cafd849bf",
+      "archivedSHA256": "2550c88ac6009b64162407430d4116319467470dd2fce1e7da0c67e0a32ef50d",
+      "bytes": 35933,
+      "transformation": "normalize CRLF to LF"
+    },
+    {
+      "file": "20260913T160837-6a1508a9/benchmark.json",
+      "source": "source/.local/scale/runs/20260913T160837-6a1508a9/.local/verification/336638408b5f460e96051af6f88b359e/benchmark.json",
+      "originalSHA256": "df7b2adb5983e095f4ea26f49797e6f812dc4d6af3d749ac65bce87cbf6b77df",
+      "archivedSHA256": "282f02e3948a91ca0ca4ea86e7fe156be02f845a26293a0c5cc17e48ce02d094",
+      "bytes": 4842,
+      "transformation": "remove secret digest and absolute evidence paths"
+    },
+    {
+      "file": "20260913T160837-6a1508a9/assignments.json",
+      "source": "source/.local/scale/runs/20260913T160837-6a1508a9/.local/verification/336638408b5f460e96051af6f88b359e/assignments.json",
+      "originalSHA256": "b488d0a3bec40c7c0bd3cfa4c3e9216c68fcf42c4b3305d0a3178cd8a0f5430a",
+      "archivedSHA256": "75df23df3c3accdb531fe915e72447dc96f22d290a409db7526761f2bdccd93c",
+      "bytes": 2152,
+      "transformation": "remove secret digest and absolute evidence paths"
+    },
+    {
+      "file": "20260913T160837-6a1508a9/phase-diagnostics.jsonl",
+      "source": "source/.local/scale/runs/20260913T160837-6a1508a9/.local/verification/336638408b5f460e96051af6f88b359e/phase-diagnostics.jsonl",
+      "originalSHA256": "9ac876bd60088402fcabe4d882d8e1c0cdb79a74fbc2a98647aabee7ffb3cc66",
+      "archivedSHA256": "9ac876bd60088402fcabe4d882d8e1c0cdb79a74fbc2a98647aabee7ffb3cc66",
+      "bytes": 119627,
+      "transformation": "none"
+    },
+    {
+      "file": "20260913T160837-6a1508a9/diagnostics.jsonl",
+      "source": "source/.local/scale/runs/20260913T160837-6a1508a9/.local/verification/336638408b5f460e96051af6f88b359e/diagnostics.jsonl",
+      "originalSHA256": "dfa11932be2da96932d67cf411e42f288ba6e402a07f5cbad42dde3b7b0590ae",
+      "archivedSHA256": "dfa11932be2da96932d67cf411e42f288ba6e402a07f5cbad42dde3b7b0590ae",
+      "bytes": 330634,
+      "transformation": "none"
+    },
+    {
+      "file": "20260913T161108-373700e6/summary.json",
+      "source": "source/.local/scale/runs/20260913T161108-373700e6/summary.json",
+      "originalSHA256": "f4f2ec037b17299615e0e69c0f60fc656a910835827bfe0dc5a98a3801e6ae38",
+      "archivedSHA256": "af608b9f5c58b54eae2e395fbec5b48db2ba28b66b788b07f8637916a9639181",
+      "bytes": 9288,
+      "transformation": "remove secret digest and absolute evidence paths"
+    },
+    {
+      "file": "20260913T161108-373700e6/resources.jsonl",
+      "source": "source/.local/scale/runs/20260913T161108-373700e6/resources.jsonl",
+      "originalSHA256": "e2fc73155affd965b4125aec871c6282b2d4b5b0114a77f7e290065e57131eb5",
+      "archivedSHA256": "3356f2965d42376c7cb71c4ed041c55f6a58f9ad07575eed7bb3ece406a64772",
+      "bytes": 35181,
+      "transformation": "normalize CRLF to LF"
+    },
+    {
+      "file": "20260913T161108-373700e6/benchmark.json",
+      "source": "source/.local/scale/runs/20260913T161108-373700e6/.local/verification/e80238d5693a41659685217807c1b7e3/benchmark.json",
+      "originalSHA256": "ef557f330f8da9c86cf28df4adc0b4b32469185ca69507143d35b2ab8b524928",
+      "archivedSHA256": "fa6b5b3f8f150ed6bcdcac03d856fcd4a094c0adb59c06a27536be0e08a91480",
+      "bytes": 4846,
+      "transformation": "remove secret digest and absolute evidence paths"
+    },
+    {
+      "file": "20260913T161108-373700e6/assignments.json",
+      "source": "source/.local/scale/runs/20260913T161108-373700e6/.local/verification/e80238d5693a41659685217807c1b7e3/assignments.json",
+      "originalSHA256": "f2c0980e1ae398aee927125ca07de0ae048ac027daf20db04863ae3ff8601ec6",
+      "archivedSHA256": "3c08ec08ebc6c7239ca3bb9e514dc8e58cc684df5b9f5efba490dc8cf18b23cf",
+      "bytes": 2152,
+      "transformation": "remove secret digest and absolute evidence paths"
+    },
+    {
+      "file": "20260913T161108-373700e6/phase-diagnostics.jsonl",
+      "source": "source/.local/scale/runs/20260913T161108-373700e6/.local/verification/e80238d5693a41659685217807c1b7e3/phase-diagnostics.jsonl",
+      "originalSHA256": "517a7cf18db8f6cb623c3bfa111301f89962ada0e8c6d7551231d1767acd5419",
+      "archivedSHA256": "517a7cf18db8f6cb623c3bfa111301f89962ada0e8c6d7551231d1767acd5419",
+      "bytes": 119632,
+      "transformation": "none"
+    },
+    {
+      "file": "20260913T161108-373700e6/diagnostics.jsonl",
+      "source": "source/.local/scale/runs/20260913T161108-373700e6/.local/verification/e80238d5693a41659685217807c1b7e3/diagnostics.jsonl",
+      "originalSHA256": "458c20e465e144e407bf697acce3c384ccdc0b69e18dd05e8dc2e83a6003234b",
+      "archivedSHA256": "458c20e465e144e407bf697acce3c384ccdc0b69e18dd05e8dc2e83a6003234b",
+      "bytes": 330633,
+      "transformation": "none"
+    },
+    {
+      "file": "reproduce/prepare.py",
+      "source": "prepare.py",
+      "originalSHA256": "246cd834a586b049794aa7cbaaf6315df67a5c586c8812d5582d2a457f0df4f8",
+      "archivedSHA256": "246cd834a586b049794aa7cbaaf6315df67a5c586c8812d5582d2a457f0df4f8",
+      "bytes": 8105,
+      "transformation": "none"
+    },
+    {
+      "file": "reproduce/run.py",
+      "source": "run.py",
+      "originalSHA256": "671cf41737f18b5c464c7faf15de5ab0f27d408ea2ce482297b5d0c9c42d9936",
+      "archivedSHA256": "fd49d4d82cab2c9e34ef4351bc07ad7583f46927adb6f15b83c6dc53f78ff49f",
+      "bytes": 2194,
+      "transformation": "normalize CRLF to LF"
+    },
+    {
+      "file": "reproduce/run-extra.py",
+      "source": "run-extra.py",
+      "originalSHA256": "6d4e177a6e6ab370fa0c68041f4008c524c1d3378c44fced93b348e0355969e6",
+      "archivedSHA256": "41635c986c84e5294ce3bf16beb2adc0929a2849c28a7ca55d9f6f839f94650b",
+      "bytes": 2195,
+      "transformation": "normalize CRLF to LF; trim trailing blank line"
+    },
+    {
+      "file": "reproduce/analyze.py",
+      "source": "analyze.py",
+      "originalSHA256": "49d7ba20d6e9afe8c7ec53f4a113c5610d4ad2745b38c44af0a8dba024fb8fe9",
+      "archivedSHA256": "9bc7c07c6316b6ff7a03ee8ecd270536b7928825fbc3ae7e884a224ab099b6d4",
+      "bytes": 3598,
+      "transformation": "normalize CRLF to LF"
+    },
+    {
+      "file": "analysis.json",
+      "source": "analysis.json",
+      "originalSHA256": "241dc1740557ece79b88f33b68da5a01b23ff66e2849283d63f4af30876133c2",
+      "archivedSHA256": "45836aba65e4e0f61965e842c6311b0bfd82c9b181829d72db4f01f858829254",
+      "bytes": 18355,
+      "transformation": "normalize CRLF to LF"
+    }
+  ],
+  "imageDigest": "sha256:e910b1da295e3039f837a1e37aafb79678a77b324b441de68c579c221fb40c47"
+}

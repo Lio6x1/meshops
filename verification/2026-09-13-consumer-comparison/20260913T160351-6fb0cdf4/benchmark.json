@@ -1,0 +1,99 @@
+{
+  "consumerInstances": 1,
+  "sourceStaleAfterSeconds": 30,
+  "warmupExpiredSnapshots": 0,
+  "warmupSnapshotMeaning": "full retained snapshot identity, source, type, generation and version; expired snapshots remain readable and are counted separately; not a freshness guarantee",
+  "stage": "initialize",
+  "requested": {
+    "entities": 10000,
+    "rates": [
+      2000,
+      5000
+    ],
+    "seconds": 30,
+    "profile": "mixed",
+    "warmupTimeoutNanoseconds": 300000000000
+  },
+  "warmup": {
+    "consumerDrainSeconds": 0,
+    "requested": 0,
+    "generationSeconds": 0,
+    "generatedEventsPerSecond": 0,
+    "offeredEventsPerSecond": 0,
+    "scheduled": 0,
+    "generatorQueueDrops": 0,
+    "accepted": 0,
+    "acceptedByType": null,
+    "errors": 0,
+    "errorExamples": null,
+    "elapsedIncludingDrainSeconds": 0,
+    "acceptedEventsPerSecond": 0,
+    "clientToKafkaAck": {
+      "samples": 0,
+      "p50Ms": 0,
+      "p99Ms": 0,
+      "maxMs": 0
+    },
+    "generatedToObserved": {
+      "samples": 0,
+      "p50Ms": 0,
+      "p99Ms": 0,
+      "maxMs": 0
+    },
+    "observationCandidates": 0,
+    "observationMisses": 0,
+    "projectorLag": 0,
+    "historyLag": 0,
+    "ingest": {
+      "series": 0,
+      "goHeapBytes": 0,
+      "goroutines": 0
+    },
+    "entity": {
+      "series": 0,
+      "goHeapBytes": 0,
+      "goroutines": 0
+    },
+    "messageBytesDistribution": {
+      "samples": 0,
+      "p50Bytes": 0,
+      "p99Bytes": 0,
+      "maxBytes": 0
+    }
+  },
+  "RunID": "d04a10b2035a4469959bd49cd98eac8e",
+  "StartedAt": "2026-09-13T08:04:25Z",
+  "Go": "go1.25.10",
+  "OS": "linux",
+  "Arch": "amd64",
+  "CPU": "",
+  "LogicalCPUs": 24,
+  "Entities": 10000,
+  "Sources": 10,
+  "Partitions": 3,
+  "Batch": 1,
+  "Scope": "real authenticated Ingest -> Kafka -> Entity -> Redis/MySQL; excludes gateway bbolt, tasks and subscription fanout",
+  "MemoryMeaning": "Go live heap; container RSS and limits are recorded by scale runner",
+  "ObservationMeaning": "rotating sample across ten sources; polling same or higher version; ACK/message reservoirs at most 100000; every warmup identity verified",
+  "InitialIngest": {
+    "series": 0,
+    "goHeapBytes": 0,
+    "goroutines": 0
+  },
+  "InitialEntity": {
+    "series": 0,
+    "goHeapBytes": 0,
+    "goroutines": 0
+  },
+  "WarmupAccepted": 0,
+  "WarmupSnapshots": 0,
+  "profile": "mixed",
+  "entityCountsByType": {},
+  "sourceCountsByType": {},
+  "warmupAcceptedByType": null,
+  "warmupSnapshotsByType": {},
+  "failure": "database_create: MySQL unavailable",
+  "Phases": null,
+  "Database": "",
+  "TopicPrefix": ""
+}

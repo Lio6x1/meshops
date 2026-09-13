@@ -1,0 +1,261 @@
+{
+  "project": "meshops-consumer-compare",
+  "requested": {
+    "entities": 10000,
+    "rates": [
+      2000,
+      5000
+    ],
+    "seconds": 30,
+    "deadline_seconds": 720,
+    "warmup_seconds": 300,
+    "sample_seconds": 5,
+    "image": "meshops-consumer-compare:experiment"
+  },
+  "stage": "benchmark",
+  "outcome": "failed",
+  "startedAt": "2026-09-13T08:03:51Z",
+  "resources": {
+    "runner": {
+      "cpus": 4,
+      "bytes": 3221225472
+    },
+    "mysql": {
+      "cpus": 2,
+      "bytes": 1073741824
+    },
+    "kafka": {
+      "cpus": 2,
+      "bytes": 1610612736
+    },
+    "redis": {
+      "cpus": 2,
+      "bytes": 1610612736,
+      "maxmemory": 1073741824
+    }
+  },
+  "comparison": {
+    "trial": 1,
+    "instances": 1,
+    "order": [
+      1,
+      3,
+      3,
+      1
+    ],
+    "initialVolumes": "fresh",
+    "demo": "left running; not modified",
+    "historyPolicy": "unchanged: 100 eligible entities, budget 200 per instance and periodic 100; record actual writes and skip counters"
+  },
+  "docker": {
+    "Platform": {
+      "Name": "Docker Desktop 4.89.0 (238018)"
+    },
+    "Version": "29.7.2",
+    "ApiVersion": "1.55",
+    "MinAPIVersion": "1.40",
+    "Os": "linux",
+    "Arch": "amd64",
+    "Components": [
+      {
+        "Name": "Engine",
+        "Version": "29.7.2",
+        "Details": {
+          "ApiVersion": "1.55",
+          "Arch": "amd64",
+          "BuildTime": "Wed Aug  5 18:28:36 2026",
+          "Experimental": "false",
+          "GitCommit": "6a43e3d",
+          "GoVersion": "go1.26.5",
+          "KernelVersion": "6.6.114.1-microsoft-standard-WSL2",
+          "MinAPIVersion": "1.40",
+          "Module": "github.com/moby/moby/v2",
+          "ModuleVersion": "v2.0.0+unknown",
+          "Os": "linux"
+        }
+      },
+      {
+        "Name": "containerd",
+        "Version": "v2.3.3",
+        "Details": {
+          "GitCommit": "aad11006b869517fcd3009450b6f82da282e1a9b"
+        }
+      },
+      {
+        "Name": "runc",
+        "Version": "1.4.3",
+        "Details": {
+          "GitCommit": "v1.4.3-0-gbb14dabe"
+        }
+      },
+      {
+        "Name": "docker-init",
+        "Version": "0.19.0",
+        "Details": {
+          "GitCommit": "de40ad0"
+        }
+      }
+    ],
+    "GitCommit": "6a43e3d",
+    "GoVersion": "go1.26.5",
+    "KernelVersion": "6.6.114.1-microsoft-standard-WSL2",
+    "BuildTime": "2026-08-05T18:28:36.000000000+00:00"
+  },
+  "configuredMySQLTuning": {
+    "bufferPoolBytes": 268435456,
+    "redoCapacityBytes": 1073741824
+  },
+  "stopExitCode": 0,
+  "benchmark": {
+    "consumerInstances": 1,
+    "sourceStaleAfterSeconds": 30,
+    "warmupExpiredSnapshots": 0,
+    "warmupSnapshotMeaning": "full retained snapshot identity, source, type, generation and version; expired snapshots remain readable and are counted separately; not a freshness guarantee",
+    "stage": "initialize",
+    "requested": {
+      "entities": 10000,
+      "rates": [
+        2000,
+        5000
+      ],
+      "seconds": 30,
+      "profile": "mixed",
+      "warmupTimeoutNanoseconds": 300000000000
+    },
+    "warmup": {
+      "consumerDrainSeconds": 0,
+      "requested": 0,
+      "generationSeconds": 0,
+      "generatedEventsPerSecond": 0,
+      "offeredEventsPerSecond": 0,
+      "scheduled": 0,
+      "generatorQueueDrops": 0,
+      "accepted": 0,
+      "acceptedByType": null,
+      "errors": 0,
+      "errorExamples": null,
+      "elapsedIncludingDrainSeconds": 0,
+      "acceptedEventsPerSecond": 0,
+      "clientToKafkaAck": {
+        "samples": 0,
+        "p50Ms": 0,
+        "p99Ms": 0,
+        "maxMs": 0
+      },
+      "generatedToObserved": {
+        "samples": 0,
+        "p50Ms": 0,
+        "p99Ms": 0,
+        "maxMs": 0
+      },
+      "observationCandidates": 0,
+      "observationMisses": 0,
+      "projectorLag": 0,
+      "historyLag": 0,
+      "ingest": {
+        "series": 0,
+        "goHeapBytes": 0,
+        "goroutines": 0
+      },
+      "entity": {
+        "series": 0,
+        "goHeapBytes": 0,
+        "goroutines": 0
+      },
+      "messageBytesDistribution": {
+        "samples": 0,
+        "p50Bytes": 0,
+        "p99Bytes": 0,
+        "maxBytes": 0
+      }
+    },
+    "RunID": "d04a10b2035a4469959bd49cd98eac8e",
+    "StartedAt": "2026-09-13T08:04:25Z",
+    "Go": "go1.25.10",
+    "OS": "linux",
+    "Arch": "amd64",
+    "CPU": "",
+    "LogicalCPUs": 24,
+    "Entities": 10000,
+    "Sources": 10,
+    "Partitions": 3,
+    "Batch": 1,
+    "Scope": "real authenticated Ingest -> Kafka -> Entity -> Redis/MySQL; excludes gateway bbolt, tasks and subscription fanout",
+    "MemoryMeaning": "Go live heap; container RSS and limits are recorded by scale runner",
+    "ObservationMeaning": "rotating sample across ten sources; polling same or higher version; ACK/message reservoirs at most 100000; every warmup identity verified",
+    "InitialIngest": {
+      "series": 0,
+      "goHeapBytes": 0,
+      "goroutines": 0
+    },
+    "InitialEntity": {
+      "series": 0,
+      "goHeapBytes": 0,
+      "goroutines": 0
+    },
+    "WarmupAccepted": 0,
+    "WarmupSnapshots": 0,
+    "profile": "mixed",
+    "entityCountsByType": {},
+    "sourceCountsByType": {},
+    "warmupAcceptedByType": null,
+    "warmupSnapshotsByType": {},
+    "failure": "database_create: MySQL unavailable",
+    "Phases": null,
+    "Database": "",
+    "TopicPrefix": ""
+  },
+  "states": [
+    {
+      "id": "7701090900fafc556a16a7e2b704bf23c52878e4763bdfcea441c1a2630a222d",
+      "name": "/meshops-consumer-compare-mysql-1",
+      "status": "running",
+      "running": true,
+      "oomKilled": false,
+      "exitCode": 0,
+      "error": "",
+      "memoryLimit": 1073741824,
+      "nanoCpus": 2000000000,
+      "health": "healthy"
+    },
+    {
+      "id": "77073bde201179130b6386e902ac58f54383823fa7841c0c378c6af25bd04846",
+      "name": "/meshops-consumer-compare-redis-1",
+      "status": "running",
+      "running": true,
+      "oomKilled": false,
+      "exitCode": 0,
+      "error": "",
+      "memoryLimit": 1610612736,
+      "nanoCpus": 2000000000,
+      "health": "healthy"
+    },
+    {
+      "id": "44b7c09b11f59613186d29fe8b6950686dc866b8d62ce437e4d94982075f701c",
+      "name": "/meshops-consumer-compare-kafka-1",
+      "status": "running",
+      "running": true,
+      "oomKilled": false,
+      "exitCode": 0,
+      "error": "",
+      "memoryLimit": 1610612736,
+      "nanoCpus": 2000000000,
+      "health": "healthy"
+    },
+    {
+      "id": "3aa8cba0aea24a24ad111decd98385860a00f8caddc2f759acdca3590cd4ff90",
+      "name": "/meshops-consumer-compare-runner-1",
+      "status": "exited",
+      "running": false,
+      "oomKilled": false,
+      "exitCode": 1,
+      "error": "",
+      "memoryLimit": 3221225472,
+      "nanoCpus": 4000000000,
+      "health": "none"
+    }
+  ],
+  "exitCode": 1,
+  "timedOut": false,
+  "finishedAt": "2026-09-13T08:04:32Z"
+}

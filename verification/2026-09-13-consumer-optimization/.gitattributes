@@ -1,0 +1,2 @@
+# 补丁上下文的空格标记加 Go 制表符不属于源码缩进错误。
+reproduce/*.patch -whitespace

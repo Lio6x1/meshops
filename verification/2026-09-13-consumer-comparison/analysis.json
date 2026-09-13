@@ -1,0 +1,670 @@
+[
+  {
+    "run": "20260913T160351-6fb0cdf4",
+    "instances": 1,
+    "trial": 1,
+    "outcome": "failed",
+    "failure": "database_create: MySQL unavailable",
+    "stage": "initialize",
+    "warmupAccepted": 0,
+    "warmupSnapshots": 0,
+    "phases": null,
+    "timing": []
+  },
+  {
+    "run": "20260913T160434-316ee8d1",
+    "instances": 3,
+    "trial": 2,
+    "outcome": "failed",
+    "failure": "under_accepted: accepted throughput including drain below 95% of requested rate",
+    "stage": "load_2000",
+    "warmupAccepted": 10000,
+    "warmupSnapshots": 10000,
+    "phases": [
+      {
+        "consumerDrainSeconds": 0.121644402,
+        "requested": 60000,
+        "generationSeconds": 30.000135855,
+        "generatedEventsPerSecond": 1999.9909430410144,
+        "offeredEventsPerSecond": 2000,
+        "scheduled": 60000,
+        "generatorQueueDrops": 0,
+        "accepted": 60000,
+        "acceptedByType": {
+          "drone": 12000,
+          "facility": 6000,
+          "person": 12000,
+          "robot": 12000,
+          "sensor": 6000,
+          "vehicle": 12000
+        },
+        "errors": 0,
+        "errorExamples": null,
+        "elapsedIncludingDrainSeconds": 35.138118321,
+        "acceptedEventsPerSecond": 1707.5473265778578,
+        "clientToKafkaAck": {
+          "samples": 60000,
+          "p50Ms": 1.26,
+          "p99Ms": 61.64,
+          "maxMs": 76.157
+        },
+        "generatedToObserved": {
+          "samples": 1200,
+          "p50Ms": 5226.708,
+          "p99Ms": 6894.616,
+          "maxMs": 6920.872
+        },
+        "observationCandidates": 1200,
+        "observationMisses": 0,
+        "projectorLag": 0,
+        "historyLag": 0,
+        "ingest": {
+          "series": 65,
+          "goHeapBytes": 11117848,
+          "goroutines": 22
+        },
+        "entity": {
+          "series": 79,
+          "goHeapBytes": 16011096,
+          "goroutines": 39
+        },
+        "messageBytesDistribution": {
+          "samples": 60000,
+          "p50Bytes": 289,
+          "p99Bytes": 310,
+          "maxBytes": 310
+        }
+      }
+    ],
+    "timing": [
+      {
+        "rate": 0,
+        "warmup": true,
+        "historyRows": 100,
+        "historyCountOK": true,
+        "groups": {
+          "projection": {
+            "handler": {
+              "seconds": 5.632762947,
+              "calls": 10000.0,
+              "meanMs": 0.5632762947000001
+            },
+            "commit": {
+              "seconds": 29.87017884200002,
+              "calls": 10000.0,
+              "meanMs": 2.987017884200002
+            },
+            "commitShareOfMeasuredWork": 0.8413437686241196
+          },
+          "history": {
+            "handler": {
+              "seconds": 4.176344287000003,
+              "calls": 10000.0,
+              "meanMs": 0.4176344287000003
+            },
+            "commit": {
+              "seconds": 24.584002877000003,
+              "calls": 10000.0,
+              "meanMs": 2.4584002877000004
+            },
+            "commitShareOfMeasuredWork": 0.8547881128421276
+          }
+        },
+        "historyCandidates": {
+          "stored": 100.0
+        },
+        "errors": [],
+        "lock_wait": {
+          "seconds": 0.000305115,
+          "calls": 100.0,
+          "meanMs": 0.0030511500000000003
+        },
+        "lock_hold": {
+          "seconds": 3.7146990540000004,
+          "calls": 100.0,
+          "meanMs": 37.146990540000004
+        }
+      },
+      {
+        "rate": 2000,
+        "warmup": false,
+        "historyRows": 700,
+        "historyCountOK": true,
+        "groups": {
+          "projection": {
+            "handler": {
+              "seconds": 44.294247611000046,
+              "calls": 60000.0,
+              "meanMs": 0.738237460183334
+            },
+            "commit": {
+              "seconds": 59.27009835799977,
+              "calls": 60000.0,
+              "meanMs": 0.9878349726333295
+            },
+            "commitShareOfMeasuredWork": 0.5723021547950609
+          },
+          "history": {
+            "handler": {
+              "seconds": 33.37717229600017,
+              "calls": 60000.0,
+              "meanMs": 0.5562862049333362
+            },
+            "commit": {
+              "seconds": 57.531016020999715,
+              "calls": 60000.0,
+              "meanMs": 0.9588502670166619
+            },
+            "commitShareOfMeasuredWork": 0.632847459465226
+          }
+        },
+        "historyCandidates": {
+          "stored": 600.0
+        },
+        "errors": [],
+        "lock_wait": {
+          "seconds": 0.0015825600000000002,
+          "calls": 600.0,
+          "meanMs": 0.0026376000000000004
+        },
+        "lock_hold": {
+          "seconds": 30.586419150999994,
+          "calls": 600.0,
+          "meanMs": 50.977365251666654
+        }
+      }
+    ]
+  },
+  {
+    "run": "20260913T160636-bc1c9b37",
+    "instances": 3,
+    "trial": 3,
+    "outcome": "failed",
+    "failure": "incomplete load: requested=60000 scheduled=60000 accepted=59587 errors=0 drops=413",
+    "stage": "load_2000",
+    "warmupAccepted": 10000,
+    "warmupSnapshots": 10000,
+    "phases": [
+      {
+        "consumerDrainSeconds": 0.119824484,
+        "requested": 60000,
+        "generationSeconds": 30.000168873,
+        "generatedEventsPerSecond": 1999.9887418633732,
+        "offeredEventsPerSecond": 2000,
+        "scheduled": 60000,
+        "generatorQueueDrops": 413,
+        "accepted": 59587,
+        "acceptedByType": {
+          "drone": 11917,
+          "facility": 5956,
+          "person": 11950,
+          "robot": 11913,
+          "sensor": 5941,
+          "vehicle": 11910
+        },
+        "errors": 0,
+        "errorExamples": null,
+        "elapsedIncludingDrainSeconds": 36.668082186,
+        "acceptedEventsPerSecond": 1625.0372653181878,
+        "clientToKafkaAck": {
+          "samples": 59587,
+          "p50Ms": 1.402,
+          "p99Ms": 64.187,
+          "maxMs": 80.296
+        },
+        "generatedToObserved": {
+          "samples": 1195,
+          "p50Ms": 6936.801,
+          "p99Ms": 9012.985,
+          "maxMs": 9122.189
+        },
+        "observationCandidates": 1195,
+        "observationMisses": 0,
+        "projectorLag": 0,
+        "historyLag": 0,
+        "ingest": {
+          "series": 65,
+          "goHeapBytes": 12127904,
+          "goroutines": 23
+        },
+        "entity": {
+          "series": 79,
+          "goHeapBytes": 13916712,
+          "goroutines": 39
+        },
+        "messageBytesDistribution": {
+          "samples": 59587,
+          "p50Bytes": 289,
+          "p99Bytes": 310,
+          "maxBytes": 310
+        }
+      }
+    ],
+    "timing": [
+      {
+        "rate": 0,
+        "warmup": true,
+        "historyRows": 100,
+        "historyCountOK": true,
+        "groups": {
+          "projection": {
+            "handler": {
+              "seconds": 5.2983666789999955,
+              "calls": 10000.0,
+              "meanMs": 0.5298366678999995
+            },
+            "commit": {
+              "seconds": 27.603102075000002,
+              "calls": 10000.0,
+              "meanMs": 2.7603102075000003
+            },
+            "commitShareOfMeasuredWork": 0.8389626092799931
+          },
+          "history": {
+            "handler": {
+              "seconds": 4.2940796899999985,
+              "calls": 10000.0,
+              "meanMs": 0.4294079689999999
+            },
+            "commit": {
+              "seconds": 24.390471693000016,
+              "calls": 10000.0,
+              "meanMs": 2.439047169300002
+            },
+            "commitShareOfMeasuredWork": 0.8502999181453158
+          }
+        },
+        "historyCandidates": {
+          "stored": 100.0
+        },
+        "errors": [],
+        "lock_wait": {
+          "seconds": 0.000292239,
+          "calls": 100.0,
+          "meanMs": 0.0029223900000000004
+        },
+        "lock_hold": {
+          "seconds": 3.85187756,
+          "calls": 100.0,
+          "meanMs": 38.518775600000005
+        }
+      },
+      {
+        "rate": 2000,
+        "warmup": false,
+        "historyRows": 700,
+        "historyCountOK": true,
+        "groups": {
+          "projection": {
+            "handler": {
+              "seconds": 44.58703412199967,
+              "calls": 59587.0,
+              "meanMs": 0.7482678121402264
+            },
+            "commit": {
+              "seconds": 62.54707472499971,
+              "calls": 59587.0,
+              "meanMs": 1.0496765187876502
+            },
+            "commitShareOfMeasuredWork": 0.583820366810766
+          },
+          "history": {
+            "handler": {
+              "seconds": 30.952787140000027,
+              "calls": 59587.0,
+              "meanMs": 0.5194553701310692
+            },
+            "commit": {
+              "seconds": 60.33805953099989,
+              "calls": 59587.0,
+              "meanMs": 1.0126044192693018
+            },
+            "commitShareOfMeasuredWork": 0.6609431474378833
+          }
+        },
+        "historyCandidates": {
+          "stored": 600.0
+        },
+        "errors": [],
+        "lock_wait": {
+          "seconds": 0.0015545799999999999,
+          "calls": 600.0,
+          "meanMs": 0.0025909666666666664
+        },
+        "lock_hold": {
+          "seconds": 28.142544540000003,
+          "calls": 600.0,
+          "meanMs": 46.904240900000005
+        }
+      }
+    ]
+  },
+  {
+    "run": "20260913T160837-6a1508a9",
+    "instances": 1,
+    "trial": 4,
+    "outcome": "failed",
+    "failure": "under_accepted: accepted throughput including drain below 95% of requested rate",
+    "stage": "load_2000",
+    "warmupAccepted": 10000,
+    "warmupSnapshots": 10000,
+    "phases": [
+      {
+        "consumerDrainSeconds": 3.758921775,
+        "requested": 60000,
+        "generationSeconds": 30.000265808,
+        "generatedEventsPerSecond": 1999.9822796236738,
+        "offeredEventsPerSecond": 2000,
+        "scheduled": 60000,
+        "generatorQueueDrops": 0,
+        "accepted": 60000,
+        "acceptedByType": {
+          "drone": 12000,
+          "facility": 6000,
+          "person": 12000,
+          "robot": 12000,
+          "sensor": 6000,
+          "vehicle": 12000
+        },
+        "errors": 0,
+        "errorExamples": null,
+        "elapsedIncludingDrainSeconds": 40.782875634,
+        "acceptedEventsPerSecond": 1471.2057221874518,
+        "clientToKafkaAck": {
+          "samples": 60000,
+          "p50Ms": 1.266,
+          "p99Ms": 55.705,
+          "maxMs": 76.899
+        },
+        "generatedToObserved": {
+          "samples": 1200,
+          "p50Ms": 7109.63,
+          "p99Ms": 9037.191,
+          "maxMs": 9075.659
+        },
+        "observationCandidates": 1200,
+        "observationMisses": 0,
+        "projectorLag": 0,
+        "historyLag": 0,
+        "ingest": {
+          "series": 65,
+          "goHeapBytes": 9676592,
+          "goroutines": 22
+        },
+        "entity": {
+          "series": 95,
+          "goHeapBytes": 10755864,
+          "goroutines": 55
+        },
+        "messageBytesDistribution": {
+          "samples": 60000,
+          "p50Bytes": 289,
+          "p99Bytes": 310,
+          "maxBytes": 310
+        }
+      }
+    ],
+    "timing": [
+      {
+        "rate": 0,
+        "warmup": true,
+        "historyRows": 100,
+        "historyCountOK": true,
+        "groups": {
+          "projection": {
+            "handler": {
+              "seconds": 5.2415162429999995,
+              "calls": 10000.0,
+              "meanMs": 0.5241516243
+            },
+            "commit": {
+              "seconds": 27.642677203000037,
+              "calls": 10000.0,
+              "meanMs": 2.7642677203000035
+            },
+            "commitShareOfMeasuredWork": 0.840606817630871
+          },
+          "history": {
+            "handler": {
+              "seconds": 7.167766262999991,
+              "calls": 10000.0,
+              "meanMs": 0.7167766262999992
+            },
+            "commit": {
+              "seconds": 25.868092926000035,
+              "calls": 10000.0,
+              "meanMs": 2.5868092926000035
+            },
+            "commitShareOfMeasuredWork": 0.7830307296688488
+          }
+        },
+        "historyCandidates": {
+          "stored": 100.0
+        },
+        "errors": [],
+        "lock_wait": {
+          "seconds": 3.4424971279999994,
+          "calls": 100.0,
+          "meanMs": 34.424971279999994
+        },
+        "lock_hold": {
+          "seconds": 3.306530328999999,
+          "calls": 100.0,
+          "meanMs": 33.065303289999996
+        }
+      },
+      {
+        "rate": 2000,
+        "warmup": false,
+        "historyRows": 700,
+        "historyCountOK": true,
+        "groups": {
+          "projection": {
+            "handler": {
+              "seconds": 39.148229328000006,
+              "calls": 60000.0,
+              "meanMs": 0.6524704888000001
+            },
+            "commit": {
+              "seconds": 70.87829749000005,
+              "calls": 60000.0,
+              "meanMs": 1.1813049581666677
+            },
+            "commitShareOfMeasuredWork": 0.6441928100415557
+          },
+          "history": {
+            "handler": {
+              "seconds": 50.357275639000015,
+              "calls": 60000.0,
+              "meanMs": 0.8392879273166669
+            },
+            "commit": {
+              "seconds": 68.40869485099975,
+              "calls": 60000.0,
+              "meanMs": 1.140144914183329
+            },
+            "commitShareOfMeasuredWork": 0.575995755086764
+          }
+        },
+        "historyCandidates": {
+          "stored": 600.0
+        },
+        "errors": [],
+        "lock_wait": {
+          "seconds": 24.361097263,
+          "calls": 600.0,
+          "meanMs": 40.60182877166667
+        },
+        "lock_hold": {
+          "seconds": 23.35475761299996,
+          "calls": 600.0,
+          "meanMs": 38.9245960216666
+        }
+      }
+    ]
+  },
+  {
+    "run": "20260913T161108-373700e6",
+    "instances": 1,
+    "trial": 5,
+    "outcome": "failed",
+    "failure": "under_accepted: accepted throughput including drain below 95% of requested rate",
+    "stage": "load_2000",
+    "warmupAccepted": 10000,
+    "warmupSnapshots": 10000,
+    "phases": [
+      {
+        "consumerDrainSeconds": 4.070902119,
+        "requested": 60000,
+        "generationSeconds": 30.000392027,
+        "generatedEventsPerSecond": 1999.9738652081849,
+        "offeredEventsPerSecond": 2000,
+        "scheduled": 60000,
+        "generatorQueueDrops": 0,
+        "accepted": 60000,
+        "acceptedByType": {
+          "drone": 12000,
+          "facility": 6000,
+          "person": 12000,
+          "robot": 12000,
+          "sensor": 6000,
+          "vehicle": 12000
+        },
+        "errors": 0,
+        "errorExamples": null,
+        "elapsedIncludingDrainSeconds": 38.096953789,
+        "acceptedEventsPerSecond": 1574.929069980504,
+        "clientToKafkaAck": {
+          "samples": 60000,
+          "p50Ms": 1.2,
+          "p99Ms": 58.572,
+          "maxMs": 76.303
+        },
+        "generatedToObserved": {
+          "samples": 1200,
+          "p50Ms": 5217.809,
+          "p99Ms": 6953.305,
+          "maxMs": 7061.09
+        },
+        "observationCandidates": 1200,
+        "observationMisses": 0,
+        "projectorLag": 0,
+        "historyLag": 0,
+        "ingest": {
+          "series": 65,
+          "goHeapBytes": 12696512,
+          "goroutines": 23
+        },
+        "entity": {
+          "series": 95,
+          "goHeapBytes": 11204888,
+          "goroutines": 55
+        },
+        "messageBytesDistribution": {
+          "samples": 60000,
+          "p50Bytes": 289,
+          "p99Bytes": 310,
+          "maxBytes": 310
+        }
+      }
+    ],
+    "timing": [
+      {
+        "rate": 0,
+        "warmup": true,
+        "historyRows": 100,
+        "historyCountOK": true,
+        "groups": {
+          "projection": {
+            "handler": {
+              "seconds": 5.374809206000004,
+              "calls": 10000.0,
+              "meanMs": 0.5374809206000003
+            },
+            "commit": {
+              "seconds": 27.253012171000044,
+              "calls": 10000.0,
+              "meanMs": 2.7253012171000046
+            },
+            "commitShareOfMeasuredWork": 0.8352691359960428
+          },
+          "history": {
+            "handler": {
+              "seconds": 6.869243994000003,
+              "calls": 10000.0,
+              "meanMs": 0.6869243994000003
+            },
+            "commit": {
+              "seconds": 26.181406006999957,
+              "calls": 10000.0,
+              "meanMs": 2.618140600699996
+            },
+            "commitShareOfMeasuredWork": 0.7921600938622335
+          }
+        },
+        "historyCandidates": {
+          "stored": 100.0
+        },
+        "errors": [],
+        "lock_wait": {
+          "seconds": 3.2713091669999996,
+          "calls": 100.0,
+          "meanMs": 32.71309167
+        },
+        "lock_hold": {
+          "seconds": 3.185823868,
+          "calls": 100.0,
+          "meanMs": 31.85823868
+        }
+      },
+      {
+        "rate": 2000,
+        "warmup": false,
+        "historyRows": 700,
+        "historyCountOK": true,
+        "groups": {
+          "projection": {
+            "handler": {
+              "seconds": 36.03914086100006,
+              "calls": 60000.0,
+              "meanMs": 0.6006523476833343
+            },
+            "commit": {
+              "seconds": 65.46758271699983,
+              "calls": 60000.0,
+              "meanMs": 1.0911263786166638
+            },
+            "commitShareOfMeasuredWork": 0.6449580915365983
+          },
+          "history": {
+            "handler": {
+              "seconds": 45.74365619800011,
+              "calls": 60000.0,
+              "meanMs": 0.7623942699666686
+            },
+            "commit": {
+              "seconds": 64.94008453200036,
+              "calls": 60000.0,
+              "meanMs": 1.082334742200006
+            },
+            "commitShareOfMeasuredWork": 0.5867174718138033
+          }
+        },
+        "historyCandidates": {
+          "stored": 600.0
+        },
+        "errors": [],
+        "lock_wait": {
+          "seconds": 22.20820771900001,
+          "calls": 600.0,
+          "meanMs": 37.01367953166669
+        },
+        "lock_hold": {
+          "seconds": 21.162163709999977,
+          "calls": 600.0,
+          "meanMs": 35.27027284999996
+        }
+      }
+    ]
+  }
+]

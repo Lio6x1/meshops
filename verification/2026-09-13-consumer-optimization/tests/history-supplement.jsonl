@@ -1,0 +1,12 @@
+{"Time":"2026-09-13T16:50:56.3946401+08:00","Action":"start","Package":"example.com/meshops-course/internal/state"}
+{"Time":"2026-09-13T16:51:08.00394+08:00","Action":"run","Package":"example.com/meshops-course/internal/state","Test":"TestHistoryBlockedEntityDoesNotBlockAnotherEntity"}
+{"Time":"2026-09-13T16:51:08.0044796+08:00","Action":"output","Package":"example.com/meshops-course/internal/state","Test":"TestHistoryBlockedEntityDoesNotBlockAnotherEntity","Output":"=== RUN   TestHistoryBlockedEntityDoesNotBlockAnotherEntity\n"}
+{"Time":"2026-09-13T16:51:08.0954002+08:00","Action":"output","Package":"example.com/meshops-course/internal/state","Test":"TestHistoryBlockedEntityDoesNotBlockAnotherEntity","Output":"--- PASS: TestHistoryBlockedEntityDoesNotBlockAnotherEntity (0.09s)\n"}
+{"Time":"2026-09-13T16:51:08.0954002+08:00","Action":"pass","Package":"example.com/meshops-course/internal/state","Test":"TestHistoryBlockedEntityDoesNotBlockAnotherEntity","Elapsed":0.09}
+{"Time":"2026-09-13T16:51:08.0954002+08:00","Action":"run","Package":"example.com/meshops-course/internal/state","Test":"TestHistorySampleRefundsFailedAndDuplicateWrites"}
+{"Time":"2026-09-13T16:51:08.0954002+08:00","Action":"output","Package":"example.com/meshops-course/internal/state","Test":"TestHistorySampleRefundsFailedAndDuplicateWrites","Output":"=== RUN   TestHistorySampleRefundsFailedAndDuplicateWrites\n"}
+{"Time":"2026-09-13T16:51:08.1611439+08:00","Action":"output","Package":"example.com/meshops-course/internal/state","Test":"TestHistorySampleRefundsFailedAndDuplicateWrites","Output":"--- PASS: TestHistorySampleRefundsFailedAndDuplicateWrites (0.07s)\n"}
+{"Time":"2026-09-13T16:51:08.1611439+08:00","Action":"pass","Package":"example.com/meshops-course/internal/state","Test":"TestHistorySampleRefundsFailedAndDuplicateWrites","Elapsed":0.07}
+{"Time":"2026-09-13T16:51:08.1616478+08:00","Action":"output","Package":"example.com/meshops-course/internal/state","Output":"PASS\n"}
+{"Time":"2026-09-13T16:51:09.2055379+08:00","Action":"output","Package":"example.com/meshops-course/internal/state","Output":"ok  \texample.com/meshops-course/internal/state\t12.811s\n"}
+{"Time":"2026-09-13T16:51:09.2055379+08:00","Action":"pass","Package":"example.com/meshops-course/internal/state","Elapsed":12.811}

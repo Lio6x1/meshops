@@ -1,0 +1,35 @@
+=== RUN   TestCommitBatchFlushesSuccessfulPrefixOnIdle
+--- PASS: TestCommitBatchFlushesSuccessfulPrefixOnIdle (0.10s)
+=== RUN   TestCommitBatchNeverCrossesFailedRecord
+2026/09/13 08:48:32 WARN consumer retry holding progress phase=application group=g topic=t partition=0 offset=3 attempts=1 elapsed=8.669µs error_type=*errors.errorString broker_code=0
+--- PASS: TestCommitBatchNeverCrossesFailedRecord (0.00s)
+=== RUN   TestCommitBatchBoundsReplayWindow
+--- PASS: TestCommitBatchBoundsReplayWindow (0.00s)
+=== RUN   TestCommitBatchCancellationLeavesUncommittedForReplay
+--- PASS: TestCommitBatchCancellationLeavesUncommittedForReplay (0.00s)
+=== RUN   TestCommitBatchRejectsGapWithoutCommittingBeyondIt
+--- PASS: TestCommitBatchRejectsGapWithoutCommittingBeyondIt (0.00s)
+2026/09/13 08:48:32 ERROR Kafka retention gap detected group=g topic=t partition=0 expected_offset=1 retained_first=2 missing_offsets=1
+=== RUN   TestCommitBatchStopsOnLostGeneration
+=== RUN   TestCommitBatchStopsOnLostGeneration/[22]_Illegal_Generation:_the_generation_id_provided_in_the_request_is_not_the_current_generation
+=== RUN   TestCommitBatchStopsOnLostGeneration/[25]_Unknown_Member_ID:_the_member_id_is_not_in_the_current_generation
+=== RUN   TestCommitBatchStopsOnLostGeneration/[27]_Rebalance_In_Progress:_the_coordinator_has_begun_rebalancing_the_group,_the_client_should_rejoin_the_group
+=== RUN   TestCommitBatchStopsOnLostGeneration/[30]_Group_Authorization_Failed:_the_client_is_not_authorized_to_access_a_particular_group_id
+--- PASS: TestCommitBatchStopsOnLostGeneration (0.00s)
+    --- PASS: TestCommitBatchStopsOnLostGeneration/[22]_Illegal_Generation:_the_generation_id_provided_in_the_request_is_not_the_current_generation (0.00s)
+    --- PASS: TestCommitBatchStopsOnLostGeneration/[25]_Unknown_Member_ID:_the_member_id_is_not_in_the_current_generation (0.00s)
+    --- PASS: TestCommitBatchStopsOnLostGeneration/[27]_Rebalance_In_Progress:_the_coordinator_has_begun_rebalancing_the_group,_the_client_should_rejoin_the_group (0.00s)
+    --- PASS: TestCommitBatchStopsOnLostGeneration/[30]_Group_Authorization_Failed:_the_client_is_not_authorized_to_access_a_particular_group_id (0.00s)
+=== RUN   TestCommitBatchRetriesSameOffsetBeforeFetchingMore
+2026/09/13 08:48:32 WARN consumer retry holding progress phase=commit group=g topic=t partition=0 offset=99 attempts=1 elapsed=3.053µs error_type=kafka.Error broker_code=7
+2026/09/13 08:48:33 INFO consumer retry recovered phase=commit group=g topic=t partition=0 offset=99 attempts=1 elapsed=1.000731812s
+--- PASS: TestCommitBatchRetriesSameOffsetBeforeFetchingMore (1.00s)
+=== RUN   TestPartitionFailureDoesNotBlockHealthyPartition
+2026/09/13 08:48:37 WARN consumer retry holding progress phase=application group=bus_it_dle24j4rd0eb_projector topic=bus_it_dle24j4rd0eb_entity-state-events.v1 partition=0 offset=0 attempts=1 elapsed=4.911µs error_type=*errors.errorString broker_code=0
+2026/09/13 08:48:38 INFO consumer retry recovered phase=application group=bus_it_dle24j4rd0eb_projector topic=bus_it_dle24j4rd0eb_entity-state-events.v1 partition=0 offset=0 attempts=1 elapsed=1.001116014s
+--- PASS: TestPartitionFailureDoesNotBlockHealthyPartition (5.09s)
+=== RUN   TestKafkaUncommittedBatchReplaysAfterConsumerRestart
+--- PASS: TestKafkaUncommittedBatchReplaysAfterConsumerRestart (7.89s)
+=== RUN   TestStrictPerPartitionReplayBoundaries
+--- PASS: TestStrictPerPartitionReplayBoundaries (4.25s)
+PASS

@@ -1,0 +1,19 @@
+{
+  "demoHttpStatus": 200,
+  "demoRestarted": false,
+  "removedTemporaryDirectories": [
+    ".cache/consumer-opt",
+    ".cache/consumer-compare"
+  ],
+  "clearedProjects": [
+    "meshops-consumer-opt",
+    "meshops-consumer-opt-tests"
+  ],
+  "removedExperimentImages": [
+    "baseline",
+    "batch",
+    "both",
+    "race",
+    "race-final"
+  ]
+}

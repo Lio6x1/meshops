@@ -200,6 +200,7 @@ Windows 的停止脚本采用强制进程退出，用于本地操作；服务收
 
 - [完整问题台账](docs/review/2026-09-12/assessment.md)：逐条判定外部 28 项意见及自查新增问题，区分当前缺陷与旧报告状态。
 - [脱敏证据归档](docs/review/2026-09-12/evidence/README.md)：逐测试终态、课程复制结果、原始文件 SHA-256，以及证据保留与清理边界；不依赖临时构建缓存才能阅读结论。
+- [消费位点批量提交与性能边界](docs/operations/consumer-performance.md)：Z13 的成功前缀提交、重放要求和实测取舍。
 - [本地排错知识库](docs/troubleshooting/README.md)：数据库锁、重放、投影恢复、SQL 执行计划、Git 换行和测试门禁。
 - [前端 UI 设计与离线原型](docs/ui/README.md)：模拟交互，不连接真实业务；浏览器 BFF 和实体枚举等接入缺口在方案中明确列出。
 - [当前工程验证边界](docs/production-readiness-checklist.md)：个人账号与机器令牌分离；单实例和有限压测不作为生产容量保证。

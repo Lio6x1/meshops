@@ -1,0 +1,72 @@
+{
+  "Groups": [
+    {
+      "Error": null,
+      "GroupID": "verify_e80238d5693a41659685217807c1b7e3_entity-projector-v1-532f3c52-8c36-481f-a13a-db707347d724",
+      "GroupState": "Stable",
+      "Members": [
+        {
+          "MemberID": "entity@00e29cbffc20 (github.com/segmentio/kafka-go)-869ee071-a261-45bd-9cfa-830b70b29e82",
+          "ClientID": "entity@00e29cbffc20 (github.com/segmentio/kafka-go)",
+          "ClientHost": "/172.30.0.5",
+          "MemberMetadata": {
+            "Version": 1,
+            "Topics": [
+              "verify_e80238d5693a41659685217807c1b7e3_entity-state-events.v1"
+            ],
+            "UserData": null,
+            "OwnedPartitions": null
+          },
+          "MemberAssignments": {
+            "Version": 1,
+            "Topics": [
+              {
+                "Topic": "verify_e80238d5693a41659685217807c1b7e3_entity-state-events.v1",
+                "Partitions": [
+                  1,
+                  2,
+                  0
+                ]
+              }
+            ],
+            "UserData": null
+          }
+        }
+      ]
+    },
+    {
+      "Error": null,
+      "GroupID": "verify_e80238d5693a41659685217807c1b7e3_entity-history-v1",
+      "GroupState": "Stable",
+      "Members": [
+        {
+          "MemberID": "entity@00e29cbffc20 (github.com/segmentio/kafka-go)-4d110e48-2780-4653-a64b-497be782d271",
+          "ClientID": "entity@00e29cbffc20 (github.com/segmentio/kafka-go)",
+          "ClientHost": "/172.30.0.5",
+          "MemberMetadata": {
+            "Version": 1,
+            "Topics": [
+              "verify_e80238d5693a41659685217807c1b7e3_entity-state-events.v1"
+            ],
+            "UserData": null,
+            "OwnedPartitions": null
+          },
+          "MemberAssignments": {
+            "Version": 1,
+            "Topics": [
+              {
+                "Topic": "verify_e80238d5693a41659685217807c1b7e3_entity-state-events.v1",
+                "Partitions": [
+                  1,
+                  2,
+                  0
+                ]
+              }
+            ],
+            "UserData": null
+          }
+        }
+      ]
+    }
+  ]
+}

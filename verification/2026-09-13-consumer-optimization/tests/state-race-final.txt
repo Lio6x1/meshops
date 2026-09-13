@@ -1,0 +1,13 @@
+=== RUN   TestMySQLSampleIdempotencePagingAgeAndBudget
+2026/09/13 09:10:54 INFO history candidate skipped reason=age
+2026/09/13 09:10:54 INFO history candidate skipped reason=budget
+--- PASS: TestMySQLSampleIdempotencePagingAgeAndBudget (0.10s)
+=== RUN   TestHistoryRetentionCatchesUpMoreThanOneBatch
+    retention_integration_test.go:58: removed 1500 samples and their keys in 190.709156ms
+--- PASS: TestHistoryRetentionCatchesUpMoreThanOneBatch (2.35s)
+=== RUN   TestHistoryRetentionBothClocksAndCutoff
+--- PASS: TestHistoryRetentionBothClocksAndCutoff (0.26s)
+=== RUN   TestRedisOrderingTombstoneAndManifest
+2026/09/13 09:10:57 WARN state quarantine reason=version_conflict topic="" partition=0 offset=0
+--- PASS: TestRedisOrderingTombstoneAndManifest (0.01s)
+PASS

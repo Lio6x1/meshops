@@ -1,0 +1,187 @@
+{
+  "sourceStaleAfterSeconds": 30,
+  "warmupExpiredSnapshots": 0,
+  "warmupSnapshotMeaning": "full retained snapshot identity, source, type, generation and version; expired snapshots remain readable and are counted separately; not a freshness guarantee",
+  "stage": "load_2000",
+  "requested": {
+    "entities": 10000,
+    "rates": [
+      2000
+    ],
+    "seconds": 30,
+    "profile": "mixed",
+    "warmupTimeoutNanoseconds": 300000000000
+  },
+  "warmup": {
+    "consumerDrainSeconds": 3.086751302,
+    "requested": 10000,
+    "generationSeconds": 4.072754839,
+    "generatedEventsPerSecond": 2455.3405238738455,
+    "offeredEventsPerSecond": 0,
+    "scheduled": 10000,
+    "generatorQueueDrops": 0,
+    "accepted": 10000,
+    "acceptedByType": {
+      "drone": 2000,
+      "facility": 1000,
+      "person": 2000,
+      "robot": 2000,
+      "sensor": 1000,
+      "vehicle": 2000
+    },
+    "errors": 0,
+    "errorExamples": null,
+    "elapsedIncludingDrainSeconds": 7.738240038,
+    "acceptedEventsPerSecond": 1292.2835103193008,
+    "clientToKafkaAck": {
+      "samples": 10000,
+      "p50Ms": 2.008,
+      "p99Ms": 62.072,
+      "maxMs": 69.383
+    },
+    "generatedToObserved": {
+      "samples": 0,
+      "p50Ms": 0,
+      "p99Ms": 0,
+      "maxMs": 0
+    },
+    "observationCandidates": 0,
+    "observationMisses": 0,
+    "projectorLag": 0,
+    "historyLag": 0,
+    "ingest": {
+      "series": 65,
+      "goHeapBytes": 15344008,
+      "goroutines": 23
+    },
+    "entity": {
+      "series": 67,
+      "goHeapBytes": 11464768,
+      "goroutines": 60
+    },
+    "messageBytesDistribution": {
+      "samples": 10000,
+      "p50Bytes": 289,
+      "p99Bytes": 310,
+      "maxBytes": 310
+    }
+  },
+  "RunID": "cc5f4f21f05d4875a59bb2de481d9bc5",
+  "StartedAt": "2026-09-13T08:59:36Z",
+  "Go": "go1.25.10",
+  "OS": "linux",
+  "Arch": "amd64",
+  "CPU": "",
+  "LogicalCPUs": 24,
+  "Entities": 10000,
+  "Sources": 10,
+  "Partitions": 3,
+  "Batch": 1,
+  "Scope": "real authenticated Ingest -> Kafka -> Entity -> Redis/MySQL; excludes gateway bbolt, tasks and subscription fanout",
+  "MemoryMeaning": "Go live heap; container RSS and limits are recorded by scale runner",
+  "ObservationMeaning": "rotating sample across ten sources; polling same or higher version; ACK/message reservoirs at most 100000; every warmup identity verified",
+  "InitialIngest": {
+    "series": 65,
+    "goHeapBytes": 9536352,
+    "goroutines": 16
+  },
+  "InitialEntity": {
+    "series": 65,
+    "goHeapBytes": 8160232,
+    "goroutines": 30
+  },
+  "WarmupAccepted": 10000,
+  "WarmupSnapshots": 10000,
+  "profile": "mixed",
+  "entityCountsByType": {
+    "drone": 2000,
+    "facility": 1000,
+    "person": 2000,
+    "robot": 2000,
+    "sensor": 1000,
+    "vehicle": 2000
+  },
+  "sourceCountsByType": {
+    "drone": 2,
+    "facility": 1,
+    "person": 2,
+    "robot": 2,
+    "sensor": 1,
+    "vehicle": 2
+  },
+  "warmupAcceptedByType": {
+    "drone": 2000,
+    "facility": 1000,
+    "person": 2000,
+    "robot": 2000,
+    "sensor": 1000,
+    "vehicle": 2000
+  },
+  "warmupSnapshotsByType": {
+    "drone": 2000,
+    "facility": 1000,
+    "person": 2000,
+    "robot": 2000,
+    "sensor": 1000,
+    "vehicle": 2000
+  },
+  "failure": "incomplete load: requested=60000 scheduled=60000 accepted=58965 errors=0 drops=1035",
+  "Phases": [
+    {
+      "consumerDrainSeconds": 0.115080333,
+      "requested": 60000,
+      "generationSeconds": 30.00029129,
+      "generatedEventsPerSecond": 1999.98058085522,
+      "offeredEventsPerSecond": 2000,
+      "scheduled": 60000,
+      "generatorQueueDrops": 1035,
+      "accepted": 58965,
+      "acceptedByType": {
+        "drone": 11798,
+        "facility": 5898,
+        "person": 11786,
+        "robot": 11801,
+        "sensor": 5896,
+        "vehicle": 11786
+      },
+      "errors": 0,
+      "errorExamples": null,
+      "elapsedIncludingDrainSeconds": 30.121979577,
+      "acceptedEventsPerSecond": 1957.5406672482918,
+      "clientToKafkaAck": {
+        "samples": 58965,
+        "p50Ms": 1.1,
+        "p99Ms": 58.064,
+        "maxMs": 90.117
+      },
+      "generatedToObserved": {
+        "samples": 1179,
+        "p50Ms": 11.536,
+        "p99Ms": 968.847,
+        "maxMs": 1080.407
+      },
+      "observationCandidates": 1179,
+      "observationMisses": 0,
+      "projectorLag": 0,
+      "historyLag": 0,
+      "ingest": {
+        "series": 65,
+        "goHeapBytes": 10431440,
+        "goroutines": 23
+      },
+      "entity": {
+        "series": 67,
+        "goHeapBytes": 16707008,
+        "goroutines": 57
+      },
+      "messageBytesDistribution": {
+        "samples": 58965,
+        "p50Bytes": 289,
+        "p99Bytes": 310,
+        "maxBytes": 310
+      }
+    }
+  ],
+  "Database": "verify_cc5f4f21f05d4875a59bb2de481d9bc5",
+  "TopicPrefix": "verify_cc5f4f21f05d4875a59bb2de481d9bc5_"
+}
