@@ -1,8 +1,13 @@
 {
   "testedImplementationCommit": "a19629ce0e7bf58388dea3355413be23279c2504",
   "ciRun": 34744143433,
-  "policy": "Final archived bytes. Following acceptance commit modifies documentation/evidence only; runtime teaching fingerprints verified separately.",
+  "policy": "Final archived bytes. Following acceptance commit modifies documentation/evidence only; runtime teaching fingerprints verified separately. Manifest lists Git-tracked artifacts only; ignored temporary logs are excluded.",
   "files": [
+    {
+      "path": "README.md",
+      "bytes": 11751,
+      "sha256": "c742c9d7e1609b32af5c77d950bd097e64c437b9b2be9ce2415524e627ee209e"
+    },
     {
       "path": "accounts-http-final.json",
       "bytes": 2487,
@@ -22,11 +27,6 @@
       "path": "capacity/20260913T133551-8a96e8b1/diagnostics.jsonl",
       "bytes": 87481,
       "sha256": "9e8b50cf1dfe16c6a04113f0968b6cfca3948eb41028e785a91d1bacfdcc8829"
-    },
-    {
-      "path": "capacity/20260913T133551-8a96e8b1/progress.log",
-      "bytes": 4736,
-      "sha256": "32fd943dc8c7f1b6e2b0d4bd178c270ada1542517b88bfbf30b97144aa9036b1"
     },
     {
       "path": "capacity/20260913T133551-8a96e8b1/progress.txt",
@@ -49,11 +49,6 @@
       "sha256": "b7ed8c8916ebc6ea148a5c89709f50d88bedbffa81db5a9551b062753e691316"
     },
     {
-      "path": "capacity/20260913T135419-cbe239d4/progress.log",
-      "bytes": 3792,
-      "sha256": "323fbc9055c9228b2319a0430dc00c3aff848a2faddd8e1efc11611690a6704a"
-    },
-    {
       "path": "capacity/20260913T135419-cbe239d4/progress.txt",
       "bytes": 3792,
       "sha256": "323fbc9055c9228b2319a0430dc00c3aff848a2faddd8e1efc11611690a6704a"
@@ -74,11 +69,6 @@
       "sha256": "ef044b7359ad785495b6621e58c21cd461013ab08b01c33b705eb01e3bd885f2"
     },
     {
-      "path": "capacity/20260913T135744-34bb2e93/progress.log",
-      "bytes": 4096,
-      "sha256": "0f3ecb3164b8c91c62122ae8d8e8443b60859aabec30403b4621d1a73df9bdc5"
-    },
-    {
       "path": "capacity/20260913T135744-34bb2e93/progress.txt",
       "bytes": 4096,
       "sha256": "0f3ecb3164b8c91c62122ae8d8e8443b60859aabec30403b4621d1a73df9bdc5"
@@ -97,11 +87,6 @@
       "path": "capacity/20260913T140130-13ad51c7/mysql-redo-diagnostics.txt",
       "bytes": 2121,
       "sha256": "815677cfc61c30b3b23f087d31d9f7b0fee4e823900e922b471097138a3a8bcf"
-    },
-    {
-      "path": "capacity/20260913T140130-13ad51c7/progress.log",
-      "bytes": 773,
-      "sha256": "243f9d061cc03af072bb8e7b877744760339ae3d99d5853eb22da73730616195"
     },
     {
       "path": "capacity/20260913T140130-13ad51c7/progress.txt",
@@ -169,14 +154,14 @@
       "sha256": "fe6449d79a33145098e14994d1e2682b3e488f4072a33db3fa9d1f292abf5366"
     },
     {
-      "path": "capacity/manifest.json",
-      "bytes": 11931,
-      "sha256": "a2011be3b693b3ca2e85d1d6b495a02c683b420b8ba04e841bed49a5e148dd32"
-    },
-    {
       "path": "capacity/README.md",
       "bytes": 11623,
       "sha256": "2d53d7f7e30fa032e4d2c6e71b698cf32642ac3561575f7a551618a5d2749024"
+    },
+    {
+      "path": "capacity/manifest.json",
+      "bytes": 11931,
+      "sha256": "a2011be3b693b3ca2e85d1d6b495a02c683b420b8ba04e841bed49a5e148dd32"
     },
     {
       "path": "capacity/redo-diagnosis.json",
@@ -319,11 +304,6 @@
       "sha256": "b00b4434ae890fc39aeb00ff0f961cc31c66dd6c2e04abf4260105b6662068cb"
     },
     {
-      "path": "README.md",
-      "bytes": 11751,
-      "sha256": "c742c9d7e1609b32af5c77d950bd097e64c437b9b2be9ce2415524e627ee209e"
-    },
-    {
       "path": "review-p2-closed.json",
       "bytes": 2860,
       "sha256": "141d18562113c5ebd369ad34c1eadac91df7da9086b3c947d455b09fc3f5efbb"
@@ -342,6 +322,11 @@
       "path": "test-simulation-final.json",
       "bytes": 1388,
       "sha256": "0e1b38a83cf6dd01613d53d0b2ce8b168cd06f5a61049eeb758519065758f9a3"
+    },
+    {
+      "path": "tutorial/README.md",
+      "bytes": 1030,
+      "sha256": "ed954403accd52ef176746bb2c3e2393e3ab819c9debb75eacd8c6e8db57a7ae"
     },
     {
       "path": "tutorial/built-checkpoint-index.json",
@@ -367,11 +352,6 @@
       "path": "tutorial/manifest.json",
       "bytes": 1993,
       "sha256": "5690e11f616cd08a0b372f1e6fd8ecf8cc72ba8c04db298c87cec771ff1b437a"
-    },
-    {
-      "path": "tutorial/README.md",
-      "bytes": 1030,
-      "sha256": "ed954403accd52ef176746bb2c3e2393e3ab819c9debb75eacd8c6e8db57a7ae"
     },
     {
       "path": "tutorial/substep-index.json",
