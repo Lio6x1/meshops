@@ -10,7 +10,7 @@
 
 个人账号已接入 HTTP/RPC/SSE：管理员本机自行设置密码，创建操作员、停用和重置，首次改密，个人身份写入任务审计。密码使用 Argon2id 与独立随机盐；改密、重置、停用和注销撤销会话。操作见[账号手册](../../operations/accounts.md)。
 
-已完成的真实依赖、HTTP、场景和初始化性能证据见[本轮归档](../../../verification/2026-09-13-accounts-scale/README.md)。规模实验独立控制实体基数、事件速率、资源和时限；百万参数不代表百万容量通过。最终 runtime 的 Windows 普通测试已补验为 [168 顶层 PASS、22 SKIP、0 FAIL](../../../verification/2026-09-13-accounts-scale/unit-release.summary.json)；相较先前 165 PASS 新增 3 项 SQL 字节批次测试。`go vet` 与 staticcheck v0.7.0 的 26 个手写包检查通过。先前 Linux 普通 race 的 162 PASS 仅证明其当时范围，完整依赖 race 已由 [CI 34744143433](https://github.com/Lio6x1/meshops/actions/runs/34744143433) 验收通过。当前发布包含 13 个阶段、28 个分步、1790 条文件指纹（Z13 为 356 个文件）和 428 个完整代码块，数量按当前阶段索引与完整答案页核对。教程最终复制与构建已经通过；百万第 8 次试验完成初始化和百万持久接收，但消费未在 30 秒内排空，因此未通过；最终 [CI 34744143433](https://github.com/Lio6x1/meshops/actions/runs/34744143433) 已通过（实现提交 a19629c），具体结果以该归档的后续记录为准；以下按日期保留旧版结果。
+已完成的真实依赖、HTTP、场景和初始化性能证据见[本轮归档](../../../verification/2026-09-13-accounts-scale/README.md)。规模实验独立控制实体基数、事件速率、资源和时限；百万参数不代表百万容量通过。最终 runtime 的 Windows 普通测试已补验为 [168 顶层 PASS、22 SKIP、0 FAIL](../../../verification/2026-09-13-accounts-scale/unit-release.summary.json)；相较先前 165 PASS 新增 3 项 SQL 字节批次测试。`go vet` 与 staticcheck v0.7.0 的 26 个手写包检查通过。先前 Linux 普通 race 的 162 PASS 仅证明其当时范围，完整依赖 race 已由 [CI 34744143433](https://github.com/Lio6x1/meshops/actions/runs/34744143433) 验收通过。账号版本归档当时包含 13 个阶段、28 个分步、1790 条文件指纹（Z13 为 356 个文件）和 428 个完整代码块，以上为账号版本历史数量，当前数量见页首消费优化增量。教程最终复制与构建已经通过；百万第 8 次试验完成初始化和百万持久接收，但消费未在 30 秒内排空，因此未通过；最终 [CI 34744143433](https://github.com/Lio6x1/meshops/actions/runs/34744143433) 已通过（实现提交 a19629c），具体结果以该归档的后续记录为准；以下按日期保留旧版结果。
 
 ## 目录与文档整理（2026-09-13）
 

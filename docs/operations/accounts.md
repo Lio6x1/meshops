@@ -83,6 +83,8 @@ try {
 
 ### 当前实测状态
 
-2026-09-13 本次 Windows 真实依赖集成运行有 216 个顶层测试 PASS、3 个辅助 SKIP，23 项必需集成门禁 PASS；最新 Windows 普通测试为 [168 PASS（unit-release）](../../verification/2026-09-13-accounts-scale/unit-release.summary.json)，先前 Linux 普通 race 为 162 PASS；两次普通运行各有 22 项 SKIP（20 项外部依赖门控、2 项 edge/state 崩溃子进程辅助入口），不能称为真实依赖 race 已通过。前端 29 项测试与构建、上述 30 项账号 HTTP、demo 数量/运动/模拟控制及全栈个人任务审计、取消和 CDC 检查均已 PASS。百万容量与教程最终复制验收仍待完成；这些检查不能互相替代。
+2026-09-13 本次 Windows 真实依赖集成运行有 216 个顶层测试 PASS、3 个辅助 SKIP，23 项必需集成门禁 PASS；账号版本归档中的 Windows 普通测试为 [168 PASS（unit-release）](../../verification/2026-09-13-accounts-scale/unit-release.summary.json)，先前 Linux 普通 race 为 162 PASS；两次普通运行各有 22 项 SKIP（20 项外部依赖门控、2 项 edge/state 崩溃子进程辅助入口），不能称为真实依赖 race 已通过。前端 29 项测试与构建、上述 30 项账号 HTTP、demo 数量/运动/模拟控制及全栈个人任务审计、取消和 CDC 检查均已 PASS。账号版本教程最终复制与构建已完成；百万容量试验因消费积压未通过；这些检查不能互相替代。
 
 浏览器会话保存在网关内存中，网关重启后需要重新登录；账号与哈希在 MySQL 中持久化。当前单网关最多 256 个浏览器会话，每个账号限制有效内部会话数量。它们是资源保护边界，不代表高并发用户系统的容量承诺。本机 HTTP 演示没有传输加密，远程部署应配置 HTTPS。初始化和恢复工具需要数据库管理能力，不是普通网页用户接口。
+
+以上账号检查保留其归档版本范围。后续消费优化最终保留 Kafka 批量提交，最新代码测试、1500/2000 events/s 实验及尚未验证的范围见[消费优化验收](../../verification/2026-09-13-consumer-optimization/README.md)；旧版 CI 不能代替新提交的云端验证。

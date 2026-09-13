@@ -294,7 +294,7 @@ Get-Content './.local/logs/task.err.log' -Tail 80 -Wait
 
 页面能打开、单元测试通过、四类任务成功、完整 Docker 从干净卷启动、重启数据保留、真实浏览器布局/键盘操作，分别是不同验收项。新手操作步骤中的“应看到”是你本次需要核对的结果，不是本手册替你宣告本机已经通过。
 
-2026-09-12 的 Docker 首次启动、浏览器登录/订阅/任务/搜索、任务与取消 HTTP 验收、搜索重建及重启保留结果见[全栈验收归档](verification/2026-09-12-fullstack/README.md)，只代表当时范围。2026-09-13 本次 Windows 真实依赖集成运行有 216 个顶层 PASS、3 个辅助 SKIP；23 项必需集成门禁、30 项真实 HTTP 账号检查、demo 数量/运动/模拟控制与全栈个人任务审计/取消/CDC，以及前端 29 项测试与构建均已 PASS。最新 Windows 普通测试为 [168 PASS（unit-release）](../verification/2026-09-13-accounts-scale/unit-release.summary.json)，先前 Linux 普通 race 为 162 PASS；两次普通运行各有 22 项 SKIP（20 项外部依赖门控、2 项 edge/state 崩溃子进程辅助入口），不能称为真实依赖 race 已通过；百万容量和教程最终验收仍待完成。你自己的电脑仍需实际执行检查。历史后端复核见 [复核资料](review/2026-09-12/acceptance.md)，教材状态见 [课程工作记录](learning/from-zero/BUILD-LEDGER.md)。
+2026-09-12 的 Docker 首次启动、浏览器登录/订阅/任务/搜索、任务与取消 HTTP 验收、搜索重建及重启保留结果见[全栈验收归档](verification/2026-09-12-fullstack/README.md)，只代表当时范围。2026-09-13 本次 Windows 真实依赖集成运行有 216 个顶层 PASS、3 个辅助 SKIP；23 项必需集成门禁、30 项真实 HTTP 账号检查、demo 数量/运动/模拟控制与全栈个人任务审计/取消/CDC，以及前端 29 项测试与构建均已 PASS。账号版本归档中的 Windows 普通测试为 [168 PASS（unit-release）](../verification/2026-09-13-accounts-scale/unit-release.summary.json)，先前 Linux 普通 race 为 162 PASS；两次普通运行各有 22 项 SKIP（20 项外部依赖门控、2 项 edge/state 崩溃子进程辅助入口），不能称为真实依赖 race 已通过；账号版本教程最终复制与构建已完成；百万容量试验因消费积压未通过。你自己的电脑仍需实际执行检查。历史后端复核见 [复核资料](review/2026-09-12/acceptance.md)，教材状态见 [课程工作记录](learning/from-zero/BUILD-LEDGER.md)。
 
 可使用[HTTP 全流程验收脚本说明](../scripts/test-fullstack.md)重复验证当前环境；个人登录、首次改密、权限和撤销可按[30 项账号 HTTP 检查](operations/accounts.md#运行-30-项真实-http-账号检查)单独执行，管理员凭证从安全交互输入进入临时进程环境，不硬编码到命令。Search 刚恢复时，gRPC 连接可能仍在退避重连；页面出现暂时不可用后，可稍后再次查询。部分错误提示保留英文诊断，处理方法见本文日志与搜索恢复步骤。
 
@@ -307,3 +307,5 @@ Get-Content './.local/logs/task.err.log' -Tail 80 -Wait
 管理员忘记密码时，在这台管理主机运行 `./scripts/account-admin.ps1 -Action Reset -Username admin`；本机开发模式增加 `-Mode Local`。这会撤销管理员已有会话，不会删除业务数据。操作员忘记密码由管理员在账号管理页重置。账号不存在或输入不合法时命令失败，不会自动重建数据库。
 
 浏览器 Cookie 使用 HttpOnly、SameSite 和写请求 CSRF 校验；当前本机 HTTP 演示不具备传输加密，远程部署必须配置 HTTPS。账号最多支持当前网关的 256 个内存会话，与百万实体写入是两个不同容量维度。
+
+以上账号检查保留其归档版本范围。后续消费优化最终保留 Kafka 批量提交，最新代码测试、1500/2000 events/s 实验及尚未验证的范围见[消费优化验收](../verification/2026-09-13-consumer-optimization/README.md)；旧版 CI 不能代替新提交的云端验证。

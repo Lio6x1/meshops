@@ -59,10 +59,12 @@
 
 百万试验已恢复推进：先在 1 万实体增加总写速率，再增加至 10 万/100 万基数；固定六类比例和 10 来源，逐一核验全部预热实体，再运行有界负载档位。独立资源、硬时限和完整失败报告见[规模压测手册](../operations/scale-benchmark.md)。当前没有百万容量通过结论，不能把百万实体说成百万 QPS。
 
-本次普通测试已完成；Windows 真实依赖运行有 216 个顶层 PASS、3 个辅助 SKIP，23 项必需集成门禁 PASS。账号 HTTP 30 项、全栈个人任务审计/取消/CDC、demo 数量/运动/模拟控制及前端 29 项测试与构建均 PASS。最新 Windows 普通测试为 [168 PASS（unit-release）](../../verification/2026-09-13-accounts-scale/unit-release.summary.json)，先前 Linux 普通 race 为 162 PASS；两次普通运行各有 22 项 SKIP（20 项外部依赖门控、2 项 edge/state 崩溃子进程辅助入口），不代表真实依赖 race 通过；百万容量与教程最终验收仍待完成。以上不是新的压测吞吐数字，也不替代个人亲自复现。
+本次普通测试已完成；Windows 真实依赖运行有 216 个顶层 PASS、3 个辅助 SKIP，23 项必需集成门禁 PASS。账号 HTTP 30 项、全栈个人任务审计/取消/CDC、demo 数量/运动/模拟控制及前端 29 项测试与构建均 PASS。账号版本归档中的 Windows 普通测试为 [168 PASS（unit-release）](../../verification/2026-09-13-accounts-scale/unit-release.summary.json)，先前 Linux 普通 race 为 162 PASS；两次普通运行各有 22 项 SKIP（20 项外部依赖门控、2 项 edge/state 崩溃子进程辅助入口），不代表真实依赖 race 通过；账号版本教程最终复制与构建已完成；百万容量试验因消费积压未通过。以上不是新的压测吞吐数字，也不替代个人亲自复现。
 
 ## 演示顺序
 
 个人操作员登录（首次先改密）→ 六类状态 → 创建巡检并看个人审计/执行记录 → 来源断网缓存/恢复 → 搜索任务 → 解释一条测试及证据。
 
 推荐亲自复现[并发重试死锁](../troubleshooting/02-retry-dlq-deadlock.md)，按现象、定位、修复、验证四步讲。项目由 AI 协助搭建，介绍自己的工作时只写实际掌握和独立完成的部分。
+
+以上账号检查保留其归档版本范围。后续消费优化最终保留 Kafka 批量提交，最新代码测试、1500/2000 events/s 实验及尚未验证的范围见[消费优化验收](../../verification/2026-09-13-consumer-optimization/README.md)；旧版 CI 不能代替新提交的云端验证。

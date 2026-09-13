@@ -1,0 +1,23 @@
+{
+  "root": "D:\\job\\golang\\projects\\meshops",
+  "excluded_directories": [
+    ".cache",
+    ".git",
+    ".local",
+    ".worktrees",
+    "dist",
+    "node_modules",
+    "playwright-report",
+    "test-results"
+  ],
+  "markdown_files": 194,
+  "local_links": 3498,
+  "external_links_not_requested": 86,
+  "broken_links": 0,
+  "issues": [],
+  "limitations": [
+    "Focused Markdown parser, not a full CommonMark implementation",
+    "Anchor checking applies to Markdown targets; non-Markdown fragments are not checked",
+    "Filesystem existence follows the host filesystem's case-sensitivity"
+  ]
+}

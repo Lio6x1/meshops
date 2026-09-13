@@ -1,0 +1,20 @@
+[
+  {
+    "path": ".cache/go-build-reference",
+    "files": 6651,
+    "bytes": 1060483937,
+    "removed": true
+  },
+  {
+    "path": ".cache/lesson-copy-b15be3cf1e274336b874e918b1cfd708",
+    "files": 357,
+    "bytes": 2022129,
+    "removed": true
+  },
+  {
+    "path": ".worktrees",
+    "files": 0,
+    "bytes": 0,
+    "removed": true
+  }
+]
