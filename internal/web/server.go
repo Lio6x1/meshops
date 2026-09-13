@@ -22,6 +22,7 @@ import (
 )
 
 type Config struct {
+	Accounts       AccountService
 	Simulation     SimulationControl
 	Registry       *platform.Registry
 	TenantID       string
@@ -61,16 +62,18 @@ func New(cfg Config) (*Server, error) {
 	if cfg.SessionTTL < time.Minute || cfg.SessionTTL > 24*time.Hour {
 		return nil, errors.New("session TTL outside 1m..24h")
 	}
-	for _, role := range []string{"operator", "admin"} {
-		if len(cfg.AccessCodes[role]) < 32 {
-			return nil, errors.New("independent random browser access codes required")
+	if cfg.Accounts == nil {
+		for _, role := range []string{"operator", "admin"} {
+			if len(cfg.AccessCodes[role]) < 32 {
+				return nil, errors.New("independent random browser access codes required")
+			}
+			if _, e := cfg.Registry.ServiceToken(cfg.TenantID, role); e != nil {
+				return nil, e
+			}
 		}
-		if _, e := cfg.Registry.ServiceToken(cfg.TenantID, role); e != nil {
-			return nil, e
+		if cfg.AccessCodes["operator"] == cfg.AccessCodes["admin"] {
+			return nil, errors.New("browser role codes must differ")
 		}
-	}
-	if cfg.AccessCodes["operator"] == cfg.AccessCodes["admin"] {
-		return nil, errors.New("browser role codes must differ")
 	}
 	s := &Server{cfg: cfg, sessions: map[string]*session{}, origins: map[string]bool{}, hosts: map[string]bool{}}
 	for _, origin := range cfg.AllowedOrigins {
@@ -114,6 +117,11 @@ func New(cfg Config) (*Server, error) {
 	}
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/session", s.sessionHTTP)
+	mux.HandleFunc("POST /api/account/password", s.passwordHTTP)
+	mux.HandleFunc("GET /api/accounts", s.accountsHTTP)
+	mux.HandleFunc("POST /api/accounts", s.accountsHTTP)
+	mux.HandleFunc("PATCH /api/accounts/{id}", s.accountsHTTP)
+	mux.HandleFunc("POST /api/accounts/{id}/reset-password", s.accountsHTTP)
 	mux.HandleFunc("GET /api/v1/entities", s.inventory)
 	mux.HandleFunc("GET /api/v1/entities/stream", s.stream)
 	mux.HandleFunc("GET /api/v1/simulation", s.simulationHTTP)
@@ -155,6 +163,22 @@ func (s *Server) Handler() http.Handler {
 		if p == nil {
 			webError(w, 401, "browser session required")
 			return
+		}
+		if s.cfg.Accounts != nil {
+			// 数据库连接池等待同样需要截止时间；SSE 的长连接寿命
+			// 不应让初始鉴权无限等待，也不能被这个短截止截断。
+			checkCtx, cancelCheck := context.WithTimeout(r.Context(), 3*time.Second)
+			_, checkErr := s.cfg.Accounts.CheckSession(checkCtx, p.token)
+			cancelCheck()
+			if checkErr != nil {
+				s.removeSession(p.id)
+				accountError(w, checkErr)
+				return
+			}
+			if p.mustChange && r.URL.Path != "/api/session" && r.URL.Path != "/api/account/password" {
+				webError(w, 403, "password change required")
+				return
+			}
 		}
 		if r.Method != "GET" && r.Method != "HEAD" {
 			if !s.origins[origin] || !equal(r.Header.Get("X-CSRF-Token"), p.csrf) {

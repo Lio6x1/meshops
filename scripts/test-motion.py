@@ -15,7 +15,7 @@ sim=scene.sim
 def main():
     output=Path(sys.argv[1])
     if output.exists():raise ValueError('Evidence output already exists')
-    sim.csrf=sim.api('/api/session','POST',{'role':'operator','accessCode':os.environ['MESHOPS_WEB_OPERATOR_CODE']})['csrfToken']
+    sim.login()
     original=scene.sources()
     report={'passed':False,'scope':'30 real HTTP snapshots; visible displacement of four moving types and fixed coordinates for sensor/facility; not a load benchmark.'}
     try:

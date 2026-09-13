@@ -1,0 +1,446 @@
+{
+  "project": "meshops-scale",
+  "requested": {
+    "entities": 10000,
+    "rates": [
+      500,
+      2000,
+      5000
+    ],
+    "seconds": 30,
+    "deadline_seconds": 900,
+    "warmup_seconds": 600,
+    "sample_seconds": 5,
+    "image": "meshops-account-backend:review"
+  },
+  "stage": "benchmark",
+  "outcome": "failed",
+  "startedAt": "2026-09-13T05:54:19Z",
+  "evidenceDirectory": ".local/scale/runs/20260913T135419-cbe239d4",
+  "resources": {
+    "runner": {
+      "cpus": 4,
+      "bytes": 3221225472
+    },
+    "mysql": {
+      "cpus": 2,
+      "bytes": 1073741824
+    },
+    "kafka": {
+      "cpus": 2,
+      "bytes": 1610612736
+    },
+    "redis": {
+      "cpus": 2,
+      "bytes": 1610612736,
+      "maxmemory": 1073741824
+    }
+  },
+  "docker": {
+    "Platform": {
+      "Name": "Docker Desktop 4.89.0 (238018)"
+    },
+    "Version": "29.7.2",
+    "ApiVersion": "1.55",
+    "MinAPIVersion": "1.40",
+    "Os": "linux",
+    "Arch": "amd64",
+    "Components": [
+      {
+        "Name": "Engine",
+        "Version": "29.7.2",
+        "Details": {
+          "ApiVersion": "1.55",
+          "Arch": "amd64",
+          "BuildTime": "Wed Aug  5 18:28:36 2026",
+          "Experimental": "false",
+          "GitCommit": "6a43e3d",
+          "GoVersion": "go1.26.5",
+          "KernelVersion": "6.6.114.1-microsoft-standard-WSL2",
+          "MinAPIVersion": "1.40",
+          "Module": "github.com/moby/moby/v2",
+          "ModuleVersion": "v2.0.0+unknown",
+          "Os": "linux"
+        }
+      },
+      {
+        "Name": "containerd",
+        "Version": "v2.3.3",
+        "Details": {
+          "GitCommit": "aad11006b869517fcd3009450b6f82da282e1a9b"
+        }
+      },
+      {
+        "Name": "runc",
+        "Version": "1.4.3",
+        "Details": {
+          "GitCommit": "v1.4.3-0-gbb14dabe"
+        }
+      },
+      {
+        "Name": "docker-init",
+        "Version": "0.19.0",
+        "Details": {
+          "GitCommit": "de40ad0"
+        }
+      }
+    ],
+    "GitCommit": "6a43e3d",
+    "GoVersion": "go1.26.5",
+    "KernelVersion": "6.6.114.1-microsoft-standard-WSL2",
+    "BuildTime": "2026-08-05T18:28:36.000000000+00:00"
+  },
+  "cgroupOomKillCount": 0,
+  "stopExitCode": 0,
+  "benchmark": {
+    "sourceStaleAfterSeconds": 30,
+    "warmupExpiredSnapshots": 0,
+    "warmupSnapshotMeaning": "full retained snapshot identity, source, type, generation and version; expired snapshots remain readable and are counted separately; not a freshness guarantee",
+    "stage": "load_5000",
+    "requested": {
+      "entities": 10000,
+      "rates": [
+        500,
+        2000,
+        5000
+      ],
+      "seconds": 30,
+      "profile": "mixed",
+      "warmupTimeoutNanoseconds": 600000000000
+    },
+    "warmup": {
+      "consumerDrainSeconds": 6.02525908,
+      "requested": 10000,
+      "generationSeconds": 1.871120098,
+      "generatedEventsPerSecond": 5344.392383304944,
+      "offeredEventsPerSecond": 0,
+      "scheduled": 10000,
+      "generatorQueueDrops": 0,
+      "accepted": 10000,
+      "acceptedByType": {
+        "drone": 2000,
+        "facility": 1000,
+        "person": 2000,
+        "robot": 2000,
+        "sensor": 1000,
+        "vehicle": 2000
+      },
+      "errors": 0,
+      "errorExamples": null,
+      "elapsedIncludingDrainSeconds": 8.1163314,
+      "acceptedEventsPerSecond": 1232.083746605024,
+      "clientToKafkaAck": {
+        "samples": 10000,
+        "p50Ms": 1.13,
+        "p99Ms": 38,
+        "maxMs": 59.424
+      },
+      "generatedToObserved": {
+        "samples": 0,
+        "p50Ms": 0,
+        "p99Ms": 0,
+        "maxMs": 0
+      },
+      "observationCandidates": 0,
+      "observationMisses": 0,
+      "projectorLag": 0,
+      "historyLag": 0,
+      "ingest": {
+        "series": 65,
+        "goHeapBytes": 9289232,
+        "goroutines": 23
+      },
+      "entity": {
+        "series": 67,
+        "goHeapBytes": 14036384,
+        "goroutines": 59
+      },
+      "messageBytesDistribution": {
+        "samples": 10000,
+        "p50Bytes": 289,
+        "p99Bytes": 310,
+        "maxBytes": 310
+      }
+    },
+    "RunID": "bf29a87e838242159e185542b847a2ab",
+    "StartedAt": "2026-09-13T05:54:34Z",
+    "Go": "go1.25.10",
+    "OS": "linux",
+    "Arch": "amd64",
+    "CPU": "",
+    "LogicalCPUs": 24,
+    "Entities": 10000,
+    "Sources": 10,
+    "Partitions": 3,
+    "Batch": 1,
+    "Scope": "real authenticated Ingest -> Kafka -> Entity -> Redis/MySQL; excludes gateway bbolt, tasks and subscription fanout",
+    "MemoryMeaning": "Go live heap; container RSS and limits are recorded by scale runner",
+    "ObservationMeaning": "rotating sample across ten sources; polling same or higher version; ACK/message reservoirs at most 100000; every warmup identity verified",
+    "InitialIngest": {
+      "series": 65,
+      "goHeapBytes": 9691872,
+      "goroutines": 17
+    },
+    "InitialEntity": {
+      "series": 65,
+      "goHeapBytes": 11653768,
+      "goroutines": 29
+    },
+    "WarmupAccepted": 10000,
+    "WarmupSnapshots": 10000,
+    "profile": "mixed",
+    "entityCountsByType": {
+      "drone": 2000,
+      "facility": 1000,
+      "person": 2000,
+      "robot": 2000,
+      "sensor": 1000,
+      "vehicle": 2000
+    },
+    "sourceCountsByType": {
+      "drone": 2,
+      "facility": 1,
+      "person": 2,
+      "robot": 2,
+      "sensor": 1,
+      "vehicle": 2
+    },
+    "warmupAcceptedByType": {
+      "drone": 2000,
+      "facility": 1000,
+      "person": 2000,
+      "robot": 2000,
+      "sensor": 1000,
+      "vehicle": 2000
+    },
+    "warmupSnapshotsByType": {
+      "drone": 2000,
+      "facility": 1000,
+      "person": 2000,
+      "robot": 2000,
+      "sensor": 1000,
+      "vehicle": 2000
+    },
+    "failure": "incomplete load: requested=150000 scheduled=150000 accepted=120220 errors=0 drops=29780",
+    "Phases": [
+      {
+        "consumerDrainSeconds": 0.007374675,
+        "requested": 15000,
+        "generationSeconds": 30.000462109,
+        "generatedEventsPerSecond": 499.9922983019675,
+        "offeredEventsPerSecond": 500,
+        "scheduled": 15000,
+        "generatorQueueDrops": 0,
+        "accepted": 15000,
+        "acceptedByType": {
+          "drone": 3000,
+          "facility": 1500,
+          "person": 3000,
+          "robot": 3000,
+          "sensor": 1500,
+          "vehicle": 3000
+        },
+        "errors": 0,
+        "errorExamples": null,
+        "elapsedIncludingDrainSeconds": 30.009560237,
+        "acceptedEventsPerSecond": 499.8407134772303,
+        "clientToKafkaAck": {
+          "samples": 15000,
+          "p50Ms": 0.556,
+          "p99Ms": 24.493,
+          "maxMs": 65.999
+        },
+        "generatedToObserved": {
+          "samples": 300,
+          "p50Ms": 1.311,
+          "p99Ms": 7.328,
+          "maxMs": 9.306
+        },
+        "observationCandidates": 300,
+        "observationMisses": 0,
+        "projectorLag": 0,
+        "historyLag": 0,
+        "ingest": {
+          "series": 65,
+          "goHeapBytes": 10914880,
+          "goroutines": 22
+        },
+        "entity": {
+          "series": 67,
+          "goHeapBytes": 10866288,
+          "goroutines": 55
+        },
+        "messageBytesDistribution": {
+          "samples": 15000,
+          "p50Bytes": 289,
+          "p99Bytes": 310,
+          "maxBytes": 310
+        }
+      },
+      {
+        "consumerDrainSeconds": 0.432681349,
+        "requested": 60000,
+        "generationSeconds": 30.00011381,
+        "generatedEventsPerSecond": 1999.9924126954504,
+        "offeredEventsPerSecond": 2000,
+        "scheduled": 60000,
+        "generatorQueueDrops": 0,
+        "accepted": 60000,
+        "acceptedByType": {
+          "drone": 12000,
+          "facility": 6000,
+          "person": 12000,
+          "robot": 12000,
+          "sensor": 6000,
+          "vehicle": 12000
+        },
+        "errors": 0,
+        "errorExamples": null,
+        "elapsedIncludingDrainSeconds": 30.439345392,
+        "acceptedEventsPerSecond": 1971.1330591152944,
+        "clientToKafkaAck": {
+          "samples": 60000,
+          "p50Ms": 0.802,
+          "p99Ms": 47.645,
+          "maxMs": 64.689
+        },
+        "generatedToObserved": {
+          "samples": 1200,
+          "p50Ms": 84.052,
+          "p99Ms": 913.744,
+          "maxMs": 952.859
+        },
+        "observationCandidates": 1200,
+        "observationMisses": 0,
+        "projectorLag": 0,
+        "historyLag": 0,
+        "ingest": {
+          "series": 65,
+          "goHeapBytes": 14775864,
+          "goroutines": 23
+        },
+        "entity": {
+          "series": 67,
+          "goHeapBytes": 15560512,
+          "goroutines": 56
+        },
+        "messageBytesDistribution": {
+          "samples": 60000,
+          "p50Bytes": 289,
+          "p99Bytes": 310,
+          "maxBytes": 310
+        }
+      },
+      {
+        "consumerDrainSeconds": 0.426552822,
+        "requested": 150000,
+        "generationSeconds": 30.000566898,
+        "generatedEventsPerSecond": 4999.905518785374,
+        "offeredEventsPerSecond": 5000,
+        "scheduled": 150000,
+        "generatorQueueDrops": 29780,
+        "accepted": 120220,
+        "acceptedByType": {
+          "drone": 24072,
+          "facility": 12125,
+          "person": 23897,
+          "robot": 23964,
+          "sensor": 12063,
+          "vehicle": 24099
+        },
+        "errors": 0,
+        "errorExamples": null,
+        "elapsedIncludingDrainSeconds": 51.748131561,
+        "acceptedEventsPerSecond": 2323.1756659327166,
+        "clientToKafkaAck": {
+          "samples": 100000,
+          "p50Ms": 1.309,
+          "p99Ms": 43.125,
+          "maxMs": 68.081
+        },
+        "generatedToObserved": {
+          "samples": 2385,
+          "p50Ms": 17533.637,
+          "p99Ms": 22041.239,
+          "maxMs": 22106.397
+        },
+        "observationCandidates": 2385,
+        "observationMisses": 0,
+        "projectorLag": 0,
+        "historyLag": 0,
+        "ingest": {
+          "series": 65,
+          "goHeapBytes": 11560680,
+          "goroutines": 22
+        },
+        "entity": {
+          "series": 67,
+          "goHeapBytes": 14120968,
+          "goroutines": 57
+        },
+        "messageBytesDistribution": {
+          "samples": 100000,
+          "p50Bytes": 289,
+          "p99Bytes": 310,
+          "maxBytes": 310
+        }
+      }
+    ],
+    "EvidenceDirectory": "/work/.local/verification/bf29a87e838242159e185542b847a2ab",
+    "Database": "verify_bf29a87e838242159e185542b847a2ab",
+    "TopicPrefix": "verify_bf29a87e838242159e185542b847a2ab_"
+  },
+  "states": [
+    {
+      "id": "4689cf36af1bc8ab768a268d3a87b4836f1576a15fd0bf18b4d0048ccc192e3e",
+      "name": "/meshops-scale-mysql-1",
+      "status": "running",
+      "running": true,
+      "oomKilled": false,
+      "exitCode": 0,
+      "error": "",
+      "memoryLimit": 1073741824,
+      "nanoCpus": 2000000000,
+      "health": "healthy"
+    },
+    {
+      "id": "557c2dac4b9423f660c3411ef87664e42dfa7d3a9b256757b982538d65572577",
+      "name": "/meshops-scale-redis-1",
+      "status": "running",
+      "running": true,
+      "oomKilled": false,
+      "exitCode": 0,
+      "error": "",
+      "memoryLimit": 1610612736,
+      "nanoCpus": 2000000000,
+      "health": "healthy"
+    },
+    {
+      "id": "945c604dddeb644a5651886bb606fe51a3adfdb369d3721d1fb936d334046441",
+      "name": "/meshops-scale-kafka-1",
+      "status": "running",
+      "running": true,
+      "oomKilled": false,
+      "exitCode": 0,
+      "error": "",
+      "memoryLimit": 1610612736,
+      "nanoCpus": 2000000000,
+      "health": "healthy"
+    },
+    {
+      "id": "8e95d9256f327d0d4712c1c16336aa7dc4c21d1c1eba72ce31680cf370c2f935",
+      "name": "/meshops-scale-runner-1",
+      "status": "exited",
+      "running": false,
+      "oomKilled": false,
+      "exitCode": 1,
+      "error": "",
+      "memoryLimit": 3221225472,
+      "nanoCpus": 4000000000,
+      "health": "none"
+    }
+  ],
+  "exitCode": 1,
+  "timedOut": false,
+  "finishedAt": "2026-09-13T05:56:49Z"
+}

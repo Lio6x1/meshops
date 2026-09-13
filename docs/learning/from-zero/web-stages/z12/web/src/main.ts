@@ -20,6 +20,8 @@ const router = createRouter({
     { path: '/dispatch', component: () => import('./views/Dispatch.vue') },
     { path: '/status', component: () => import('./views/Status.vue') },
     { path: '/simulation', component: () => import('./views/Simulation.vue') },
+    { path: '/accounts', component: () => import('./views/Accounts.vue') },
+    { path: '/account/password', component: () => import('./views/PasswordChange.vue') },
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 })

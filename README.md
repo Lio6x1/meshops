@@ -14,12 +14,14 @@
 
 ```powershell
 ./scripts/demo-stack.ps1 -Action Up
-./scripts/demo-stack.ps1 -Action Codes
+./scripts/account-admin.ps1 -Action Setup
 ```
 
-打开 `http://localhost:18090`，选择操作员，输入命令输出的操作员访问码。可查看六类实体实时状态、历史记录，创建及取消巡检任务，查看分发记录和搜索任务。管理员还可查看分发运行状态及执行受约束的人工重试。页面通过 HTTP/SSE 网关调用现有 gRPC 业务服务，结果来自真实 MySQL、Redis、Kafka 和 Elasticsearch。
+打开 `http://localhost:18090`，用你刚设置的管理员用户名和密码登录，在账号管理页面创建操作员；操作员首次登录须修改初始密码。可查看六类实体实时状态、历史记录，创建及取消巡检任务，查看分发记录和搜索任务。管理员还可查看分发运行状态及执行受约束的人工重试。页面通过 HTTP/SSE 网关调用现有 gRPC 业务服务，结果来自真实 MySQL、Redis、Kafka 和 Elasticsearch。
 
 “模拟演示”支持人员、无人机、车辆、机器人、传感器、设施各 **0—5 个**，默认各 1 个，总计最多 30 个。点击“应用数量”后等待实际启用，再到地图查看；支持暂停、断网缓存和恢复上报。数量缩减保留历史及已有任务，详见[模拟器与地图说明](docs/simulation-map.md)。
+
+个人账号的初始化、停用、重置及验证步骤见[账号操作手册](docs/operations/accounts.md)。实体基数与写入速率分开设置，规模实验使用独立 Docker 环境，见[容量测试手册](docs/operations/scale-benchmark.md)；测试结果和边界以[本轮验收证据](verification/2026-09-13-accounts-scale/README.md)为准，配置一百万实体不等于已经证明百万并发。
 
 Docker 模式不需要宿主机安装 Go、Node.js 或生成 Proto。首次构建需要下载镜像和依赖，网络排错、停止、重启、日志、搜索重建及本地 IDE 调试见[启动手册](docs/run-fullstack.md)。`Stop` 和 `Down` 保留数据卷，`Reset -ConfirmReset` 才清空独立演示数据。下文原有 CLI 路线用于后端学习，与 Docker 网页模式分别保存数据。
 
@@ -89,7 +91,7 @@ Set-Location 'D:\job\golang\projects\meshops'
 ./scripts/demo.ps1
 ```
 
-初始化脚本启动专用 Compose 服务、构建业务与工具程序（包含 `verify`、可选 Search 和本地搜索维护工具）、执行 001—004 增量迁移并导入来源/实体绑定。数据源与执行方凭证第一次运行时生成在 `.local/secrets.json`；再次运行会复用，避免已有队列突然失去身份。不要把这个文件提交到仓库。
+初始化脚本启动专用 Compose 服务、构建业务与工具程序（包含 `verify`、可选 Search 和本地搜索维护工具）、执行 001—005 增量迁移并导入来源/实体绑定。数据源与执行方凭证第一次运行时生成在 `.local/secrets.json`；再次运行会复用，避免已有队列突然失去身份。不要把这个文件提交到仓库。
 
 启动脚本运行四个服务、六个来源模拟器和四个执行方。来源默认每秒上报两次、运行 30 分钟；过期后重新启动模拟来源，查询才能恢复新鲜状态。演示脚本验证六类查询、四类 inspect 成功、重复创建返回同一任务 ID，以及真实订阅；任一步失败就报错，详细证据写入 `results/`。
 
@@ -200,7 +202,7 @@ Windows 的停止脚本采用强制进程退出，用于本地操作；服务收
 - [脱敏证据归档](docs/review/2026-09-12/evidence/README.md)：逐测试终态、课程复制结果、原始文件 SHA-256，以及证据保留与清理边界；不依赖临时构建缓存才能阅读结论。
 - [本地排错知识库](docs/troubleshooting/README.md)：数据库锁、重放、投影恢复、SQL 执行计划、Git 换行和测试门禁。
 - [前端 UI 设计与离线原型](docs/ui/README.md)：模拟交互，不连接真实业务；浏览器 BFF 和实体枚举等接入缺口在方案中明确列出。
-- [当前工程验证边界](docs/production-readiness-checklist.md)：机器令牌不是用户密码体系，单实例和有限压测不作为生产容量保证。
+- [当前工程验证边界](docs/production-readiness-checklist.md)：个人账号与机器令牌分离；单实例和有限压测不作为生产容量保证。
 
 完整集成验收需 Python 3：`./scripts/test.ps1 -Integration` 会启动 ES 与专用故障 Redis、保存 JSON 结果，并拒绝关键测试缺失或业务测试跳过。在支持 CGO 的平台加 `-Race`；云端 CI 在依赖启动后运行全包 race。PowerShell 点调用与执行策略说明见 [课程导航](docs/learning/from-zero/README.md)。
 

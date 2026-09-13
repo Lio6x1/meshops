@@ -11,6 +11,7 @@ import (
 	ingestv1 "example.com/meshops-course/gen/ingest/v1"
 	searchv1 "example.com/meshops-course/gen/search/v1"
 	taskv1 "example.com/meshops-course/gen/task/v1"
+	"example.com/meshops-course/internal/accounts"
 	"example.com/meshops-course/internal/bus"
 	"example.com/meshops-course/internal/platform"
 	"example.com/meshops-course/internal/search"
@@ -77,14 +78,20 @@ func Run(parent context.Context, role string, args []string, diagnostics io.Writ
 	closers = append(closers, func() { kafka.Close() })
 	var db *sql.DB
 	var redisClient *redis.Client
-	if role != "ingest" && role != "search" {
+	accountAuth := os.Getenv("MESHOPS_ACCOUNT_AUTH") == "1"
+	if role != "ingest" && (role != "search" || accountAuth) {
 		db, e = platform.OpenDB(cfg.MeshOps.MySQLDSNEnv)
 		if e != nil {
 			return fail(e)
 		}
 		closers = append(closers, func() { db.Close() })
-		if e = tasks.CheckBindings(ctx, db, reg); e != nil {
-			return fail(e)
+		if role != "search" {
+			if e = tasks.CheckBindings(ctx, db, reg); e != nil {
+				return fail(e)
+			}
+		}
+		if accountAuth {
+			reg.ResolveSession = accounts.NewStore(db).ResolveSession
 		}
 	}
 	if role == "entity" {

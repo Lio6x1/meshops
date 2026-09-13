@@ -46,10 +46,28 @@ func (s *Server) stream(w http.ResponseWriter, r *http.Request) {
 	joined := make(chan struct{})
 	go func() {
 		defer close(joined)
-		select {
-		case <-p.done:
-			cancel()
-		case <-ctx.Done():
+		// 本机管理命令或其他网关改密时，定期查验也会取消已建立的流。
+		ticker := time.NewTicker(time.Second)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-p.done:
+				cancel()
+				return
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				if s.cfg.Accounts != nil {
+					check, done := context.WithTimeout(ctx, 3*time.Second)
+					_, err := s.cfg.Accounts.CheckSession(check, p.token)
+					done()
+					if err != nil {
+						s.removeSession(p.id)
+						cancel()
+						return
+					}
+				}
+			}
 		}
 	}()
 	defer func() { cancel(); <-joined }()

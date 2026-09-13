@@ -9,7 +9,7 @@ $index = Get-Content -LiteralPath (Join-Path $materialRoot 'checkpoint-index.jso
 $results = [Collections.Generic.List[object]]::new()
 $utf8 = [Text.UTF8Encoding]::new($false)
 $env:GOWORK = 'off'
-$env:GOCACHE = Join-Path $repoRoot '.cache/go-build-reference'
+if (-not $env:GOCACHE) { $env:GOCACHE = Join-Path $repoRoot '.cache/go-build-reference' }
 $go = 'D:/go1.25.10/bin/go.exe'
 function LearnerPath([string]$relative) {
     if ($relative -match '(^/|\\|:|(^|/)\.\.(/|$))') { throw "Unsafe lesson path: $relative" }

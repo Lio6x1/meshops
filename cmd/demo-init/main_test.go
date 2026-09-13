@@ -8,6 +8,33 @@ import (
 	"testing"
 )
 
+func TestAccountModeDoesNotRequireLegacyBrowserCodes(t *testing.T) {
+	dir := t.TempDir()
+	if _, err := ensureSecrets(dir); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Remove(filepath.Join(dir, "web-codes.json")); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("MESHOPS_DEMO_STATE", dir)
+	t.Setenv("MESHOPS_ACCOUNT_AUTH", "1")
+	for _, name := range secretNames() {
+		t.Setenv(name, "")
+	}
+	t.Setenv("MESHOPS_MYSQL_DSN", "")
+	if err := run([]string{"exec", "/not-existing/web-gateway"}); err == nil {
+		t.Fatal("missing program should fail")
+	}
+	if os.Getenv("MESHOPS_OPERATOR_TOKEN") == "" {
+		t.Fatal("account gateway failed before loading runtime credentials")
+	}
+	for _, name := range []string{"MESHOPS_WEB_OPERATOR_CODE", "MESHOPS_WEB_ADMIN_CODE", "MESHOPS_MYSQL_ROOT_PASSWORD"} {
+		if os.Getenv(name) != "" {
+			t.Fatalf("unneeded credential delivered: %s", name)
+		}
+	}
+}
+
 func TestSecretsPersistAndCodesDoNotExposeMachineCredentials(t *testing.T) {
 	dir := t.TempDir()
 	first, err := ensureSecrets(dir)

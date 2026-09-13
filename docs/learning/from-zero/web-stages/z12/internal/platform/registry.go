@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
-	"gopkg.in/yaml.v3"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -55,33 +54,33 @@ func (r *Registry) ServiceToken(tenant, role string) (string, error) {
 }
 
 type manifest struct {
-	Tenant  string `yaml:"tenant_id"`
+	Tenant  string `yaml:"tenant_id" json:"tenant_id"`
 	Sources []struct {
-		ID         string            `yaml:"source_id"`
-		Adapter    string            `yaml:"adapter"`
-		Generation int64             `yaml:"source_generation"`
-		Env        string            `yaml:"credential_env"`
-		Fixture    string            `yaml:"fixture"`
-		Stale      string            `yaml:"stale_after"`
-		Rate       int               `yaml:"rate_limit_per_second"`
-		Entities   map[string]string `yaml:"entities"`
-	} `yaml:"sources"`
+		ID         string            `yaml:"source_id" json:"source_id"`
+		Adapter    string            `yaml:"adapter" json:"adapter"`
+		Generation int64             `yaml:"source_generation" json:"source_generation"`
+		Env        string            `yaml:"credential_env" json:"credential_env"`
+		Fixture    string            `yaml:"fixture" json:"fixture"`
+		Stale      string            `yaml:"stale_after" json:"stale_after"`
+		Rate       int               `yaml:"rate_limit_per_second" json:"rate_limit_per_second"`
+		Entities   map[string]string `yaml:"entities" json:"entities"`
+	} `yaml:"sources" json:"sources"`
 	Executors []struct {
-		ID       string   `yaml:"executor_id"`
-		Entities []string `yaml:"entity_ids"`
-		Tasks    []string `yaml:"supported_tasks"`
-		Env      string   `yaml:"credential_env"`
-	} `yaml:"executors"`
+		ID       string   `yaml:"executor_id" json:"executor_id"`
+		Entities []string `yaml:"entity_ids" json:"entity_ids"`
+		Tasks    []string `yaml:"supported_tasks" json:"supported_tasks"`
+		Env      string   `yaml:"credential_env" json:"credential_env"`
+	} `yaml:"executors" json:"executors"`
 	Actors []struct {
-		ID   string `yaml:"id"`
-		Role string `yaml:"role"`
-		Env  string `yaml:"credential_env"`
-	} `yaml:"actors"`
+		ID   string `yaml:"id" json:"id"`
+		Role string `yaml:"role" json:"role"`
+		Env  string `yaml:"credential_env" json:"credential_env"`
+	} `yaml:"actors" json:"actors"`
 	Catalog []struct {
-		Type        string `yaml:"task_type"`
-		Description string `yaml:"description"`
-		Schema      string `yaml:"parameter_schema_json"`
-	} `yaml:"task_catalog"`
+		Type        string `yaml:"task_type" json:"task_type"`
+		Description string `yaml:"description" json:"description"`
+		Schema      string `yaml:"parameter_schema_json" json:"parameter_schema_json"`
+	} `yaml:"task_catalog" json:"task_catalog"`
 }
 
 func LoadRegistry(paths string) (*Registry, error) {
@@ -118,9 +117,7 @@ func LoadRegistry(paths string) (*Registry, error) {
 			return nil, fmt.Errorf("manifest: %w", err)
 		}
 		var m manifest
-		dec := yaml.NewDecoder(f)
-		dec.KnownFields(true)
-		err = dec.Decode(&m)
+		err = decodeManifest(f, &m)
 		f.Close()
 		if err != nil {
 			return nil, fmt.Errorf("manifest syntax: %w", err)

@@ -11,7 +11,7 @@ COPY gen ./gen
 COPY migrations ./migrations
 RUN --mount=type=cache,target=/go/pkg/mod --mount=type=cache,target=/root/.cache/go-build \
     set -eu; mkdir /out; \
-    for name in ingest entity task dispatcher search opctl search-admin gateway-simulator executor-simulator verify web-gateway demo-init; do \
+    for name in ingest entity task dispatcher search opctl search-admin gateway-simulator executor-simulator verify web-gateway account-admin demo-init; do \
       CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /out/$name ./cmd/$name; \
     done
 

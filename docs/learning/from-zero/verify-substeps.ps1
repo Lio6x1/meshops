@@ -9,7 +9,7 @@ $stages=(Get-Content (Join-Path $materialRoot 'checkpoint-index.json') -Raw|Conv
 $steps=Get-Content (Join-Path $materialRoot 'substep-index.json') -Raw|ConvertFrom-Json
 $go='D:/go1.25.10/bin/go.exe'
 $env:GOWORK='off'
-$env:GOCACHE=Join-Path $repoRoot '.cache/go-build-reference'
+if(-not $env:GOCACHE){$env:GOCACHE=Join-Path $repoRoot '.cache/go-build-reference'}
 $results=[Collections.Generic.List[object]]::new()
 if($SearchOnly -and $WebOnly){throw 'Choose at most one focused verification mode'}
 function Source-Files([string]$directory) {
@@ -68,8 +68,8 @@ try {
                         foreach($name in $step.tests){if(-not @($events|Where-Object {$_.Action -eq 'pass' -and $_.Test -eq $name}).Count){throw "Test not passed or not found: $name"}}
                     }
                     if($step.id -eq 'z12-01') {
-                        & node --experimental-strip-types --test web/tests/*.test.ts *> (Join-Path $runRoot ($step.id+'-browser.txt'))
-                        if($LASTEXITCODE -ne 0){throw 'Browser domain tests failed'}
+                        & ./scripts/frontend.ps1 -Action Install *> (Join-Path $runRoot ($step.id+'-npm.txt'))
+                        & ./scripts/frontend.ps1 -Action Test *> (Join-Path $runRoot ($step.id+'-browser.txt'))
                     }
                     if($step.id -in @('z12-02','z13-01')) {
                         & ./scripts/frontend.ps1 -Action Install *> (Join-Path $runRoot ($step.id+'-npm.txt'))

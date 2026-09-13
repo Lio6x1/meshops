@@ -51,6 +51,12 @@ func (r *Registry) authorize(ctx context.Context, method string) (context.Contex
 		return nil, status.Error(codes.Unauthenticated, "credential required")
 	}
 	p, err := r.Authenticate(strings.TrimPrefix(values[0], "Bearer "))
+	if err != nil && r.ResolveSession != nil {
+		p, err = r.ResolveSession(ctx, strings.TrimPrefix(values[0], "Bearer "))
+		if err == nil && (p.ID == "" || p.TenantID == "" || (p.Role != "operator" && p.Role != "admin")) {
+			return nil, status.Error(codes.Unauthenticated, "invalid personal identity")
+		}
+	}
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "invalid credential")
 	}

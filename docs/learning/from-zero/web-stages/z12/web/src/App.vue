@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { session, restoreSession, login, logout, errorText } from './api'
+import { canUseBusiness } from './accounts'
+import PasswordChange from './views/PasswordChange.vue'
 const initializing = ref(true),
   busy = ref(false),
   error = ref(''),
-  role = ref('operator'),
-  accessCode = ref('')
-const nav = [
+  notice = ref(''),
+  username = ref(''),
+  password = ref('')
+const businessNav = [
   ['/', '◈', '实体总览'],
   ['/entities', '▦', '实体资源'],
   ['/simulation', '▷', '模拟演示'],
@@ -15,6 +18,11 @@ const nav = [
   ['/dispatch', '⇄', '可靠分发'],
   ['/status', '◷', '运行状态'],
 ]
+const nav = computed(() => [
+  ...(canUseBusiness(session.value) ? businessNav : []),
+  ...(canUseBusiness(session.value) && session.value?.role === 'admin' ? [['/accounts', '♙', '账号管理']] : []),
+  ['/account/password', '⚿', '修改密码'],
+])
 onMounted(async () => {
   try {
     await restoreSession()
@@ -24,23 +32,34 @@ onMounted(async () => {
   }
 })
 async function signIn() {
+  if (busy.value || !username.value || !password.value) return
+  busy.value = true
+  error.value = ''
+  notice.value = ''
+  try {
+    await login(username.value, password.value)
+  } catch (e) {
+    error.value = errorText(e)
+  } finally {
+    password.value = ''
+    busy.value = false
+  }
+}
+async function signOut() {
+  if (busy.value) return
   busy.value = true
   error.value = ''
   try {
-    await login(role.value, accessCode.value)
-    accessCode.value = ''
+    await logout()
   } catch (e) {
     error.value = errorText(e)
   } finally {
     busy.value = false
   }
 }
-async function signOut() {
-  try {
-    await logout()
-  } catch (e) {
-    error.value = errorText(e)
-  }
+function passwordChanged() {
+  error.value = ''
+  notice.value = '密码已修改，请使用新密码重新登录。'
 }
 </script>
 <template>
@@ -70,20 +89,20 @@ async function signOut() {
       <h2>进入协同控制台</h2>
       <p class="muted">本系统使用模拟数据源和执行方，业务结果来自真实后端。</p>
       <el-alert v-if="error" :title="error" type="error" :closable="false" />
+      <el-alert v-if="notice" :title="notice" type="success" :closable="false" role="status" />
       <el-form label-position="top" @submit.prevent="signIn">
-        <el-form-item label="访问身份">
-          <el-radio-group v-model="role">
-            <el-radio-button value="operator">操作员</el-radio-button>
-            <el-radio-button value="admin">管理员</el-radio-button>
-          </el-radio-group>
+        <el-form-item label="用户名" label-for="login-username">
+          <el-input id="login-username" v-model="username" autocomplete="username" :disabled="busy" placeholder="输入个人用户名" />
         </el-form-item>
-        <el-form-item label="演示访问码">
+        <el-form-item label="密码" label-for="login-password">
           <el-input
-            v-model="accessCode"
+            id="login-password"
+            v-model="password"
             type="password"
             show-password
             autocomplete="off"
-            placeholder="输入启动手册提供的随机访问码"
+            :disabled="busy"
+            placeholder="输入个人密码"
           />
         </el-form-item>
         <el-button
@@ -91,13 +110,13 @@ async function signOut() {
           type="primary"
           size="large"
           :loading="busy"
-          :disabled="!accessCode"
+          :disabled="!username || !password"
           class="full-width"
         >
           进入工作台
         </el-button>
       </el-form>
-      <p class="small muted">访问码只用于本次登录，不保存在浏览器存储中。</p>
+      <p class="small muted">使用管理员创建的个人账号登录；初始密码需在首次登录后修改。</p>
     </section>
   </div>
   <div v-else class="shell">
@@ -115,6 +134,8 @@ async function signOut() {
           v-for="[path, icon, label] in nav"
           :key="path"
           :to="path"
+          :title="label"
+          :aria-label="label"
           :class="{ active: path === '/' ? $route.path === '/' : $route.path.startsWith(path!) }"
         >
           <span class="nav-icon">{{ icon }}</span>
@@ -131,17 +152,18 @@ async function signOut() {
       <header class="topbar">
         <span>
           园区综合协同 /
-          <b>{{ nav.find((n) => n[0] === $route.path)?.[2] ?? '任务详情' }}</b>
+          <b>{{ session.mustChangePassword ? '设置个人密码' : $route.path === '/accounts' ? '账号管理' : nav.find((n) => n[0] === $route.path)?.[2] ?? '任务详情' }}</b>
         </span>
         <div class="identity">
           <el-tag effect="plain">{{ session.role === 'admin' ? '管理员' : '操作员' }}</el-tag>
-          <span>{{ session.actorId }}</span>
-          <el-button text @click="signOut">退出</el-button>
+          <span :title="session.username">{{ session.displayName || session.username }}</span>
+          <el-button text :loading="busy" @click="signOut">退出</el-button>
         </div>
       </header>
       <main id="content" tabindex="-1">
         <el-alert v-if="error" :title="error" type="error" @close="error = ''" />
-        <RouterView :key="$route.path" />
+        <PasswordChange v-if="!canUseBusiness(session)" @password-changed="passwordChanged" />
+        <RouterView v-else :key="$route.path" @password-changed="passwordChanged" />
       </main>
       <footer>
         MeshOps · 通用实体与可靠任务协同

@@ -15,6 +15,10 @@ import (
 const MaxEntityVersion int64 = 1<<53 - 1
 
 type Principal struct {
+	// SessionHash 绑定已解析的会话，用于账号写事务内复核注销；不包含原令牌。
+	SessionHash string
+	// AuthVersion 仅个人会话设置，机器凭证保持零值。
+	AuthVersion                              int64
 	ID, TenantID, Role, SourceID, ExecutorID string
 	EntityIDs                                []string
 }
@@ -31,10 +35,12 @@ type Source struct {
 	Entities                       map[string]string
 }
 type Registry struct {
-	Bindings    map[string]Binding
-	Sources     map[string]Source
-	Principals  map[string]Principal
-	Credentials map[string]string
+	// ResolveSession 在启动时注入；只从可信数据库解析个人身份。
+	ResolveSession func(context.Context, string) (Principal, error)
+	Bindings       map[string]Binding
+	Sources        map[string]Source
+	Principals     map[string]Principal
+	Credentials    map[string]string
 }
 
 func Key(tenant, id string) string { return tenant + ":" + id }

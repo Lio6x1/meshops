@@ -1,0 +1,439 @@
+{
+  "schemaVersion": 1,
+  "runKind": "windows-real-dependency-integration",
+  "source": ".cache/account-scale/integration-windows-final.jsonl",
+  "sourceSHA256": "65a73d3ea2cd1aa9ee785a6eae85b88c6f751f854c420506ce0ebbf866ca8c24",
+  "eventsFile": "integration-windows-final.events.jsonl",
+  "recordCount": 1557,
+  "actionCounts": {
+    "output": 803,
+    "pass": 357,
+    "run": 344,
+    "skip": 20,
+    "start": 33
+  },
+  "packages": {
+    "pass": 16,
+    "skip": 17,
+    "fail": 0,
+    "build-fail": 0
+  },
+  "topLevelTests": {
+    "pass": 216,
+    "skip": 3,
+    "fail": 0,
+    "build-fail": 0
+  },
+  "allTestNodesIncludingSubtests": {
+    "pass": 341,
+    "skip": 3,
+    "fail": 0,
+    "build-fail": 0
+  },
+  "subtestsOnly": {
+    "pass": 125,
+    "skip": 0,
+    "fail": 0,
+    "build-fail": 0
+  },
+  "firstEventTime": "2026-09-13T13:10:12.3585458+08:00",
+  "lastEventTime": "2026-09-13T13:21:29.6759628+08:00",
+  "packageResults": [
+    {
+      "Action": "pass",
+      "Package": "example.com/meshops-course/cmd/account-admin",
+      "Elapsed": 2.328,
+      "Time": "2026-09-13T13:10:14.6863086+08:00"
+    },
+    {
+      "Action": "skip",
+      "Package": "example.com/meshops-course/cmd/dispatcher",
+      "Elapsed": 0.001,
+      "Time": "2026-09-13T13:10:15.5943004+08:00"
+    },
+    {
+      "Action": "skip",
+      "Package": "example.com/meshops-course/cmd/entity",
+      "Elapsed": 0,
+      "Time": "2026-09-13T13:10:15.746688+08:00"
+    },
+    {
+      "Action": "skip",
+      "Package": "example.com/meshops-course/cmd/executor-simulator",
+      "Elapsed": 0,
+      "Time": "2026-09-13T13:10:17.2180012+08:00"
+    },
+    {
+      "Action": "skip",
+      "Package": "example.com/meshops-course/cmd/gateway-simulator",
+      "Elapsed": 0,
+      "Time": "2026-09-13T13:10:17.3969707+08:00"
+    },
+    {
+      "Action": "skip",
+      "Package": "example.com/meshops-course/cmd/ingest",
+      "Elapsed": 0,
+      "Time": "2026-09-13T13:10:17.5223373+08:00"
+    },
+    {
+      "Action": "pass",
+      "Package": "example.com/meshops-course/cmd/demo-init",
+      "Elapsed": 2.48,
+      "Time": "2026-09-13T13:10:17.6987788+08:00"
+    },
+    {
+      "Action": "skip",
+      "Package": "example.com/meshops-course/cmd/opctl",
+      "Elapsed": 0,
+      "Time": "2026-09-13T13:10:17.9541715+08:00"
+    },
+    {
+      "Action": "skip",
+      "Package": "example.com/meshops-course/cmd/search",
+      "Elapsed": 0,
+      "Time": "2026-09-13T13:10:17.9541715+08:00"
+    },
+    {
+      "Action": "skip",
+      "Package": "example.com/meshops-course/cmd/search-admin",
+      "Elapsed": 0,
+      "Time": "2026-09-13T13:10:18.1785703+08:00"
+    },
+    {
+      "Action": "skip",
+      "Package": "example.com/meshops-course/cmd/task",
+      "Elapsed": 0,
+      "Time": "2026-09-13T13:10:18.1785703+08:00"
+    },
+    {
+      "Action": "pass",
+      "Package": "example.com/meshops-course/cmd/verify",
+      "Elapsed": 2.149,
+      "Time": "2026-09-13T13:10:22.8041731+08:00"
+    },
+    {
+      "Action": "skip",
+      "Package": "example.com/meshops-course/gen/common/v1",
+      "Elapsed": 0,
+      "Time": "2026-09-13T13:10:22.8225726+08:00"
+    },
+    {
+      "Action": "skip",
+      "Package": "example.com/meshops-course/gen/dispatcher/v1",
+      "Elapsed": 0,
+      "Time": "2026-09-13T13:10:22.8225726+08:00"
+    },
+    {
+      "Action": "skip",
+      "Package": "example.com/meshops-course/gen/entity/v1",
+      "Elapsed": 0,
+      "Time": "2026-09-13T13:10:22.8225726+08:00"
+    },
+    {
+      "Action": "skip",
+      "Package": "example.com/meshops-course/gen/executor/v1",
+      "Elapsed": 0,
+      "Time": "2026-09-13T13:10:22.8225726+08:00"
+    },
+    {
+      "Action": "skip",
+      "Package": "example.com/meshops-course/gen/ingest/v1",
+      "Elapsed": 0.001,
+      "Time": "2026-09-13T13:10:22.8231583+08:00"
+    },
+    {
+      "Action": "skip",
+      "Package": "example.com/meshops-course/gen/search/v1",
+      "Elapsed": 0,
+      "Time": "2026-09-13T13:10:22.8231583+08:00"
+    },
+    {
+      "Action": "skip",
+      "Package": "example.com/meshops-course/gen/task/v1",
+      "Elapsed": 0,
+      "Time": "2026-09-13T13:10:22.8231583+08:00"
+    },
+    {
+      "Action": "pass",
+      "Package": "example.com/meshops-course/cmd/web-gateway",
+      "Elapsed": 2.328,
+      "Time": "2026-09-13T13:10:23.8728771+08:00"
+    },
+    {
+      "Action": "pass",
+      "Package": "example.com/meshops-course/internal/app",
+      "Elapsed": 2.012,
+      "Time": "2026-09-13T13:10:29.5170617+08:00"
+    },
+    {
+      "Action": "pass",
+      "Package": "example.com/meshops-course/internal/bus",
+      "Elapsed": 33.809,
+      "Time": "2026-09-13T13:11:03.8284223+08:00"
+    },
+    {
+      "Action": "pass",
+      "Package": "example.com/meshops-course/internal/cli",
+      "Elapsed": 4.707,
+      "Time": "2026-09-13T13:11:12.5581488+08:00"
+    },
+    {
+      "Action": "pass",
+      "Package": "example.com/meshops-course/internal/edge",
+      "Elapsed": 30.119,
+      "Time": "2026-09-13T13:11:46.3671629+08:00"
+    },
+    {
+      "Action": "pass",
+      "Package": "example.com/meshops-course/internal/accounts",
+      "Elapsed": 81.499,
+      "Time": "2026-09-13T13:11:48.0767276+08:00"
+    },
+    {
+      "Action": "pass",
+      "Package": "example.com/meshops-course/internal/platform",
+      "Elapsed": 2.77,
+      "Time": "2026-09-13T13:11:51.5689088+08:00"
+    },
+    {
+      "Action": "pass",
+      "Package": "example.com/meshops-course/internal/simulation",
+      "Elapsed": 0.627,
+      "Time": "2026-09-13T13:11:52.6243195+08:00"
+    },
+    {
+      "Action": "pass",
+      "Package": "example.com/meshops-course/internal/search",
+      "Elapsed": 17.106,
+      "Time": "2026-09-13T13:12:11.2265328+08:00"
+    },
+    {
+      "Action": "pass",
+      "Package": "example.com/meshops-course/internal/state",
+      "Elapsed": 83.603,
+      "Time": "2026-09-13T13:13:23.0121633+08:00"
+    },
+    {
+      "Action": "skip",
+      "Package": "example.com/meshops-course/internal/testsupport",
+      "Elapsed": 0,
+      "Time": "2026-09-13T13:13:23.0187267+08:00"
+    },
+    {
+      "Action": "pass",
+      "Package": "example.com/meshops-course/internal/verification",
+      "Elapsed": 5.024,
+      "Time": "2026-09-13T13:13:30.3800197+08:00"
+    },
+    {
+      "Action": "pass",
+      "Package": "example.com/meshops-course/internal/web",
+      "Elapsed": 2.346,
+      "Time": "2026-09-13T13:13:35.2507537+08:00"
+    },
+    {
+      "Action": "pass",
+      "Package": "example.com/meshops-course/internal/tasks",
+      "Elapsed": 555.647,
+      "Time": "2026-09-13T13:21:29.6759628+08:00"
+    }
+  ],
+  "skippedTestNodes": [
+    {
+      "Action": "skip",
+      "Test": "TestDurableCrashChild",
+      "Package": "example.com/meshops-course/internal/edge",
+      "Elapsed": 0,
+      "Time": "2026-09-13T13:11:20.4896609+08:00"
+    },
+    {
+      "Action": "skip",
+      "Test": "TestDurableCrashChild",
+      "Package": "example.com/meshops-course/internal/state",
+      "Elapsed": 0,
+      "Time": "2026-09-13T13:12:15.8287376+08:00"
+    },
+    {
+      "Action": "skip",
+      "Test": "TestDurableCrashChild",
+      "Package": "example.com/meshops-course/internal/tasks",
+      "Elapsed": 0,
+      "Time": "2026-09-13T13:12:29.3581278+08:00"
+    }
+  ],
+  "failedTestNodes": [],
+  "requiredIntegrationGate": {
+    "checkerPath": "scripts/check-test-results.py",
+    "checkerSHA256": "1a05d80a155276b68ce363c4743b6825435795cdb2d40b2c9ed077cbb47a4da8",
+    "required": 23,
+    "passed": 23,
+    "tests": [
+      {
+        "Package": "example.com/meshops-course/internal/accounts",
+        "Test": "TestAccountHTTPSSERevocation",
+        "passed": true,
+        "Elapsed": 20.34,
+        "Time": "2026-09-13T13:10:49.3022489+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/accounts",
+        "Test": "TestAccountsMySQLLifecycleAndPersonalRPC",
+        "passed": true,
+        "Elapsed": 21.48,
+        "Time": "2026-09-13T13:11:10.7789705+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/accounts",
+        "Test": "TestConcurrentBootstrapCreatesExactlyOneAdmin",
+        "passed": true,
+        "Elapsed": 21.99,
+        "Time": "2026-09-13T13:11:32.7653129+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/accounts",
+        "Test": "TestLoggedOutPrincipalCannotMutate",
+        "passed": true,
+        "Elapsed": 15.28,
+        "Time": "2026-09-13T13:11:48.0424424+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/bus",
+        "Test": "TestPartitionFailureDoesNotBlockHealthyPartition",
+        "passed": true,
+        "Elapsed": 4.96,
+        "Time": "2026-09-13T13:10:35.5422529+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/bus",
+        "Test": "TestRetentionGapIsNotReportedAsHealthyLag",
+        "passed": true,
+        "Elapsed": 15.49,
+        "Time": "2026-09-13T13:10:59.4588905+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/edge",
+        "Test": "TestExecutorForceKillRetainsSingleEffectAndExactReport",
+        "passed": true,
+        "Elapsed": 0.19,
+        "Time": "2026-09-13T13:11:22.0489831+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/edge",
+        "Test": "TestGatewayForceKillAfterRemoteACKBeforeLocalCommit",
+        "passed": true,
+        "Elapsed": 1.37,
+        "Time": "2026-09-13T13:11:21.8582451+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/search",
+        "Test": "TestCDCRebuildStartsAfterOldHistory",
+        "passed": true,
+        "Elapsed": 12.17,
+        "Time": "2026-09-13T13:12:10.6273187+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/search",
+        "Test": "TestRealElasticsearchVersionProjection",
+        "passed": true,
+        "Elapsed": 2.04,
+        "Time": "2026-09-13T13:11:55.4548925+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/search",
+        "Test": "TestSnapshotEstablishesReadViewBeforeReleasingLock",
+        "passed": true,
+        "Elapsed": 0.57,
+        "Time": "2026-09-13T13:12:11.1986569+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/state",
+        "Test": "TestGRPCBlockedSubscriberReleasesSenderAndDoesNotBlockPeer",
+        "passed": true,
+        "Elapsed": 0.84,
+        "Time": "2026-09-13T13:13:21.2531114+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/state",
+        "Test": "TestMySQLSampleIdempotencePagingAgeAndBudget",
+        "passed": true,
+        "Elapsed": 0.21,
+        "Time": "2026-09-13T13:12:50.5446963+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/state",
+        "Test": "TestNewEntityAndRunStrictRecoveryLifecycle",
+        "passed": true,
+        "Elapsed": 0.02,
+        "Time": "2026-09-13T13:13:06.3191868+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/state",
+        "Test": "TestRedisForceKillBeforeOffsetReplaysWithoutRegressing",
+        "passed": true,
+        "Elapsed": 34.51,
+        "Time": "2026-09-13T13:12:50.3373786+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/state",
+        "Test": "TestRedisOOMDoesNotCommitKafkaOffset",
+        "passed": true,
+        "Elapsed": 5.93,
+        "Time": "2026-09-13T13:12:56.4772135+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/state",
+        "Test": "TestRedisSubscriptionInitialRaceDeleteAndGap",
+        "passed": true,
+        "Elapsed": 0.08,
+        "Time": "2026-09-13T13:13:20.4130768+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/state",
+        "Test": "TestSixFixturesThroughAuthenticatedRPCAndKafka",
+        "passed": true,
+        "Elapsed": 3.22,
+        "Time": "2026-09-13T13:13:20.3130517+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/tasks",
+        "Test": "TestA23DurableDLQAndConcurrentManualRetry",
+        "passed": true,
+        "Elapsed": 14.92,
+        "Time": "2026-09-13T13:17:03.6389167+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/tasks",
+        "Test": "TestDispatchWorkerPreservesNewerTerminalMirror",
+        "passed": true,
+        "Elapsed": 27.84,
+        "Time": "2026-09-13T13:21:01.7487649+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/tasks",
+        "Test": "TestListTasksCountAndPageShareSnapshot",
+        "passed": true,
+        "Elapsed": 13.7,
+        "Time": "2026-09-13T13:21:29.6487923+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/tasks",
+        "Test": "TestOutboxAndDispatcherForceKillDurableBoundaries",
+        "passed": true,
+        "Elapsed": 48.89,
+        "Time": "2026-09-13T13:13:18.245548+08:00"
+      },
+      {
+        "Package": "example.com/meshops-course/internal/tasks",
+        "Test": "TestReportRequiresDurableDispatchIntent",
+        "passed": true,
+        "Elapsed": 44.97,
+        "Time": "2026-09-13T13:19:50.778482+08:00"
+      }
+    ]
+  },
+  "skipClassification": {
+    "crashChildHelperEntries": 3,
+    "externalDependencyTests": 0,
+    "noTestFilePackages": 17
+  }
+}

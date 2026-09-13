@@ -1,0 +1,30 @@
+=== RUN   TestDemoEntityExpansionIsAdditiveAndAtomic
+--- PASS: TestDemoEntityExpansionIsAdditiveAndAtomic (9.65s)
+=== RUN   TestBindingScaleRoundTrips
+=== RUN   TestBindingScaleRoundTrips/1000
+    migrations_batch_integration_test.go:71: entities=1000 operation=seed elapsed=479.5905ms SQL=12
+    migrations_batch_integration_test.go:71: entities=1000 operation=check elapsed=39.5606ms SQL=6
+=== RUN   TestBindingScaleRoundTrips/10000
+    migrations_batch_integration_test.go:71: entities=10000 operation=seed elapsed=1.926309s SQL=84
+    migrations_batch_integration_test.go:71: entities=10000 operation=check elapsed=465.1184ms SQL=42
+--- PASS: TestBindingScaleRoundTrips (22.91s)
+    --- PASS: TestBindingScaleRoundTrips/1000 (10.13s)
+    --- PASS: TestBindingScaleRoundTrips/10000 (12.79s)
+=== RUN   TestBindingBatchesRejectConflictsAndRollback
+=== RUN   TestBindingBatchesRejectConflictsAndRollback/type
+=== RUN   TestBindingBatchesRejectConflictsAndRollback/catalog
+=== RUN   TestBindingBatchesRejectConflictsAndRollback/source
+=== RUN   TestBindingBatchesRejectConflictsAndRollback/generation
+=== RUN   TestBindingBatchesRejectConflictsAndRollback/executor
+=== RUN   TestBindingBatchesRejectConflictsAndRollback/tenant
+=== RUN   TestBindingBatchesRejectConflictsAndRollback/credential
+--- PASS: TestBindingBatchesRejectConflictsAndRollback (14.00s)
+    --- PASS: TestBindingBatchesRejectConflictsAndRollback/type (0.38s)
+    --- PASS: TestBindingBatchesRejectConflictsAndRollback/catalog (0.21s)
+    --- PASS: TestBindingBatchesRejectConflictsAndRollback/source (0.22s)
+    --- PASS: TestBindingBatchesRejectConflictsAndRollback/generation (0.21s)
+    --- PASS: TestBindingBatchesRejectConflictsAndRollback/executor (0.26s)
+    --- PASS: TestBindingBatchesRejectConflictsAndRollback/tenant (0.14s)
+    --- PASS: TestBindingBatchesRejectConflictsAndRollback/credential (0.16s)
+PASS
+ok  	example.com/meshops-course/internal/tasks	48.956s

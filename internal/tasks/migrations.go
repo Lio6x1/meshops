@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 )
 
 // SplitSQL 能解析未作修改的历史迁移脚本中的 DELIMITER 指令，
@@ -177,18 +178,16 @@ func Migrate(ctx context.Context, db *sql.DB, dir string) error {
 	return nil
 }
 func canonical(v any) string { b, _ := json.Marshal(v); return string(b) }
-func bindingValues(reg *platform.Registry) map[string]string {
-	out := map[string]string{}
-	for key, b := range reg.Bindings {
+func bindingValue(reg *platform.Registry, key string) string {
+	if strings.HasPrefix(key, "entity:") {
+		b := reg.Bindings[strings.TrimPrefix(key, "entity:")]
 		b.Tasks = append([]string(nil), b.Tasks...)
 		sort.Strings(b.Tasks)
-		out["entity:"+key] = canonical(b)
+		return canonical(b)
 	}
-	for key, s := range reg.Sources {
-		s.Fixture = ""
-		out["source:"+key] = canonical(s)
-	}
-	return out
+	s := reg.Sources[strings.TrimPrefix(key, "source:")]
+	s.Fixture = ""
+	return canonical(s)
 }
 func Seed(ctx context.Context, db *sql.DB, reg *platform.Registry) error {
 	return syncBindings(ctx, db, reg, true, false)
@@ -229,13 +228,35 @@ func additiveSourceEntities(old, next string) bool {
 func CheckBindings(ctx context.Context, db *sql.DB, reg *platform.Registry) error {
 	return syncBindings(ctx, db, reg, false, false)
 }
+
+// 只暴露批次规模与耗时；底层错误可能携带重复键等值，因此仅保留其类型。
+// Unwrap 仍允许调用者通过 errors.Is/As 识别原始故障。
+type bindingBatchFailure struct {
+	start, batchRows, insertOffset, rows, parameterBytes int
+	elapsed                                              time.Duration
+	cause                                                error
+}
+
+func (e *bindingBatchFailure) Error() string {
+	return fmt.Sprintf("binding batch unavailable: operation=insert start=%d batch_rows=%d insert_offset=%d rows=%d parameter_bytes=%d elapsed=%s cause_type=%T", e.start, e.batchRows, e.insertOffset, e.rows, e.parameterBytes, e.elapsed, e.cause)
+}
+func (e *bindingBatchFailure) Unwrap() error { return e.cause }
+
 func syncBindings(ctx context.Context, db *sql.DB, reg *platform.Registry, seed, expand bool) error {
 	tx, e := db.BeginTx(ctx, nil)
 	if e != nil {
 		return e
 	}
 	defer tx.Rollback()
-	wanted := bindingValues(reg)
+	// 仅保留排序键；JSON 和查询结果按批创建，避免百万实体的第二份完整 JSON 清单。
+	keys := make([]string, 0, len(reg.Bindings)+len(reg.Sources))
+	for key := range reg.Bindings {
+		keys = append(keys, "entity:"+key)
+	}
+	for key := range reg.Sources {
+		keys = append(keys, "source:"+key)
+	}
+	sort.Strings(keys)
 	if expand {
 		// 删除整个来源或实体也必须接受逐值的子集检查，不能绕过校验。
 		// 共用数据库的其他租户不属于本清单的范围。
@@ -246,9 +267,15 @@ func syncBindings(ctx context.Context, db *sql.DB, reg *platform.Registry, seed,
 		for _, binding := range reg.Bindings {
 			tenants[binding.TenantID] = true
 		}
+		prefixes := make([]string, 0, len(tenants)*2)
 		for tenant := range tenants {
-			sourcePrefix, entityPrefix := "source:"+tenant+":", "entity:"+tenant+":"
-			rows, err := tx.QueryContext(ctx, `SELECT binding_key FROM course_bindings WHERE LEFT(binding_key,CHAR_LENGTH(?))=? OR LEFT(binding_key,CHAR_LENGTH(?))=? FOR UPDATE`, sourcePrefix, sourcePrefix, entityPrefix, entityPrefix)
+			prefixes = append(prefixes, "entity:"+tenant+":", "source:"+tenant+":")
+		}
+		sort.Strings(prefixes)
+		for _, prefix := range prefixes {
+			// 与常规校验使用相同的全局键顺序；转义租户 ID 中的下划线。
+			pattern := strings.NewReplacer("!", "!!", "%", "!%", "_", "!_").Replace(prefix) + "%"
+			rows, err := tx.QueryContext(ctx, `SELECT binding_key FROM course_bindings FORCE INDEX (PRIMARY) WHERE binding_key LIKE ? ESCAPE '!' ORDER BY binding_key FOR UPDATE`, pattern)
 			if err != nil {
 				return err
 			}
@@ -259,7 +286,9 @@ func syncBindings(ctx context.Context, db *sql.DB, reg *platform.Registry, seed,
 					rows.Close()
 					return err
 				}
-				if _, ok := wanted[key]; !ok {
+				_, entityExists := reg.Bindings[strings.TrimPrefix(key, "entity:")]
+				_, sourceExists := reg.Sources[strings.TrimPrefix(key, "source:")]
+				if !(strings.HasPrefix(key, "entity:") && entityExists) && !(strings.HasPrefix(key, "source:") && sourceExists) {
 					missing = key
 				}
 			}
@@ -273,18 +302,43 @@ func syncBindings(ctx context.Context, db *sql.DB, reg *platform.Registry, seed,
 			}
 		}
 	}
-	keys := make([]string, 0, len(wanted))
-	for key := range wanted {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-	for _, key := range keys {
-		value := wanted[key]
-		var old string
-		e = tx.QueryRowContext(ctx, `SELECT binding_json FROM course_bindings WHERE binding_key=? FOR UPDATE`, key).Scan(&old)
-		if e == sql.ErrNoRows && seed {
-			_, e = tx.ExecContext(ctx, `INSERT INTO course_bindings(binding_key,binding_json) VALUES(?,?)`, key, value)
-		} else if e == nil {
+	// 一个事务覆盖全部批次；固定索引顺序取锁，任何后续冲突都回滚已写批次。
+	const batchSize = 500
+	for start := 0; start < len(keys); start += batchSize {
+		batch := keys[start:min(start+batchSize, len(keys))]
+		args := make([]any, 0, len(batch))
+		for _, key := range batch {
+			args = append(args, key)
+		}
+		rows, err := tx.QueryContext(ctx, `SELECT binding_key,binding_json FROM course_bindings FORCE INDEX (PRIMARY) WHERE binding_key IN (`+strings.TrimSuffix(strings.Repeat("?,", len(batch)), ",")+`) ORDER BY binding_key FOR UPDATE`, args...)
+		if err != nil {
+			return err
+		}
+		stored := make(map[string]string, len(batch))
+		for rows.Next() {
+			var key, value string
+			if err = rows.Scan(&key, &value); err != nil {
+				rows.Close()
+				return err
+			}
+			stored[key] = value
+		}
+		err = rows.Err()
+		rows.Close()
+		if err != nil {
+			return err
+		}
+		inserts := make([]any, 0, len(batch)*2)
+		for _, key := range batch {
+			value := bindingValue(reg, key)
+			old, exists := stored[key]
+			if !exists {
+				if !seed {
+					return fmt.Errorf("binding unavailable %s: %w", key, sql.ErrNoRows)
+				}
+				inserts = append(inserts, key, value)
+				continue
+			}
 			var a, b any
 			json.Unmarshal([]byte(old), &a)
 			json.Unmarshal([]byte(value), &b)
@@ -292,14 +346,39 @@ func syncBindings(ctx context.Context, db *sql.DB, reg *platform.Registry, seed,
 				if !expand || !strings.HasPrefix(key, "source:") || !additiveSourceEntities(old, value) {
 					return fmt.Errorf("binding differs: %s", key)
 				}
-				_, e = tx.ExecContext(ctx, `UPDATE course_bindings SET binding_json=? WHERE binding_key=?`, value, key)
+				if _, err = tx.ExecContext(ctx, `UPDATE course_bindings SET binding_json=? WHERE binding_key=?`, value, key); err != nil {
+					return fmt.Errorf("binding unavailable %s: %w", key, err)
+				}
 			}
 		}
-		if e != nil {
-			return fmt.Errorf("binding unavailable %s: %w", key, e)
+		// 来源 JSON 单行可达数 MiB；行数上限之外，再限制一次写入的参数字节。
+		// 超预算单行独立发送，既不拆改 JSON，也不拆分整个 Seed 的事务。
+		const insertByteBudget = 4 << 20
+		for offset := 0; offset < len(inserts); {
+			end, parameterBytes := offset, 0
+			for end < len(inserts) {
+				rowBytes := len(inserts[end].(string)) + len(inserts[end+1].(string))
+				if end > offset && parameterBytes+rowBytes > insertByteBudget {
+					break
+				}
+				parameterBytes += rowBytes
+				end += 2
+			}
+			rows := (end - offset) / 2
+			query := `INSERT INTO course_bindings(binding_key,binding_json) VALUES ` + strings.TrimSuffix(strings.Repeat("(?,?),", rows), ",")
+			began := time.Now()
+			if _, err = tx.ExecContext(ctx, query, inserts[offset:end]...); err != nil {
+				return &bindingBatchFailure{start: start, batchRows: len(batch), insertOffset: offset / 2, rows: rows, parameterBytes: parameterBytes, elapsed: time.Since(began), cause: err}
+			}
+			offset = end
 		}
 	}
-	for _, s := range reg.Sources {
+	sources := make([]platform.Source, 0, len(reg.Sources))
+	for _, source := range reg.Sources {
+		sources = append(sources, source)
+	}
+	sort.Slice(sources, func(i, j int) bool { return sources[i].ID < sources[j].ID })
+	for _, s := range sources {
 		token, e := reg.Credential(s.TenantID, s.ID)
 		if e != nil {
 			return e
@@ -321,24 +400,56 @@ func syncBindings(ctx context.Context, db *sql.DB, reg *platform.Registry, seed,
 			return fmt.Errorf("source unavailable %s: %w", s.ID, e)
 		}
 	}
-	for _, b := range reg.Bindings {
-		var kind, source, executor, catalog string
-		var generation int64
-		e = tx.QueryRowContext(ctx, `SELECT entity_type,COALESCE(owner_source_id,''),source_generation,COALESCE(executor_id,''),COALESCE(task_catalog,'[]') FROM entities WHERE tenant_id=? AND entity_id=? FOR UPDATE`, b.TenantID, b.EntityID).Scan(&kind, &source, &generation, &executor, &catalog)
-		want := append([]string{}, b.Tasks...)
-		sort.Strings(want)
-		if e == sql.ErrNoRows && seed {
-			_, e = tx.ExecContext(ctx, `INSERT INTO entities(tenant_id,entity_id,entity_type,owner_source_id,source_generation,executor_id,task_catalog) VALUES(?,?,?,?,?,?,?)`, b.TenantID, b.EntityID, b.Type, b.SourceID, b.SourceGeneration, b.ExecutorID, canonical(want))
-		} else if e == nil {
-			var got []string
-			json.Unmarshal([]byte(catalog), &got)
-			sort.Strings(got)
-			if kind != b.Type || source != b.SourceID || generation != b.SourceGeneration || executor != b.ExecutorID || canonical(got) != canonical(want) {
+	// keys 中 entity 前缀排在 source 之前，复用排序结果限制额外内存。
+	for start := 0; start < len(reg.Bindings); start += batchSize {
+		batch := keys[start:min(start+batchSize, len(reg.Bindings))]
+		args := make([]any, 0, len(batch)*2)
+		for _, key := range batch {
+			b := reg.Bindings[strings.TrimPrefix(key, "entity:")]
+			args = append(args, b.TenantID, b.EntityID)
+		}
+		rows, err := tx.QueryContext(ctx, `SELECT tenant_id,entity_id,entity_type,COALESCE(owner_source_id,''),source_generation,COALESCE(executor_id,''),COALESCE(task_catalog,'[]') FROM entities FORCE INDEX (uk_tenant_entity) WHERE (tenant_id,entity_id) IN (`+strings.TrimSuffix(strings.Repeat("(?,?),", len(batch)), ",")+`) ORDER BY tenant_id,entity_id FOR UPDATE`, args...)
+		if err != nil {
+			return err
+		}
+		stored := make(map[string]platform.Binding, len(batch))
+		for rows.Next() {
+			var b platform.Binding
+			var catalog string
+			if err = rows.Scan(&b.TenantID, &b.EntityID, &b.Type, &b.SourceID, &b.SourceGeneration, &b.ExecutorID, &catalog); err != nil {
+				rows.Close()
+				return err
+			}
+			json.Unmarshal([]byte(catalog), &b.Tasks)
+			sort.Strings(b.Tasks)
+			stored[platform.Key(b.TenantID, b.EntityID)] = b
+		}
+		err = rows.Err()
+		rows.Close()
+		if err != nil {
+			return err
+		}
+		inserts := make([]any, 0, len(batch)*7)
+		for _, key := range batch {
+			b := reg.Bindings[strings.TrimPrefix(key, "entity:")]
+			want := append([]string{}, b.Tasks...)
+			sort.Strings(want)
+			got, exists := stored[platform.Key(b.TenantID, b.EntityID)]
+			if !exists {
+				if !seed {
+					return fmt.Errorf("entity unavailable %s: %w", b.EntityID, sql.ErrNoRows)
+				}
+				inserts = append(inserts, b.TenantID, b.EntityID, b.Type, b.SourceID, b.SourceGeneration, b.ExecutorID, canonical(want))
+				continue
+			}
+			if got.Type != b.Type || got.SourceID != b.SourceID || got.SourceGeneration != b.SourceGeneration || got.ExecutorID != b.ExecutorID || canonical(got.Tasks) != canonical(want) {
 				return fmt.Errorf("entity binding differs: %s/%s (type/source/generation/executor/catalog)", b.TenantID, b.EntityID)
 			}
 		}
-		if e != nil {
-			return fmt.Errorf("entity unavailable %s: %w", b.EntityID, e)
+		if len(inserts) > 0 {
+			if _, err = tx.ExecContext(ctx, `INSERT INTO entities(tenant_id,entity_id,entity_type,owner_source_id,source_generation,executor_id,task_catalog) VALUES `+strings.TrimSuffix(strings.Repeat("(?,?,?,?,?,?,?),", len(inserts)/7), ","), inserts...); err != nil {
+				return fmt.Errorf("entity batch unavailable: %w", err)
+			}
 		}
 	}
 	return tx.Commit()

@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "scope": "Measured registry initialization and JSON manifest parsing only; not sustained throughput or million-entity capacity.",
+  "bindingRuns": [
+    {
+      "source": ".cache/binding-baseline.txt",
+      "sourceSHA256": "c78eea745bb22179d67a897ab04ed671dcc510b4e93a8dcbf7ed91bd9e3f5fc3",
+      "outcome": "failed-budget-regression-before-change",
+      "measurements": [
+        {
+          "entities": 1000,
+          "operation": "seed",
+          "elapsedRaw": "7.8605848s",
+          "elapsedSeconds": 7.8605848,
+          "sqlStatements": 4004,
+          "sourceLine": 3
+        },
+        {
+          "entities": 1000,
+          "operation": "check",
+          "elapsedRaw": "3.7290554s",
+          "elapsedSeconds": 3.7290554,
+          "sqlStatements": 2002,
+          "sourceLine": 5
+        },
+        {
+          "entities": 10000,
+          "operation": "seed",
+          "elapsedRaw": "1m5.1939145s",
+          "elapsedSeconds": 65.1939145,
+          "sqlStatements": 40004,
+          "sourceLine": 9
+        },
+        {
+          "entities": 10000,
+          "operation": "check",
+          "elapsedRaw": "31.1899673s",
+          "elapsedSeconds": 31.1899673,
+          "sqlStatements": 20002,
+          "sourceLine": 12
+        }
+      ]
+    },
+    {
+      "source": ".cache/binding-after.txt",
+      "sourceSHA256": "fb871d91f8a3c7bc3082ab91a9570bbd6f44327615f044a08c249086fa357f5b",
+      "outcome": "passed",
+      "measurements": [
+        {
+          "entities": 1000,
+          "operation": "seed",
+          "elapsedRaw": "564.9471ms",
+          "elapsedSeconds": 0.5649470999999999,
+          "sqlStatements": 12,
+          "sourceLine": 14
+        },
+        {
+          "entities": 1000,
+          "operation": "check",
+          "elapsedRaw": "62.5334ms",
+          "elapsedSeconds": 0.0625334,
+          "sqlStatements": 6,
+          "sourceLine": 15
+        },
+        {
+          "entities": 10000,
+          "operation": "seed",
+          "elapsedRaw": "1.8570645s",
+          "elapsedSeconds": 1.8570645,
+          "sqlStatements": 84,
+          "sourceLine": 17
+        },
+        {
+          "entities": 10000,
+          "operation": "check",
+          "elapsedRaw": "504.4799ms",
+          "elapsedSeconds": 0.5044799,
+          "sqlStatements": 42,
+          "sourceLine": 18
+        }
+      ]
+    },
+    {
+      "source": ".cache/binding-final.txt",
+      "sourceSHA256": "5aa4748511238a87bd1a08cbebf6f8b646e4249053ff7fa4260b86d11b1ba1ff",
+      "outcome": "passed",
+      "measurements": [
+        {
+          "entities": 1000,
+          "operation": "seed",
+          "elapsedRaw": "479.5905ms",
+          "elapsedSeconds": 0.47959050000000003,
+          "sqlStatements": 12,
+          "sourceLine": 5
+        },
+        {
+          "entities": 1000,
+          "operation": "check",
+          "elapsedRaw": "39.5606ms",
+          "elapsedSeconds": 0.0395606,
+          "sqlStatements": 6,
+          "sourceLine": 6
+        },
+        {
+          "entities": 10000,
+          "operation": "seed",
+          "elapsedRaw": "1.926309s",
+          "elapsedSeconds": 1.926309,
+          "sqlStatements": 84,
+          "sourceLine": 8
+        },
+        {
+          "entities": 10000,
+          "operation": "check",
+          "elapsedRaw": "465.1184ms",
+          "elapsedSeconds": 0.4651184,
+          "sqlStatements": 42,
+          "sourceLine": 9
+        }
+      ]
+    }
+  ],
+  "manifestAfterBenchmarks": [
+    {
+      "entities": 10000,
+      "iterations": 1,
+      "nanosecondsPerOperation": 39581400,
+      "allocatedBytesPerOperation": 20593504,
+      "allocationsPerOperation": 314298,
+      "sourceLine": 9
+    },
+    {
+      "entities": 100000,
+      "iterations": 1,
+      "nanosecondsPerOperation": 388966000,
+      "allocatedBytesPerOperation": 192363432,
+      "allocationsPerOperation": 3106946,
+      "sourceLine": 14
+    }
+  ],
+  "beforeCPUProfile": {
+    "source": ".cache/profiles/manifest-before-top.txt",
+    "archivedText": "initialization/manifest-before-top.txt",
+    "profileSHA256": "6d25d56e9048e1664d19d29b878011a1b545f76a07922973f63b3592b2746626",
+    "profileCopied": false,
+    "durationSeconds": 3.34,
+    "sampledCPUSeconds": 3.2,
+    "yamlMapping": {
+      "function": "gopkg.in/yaml%2ev3.(*decoder).mapping",
+      "flatSeconds": 1.6,
+      "flatPercent": 50.0,
+      "cumulativeSeconds": 2.59,
+      "cumulativePercent": 80.94
+    }
+  },
+  "missingFromProvidedSources": [
+    "Original before BenchmarkScaleManifest output for the postmortem values approximately 2.739 seconds and 204 MB was not present in the supplied .cache/profiles files. These values are not independently reconstructed by this archive."
+  ],
+  "measurementBoundary": {
+    "sqlCount": "Com_select + Com_insert + Com_update deltas on an exclusive server session; excludes migration/setup, transaction-control, SHOW STATUS and driver protocol prepare/close.",
+    "elapsed": "Seed/CheckBindings call including commit; excludes migration and registry construction.",
+    "memory": "Benchmark B/op is cumulative allocated bytes per operation, not peak RSS.",
+    "capacity": "No extrapolation to one million entities or ingestion throughput."
+  }
+}

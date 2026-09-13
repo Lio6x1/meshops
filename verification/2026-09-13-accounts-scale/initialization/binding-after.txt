@@ -1,0 +1,39 @@
+=== RUN   TestDemoEntityExpansionIsAdditiveAndAtomic
+--- PASS: TestDemoEntityExpansionIsAdditiveAndAtomic (11.93s)
+=== RUN   TestA03MigrationsAndNonDestructiveSeed
+=== RUN   TestA03MigrationsAndNonDestructiveSeed/legacy=false
+=== RUN   TestA03MigrationsAndNonDestructiveSeed/legacy=true
+=== RUN   TestA03MigrationsAndNonDestructiveSeed/duplicate_audit_blocks_upgrade
+--- PASS: TestA03MigrationsAndNonDestructiveSeed (35.10s)
+    --- PASS: TestA03MigrationsAndNonDestructiveSeed/legacy=false (13.05s)
+    --- PASS: TestA03MigrationsAndNonDestructiveSeed/legacy=true (13.62s)
+    --- PASS: TestA03MigrationsAndNonDestructiveSeed/duplicate_audit_blocks_upgrade (8.42s)
+=== RUN   TestBindingScaleRoundTrips
+=== RUN   TestBindingScaleRoundTrips/1000
+{"@timestamp":"2026-09-13T12:48:45.355+08:00","caller":"stat/usage.go:82","content":"CPU: 0m, MEMORY: Alloc=3.7Mi, TotalAlloc=9.1Mi, Sys=13.5Mi, NumGC=4","level":"stat"}
+    migrations_batch_integration_test.go:71: entities=1000 operation=seed elapsed=564.9471ms SQL=12
+    migrations_batch_integration_test.go:71: entities=1000 operation=check elapsed=62.5334ms SQL=6
+=== RUN   TestBindingScaleRoundTrips/10000
+    migrations_batch_integration_test.go:71: entities=10000 operation=seed elapsed=1.8570645s SQL=84
+    migrations_batch_integration_test.go:71: entities=10000 operation=check elapsed=504.4799ms SQL=42
+--- PASS: TestBindingScaleRoundTrips (32.22s)
+    --- PASS: TestBindingScaleRoundTrips/1000 (15.85s)
+    --- PASS: TestBindingScaleRoundTrips/10000 (16.36s)
+=== RUN   TestBindingBatchesRejectConflictsAndRollback
+=== RUN   TestBindingBatchesRejectConflictsAndRollback/type
+=== RUN   TestBindingBatchesRejectConflictsAndRollback/catalog
+=== RUN   TestBindingBatchesRejectConflictsAndRollback/source
+=== RUN   TestBindingBatchesRejectConflictsAndRollback/generation
+=== RUN   TestBindingBatchesRejectConflictsAndRollback/executor
+=== RUN   TestBindingBatchesRejectConflictsAndRollback/tenant
+=== RUN   TestBindingBatchesRejectConflictsAndRollback/credential
+--- PASS: TestBindingBatchesRejectConflictsAndRollback (13.48s)
+    --- PASS: TestBindingBatchesRejectConflictsAndRollback/type (0.30s)
+    --- PASS: TestBindingBatchesRejectConflictsAndRollback/catalog (0.19s)
+    --- PASS: TestBindingBatchesRejectConflictsAndRollback/source (0.15s)
+    --- PASS: TestBindingBatchesRejectConflictsAndRollback/generation (0.18s)
+    --- PASS: TestBindingBatchesRejectConflictsAndRollback/executor (0.21s)
+    --- PASS: TestBindingBatchesRejectConflictsAndRollback/tenant (0.19s)
+    --- PASS: TestBindingBatchesRejectConflictsAndRollback/credential (0.15s)
+PASS
+ok  	example.com/meshops-course/internal/tasks	95.072s

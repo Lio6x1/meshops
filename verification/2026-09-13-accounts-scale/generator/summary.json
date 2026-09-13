@@ -1,0 +1,45 @@
+{
+  "kind": "bounded generator microbenchmark; not end-to-end capacity",
+  "date": "2026-09-13",
+  "limits": {
+    "cpus": 2,
+    "memoryMiB": 512,
+    "network": "none",
+    "gomaxprocs": 2
+  },
+  "image": "meshops-demo-backend:local",
+  "bench": "BenchmarkLoadDriverFixture",
+  "benchtime": "1s",
+  "count": 3,
+  "scenarios": {
+    "image_direct": {
+      "fixture": "/app/testdata/sources",
+      "diskNsPerOp": [
+        26345,
+        26006,
+        24682
+      ],
+      "cachedNsPerOp": [
+        16065,
+        15508,
+        16151
+      ]
+    },
+    "retained_run_symlink": {
+      "fixture": "/work/testdata/sources",
+      "mount": "read-only retained run directory; symlink target remains in backend image",
+      "diskNsPerOp": [
+        723662,
+        743360,
+        967133
+      ],
+      "cachedNsPerOp": [
+        14464,
+        15055,
+        14466
+      ]
+    }
+  },
+  "interpretation": "The same generator plus Normalize is much slower via the retained run symlink path. Caching removes per-event file reads and JSON template parsing. These microbenchmarks support an input-generator path bottleneck; sustained ingestion capacity still requires identical full-load rerun. CPU profiles contain both disk and cached subbenchmarks, and do not measure blocked wall time directly.",
+  "rawProfiles": "Retained locally under .cache/fixture-generator-profile; only allowlisted text summaries archived. Test binaries and raw run directories excluded."
+}

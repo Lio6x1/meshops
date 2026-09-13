@@ -1,0 +1,7 @@
+runner-1  | 2026-09-13T06:14:31.695693477Z 2026-09-13T06:14:31Z stage=initialize completed=0 total=1000000
+runner-1  | 2026-09-13T06:14:31.695729933Z 2026-09-13T06:14:31Z stage=manifest_plan completed=0 total=1000000
+runner-1  | 2026-09-13T06:14:31.993636575Z 2026-09-13T06:14:31Z stage=manifest_write completed=0 total=1000000
+runner-1  | 2026-09-13T06:14:32.696361367Z 2026-09-13T06:14:32Z stage=registry_load completed=0 total=1000000
+runner-1  | 2026-09-13T06:14:40.180967058Z 2026-09-13T06:14:40Z stage=database_create completed=0 total=1000000
+runner-1  | 2026-09-13T06:14:40.210165498Z 2026-09-13T06:14:40Z stage=database_migrate completed=0 total=1000000
+runner-1  | 2026-09-13T06:14:44.927032158Z 2026-09-13T06:14:44Z stage=database_seed completed=0 total=1000000

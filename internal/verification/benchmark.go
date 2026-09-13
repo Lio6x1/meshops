@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -86,6 +87,10 @@ func distribution(values []float64) Latency {
 }
 
 type Phase struct {
+	ConsumerDrainElapsed  float64          `json:"consumerDrainSeconds"`
+	Requested             int              `json:"requested"`
+	GenerationElapsed     float64          `json:"generationSeconds"`
+	GeneratedRate         float64          `json:"generatedEventsPerSecond"`
 	OfferedRate           int              `json:"offeredEventsPerSecond"`
 	Scheduled             int              `json:"scheduled"`
 	QueueDrops            int              `json:"generatorQueueDrops"`
@@ -106,6 +111,12 @@ type Phase struct {
 	MessageBytes          ByteDistribution `json:"messageBytesDistribution"`
 }
 type BenchmarkReport struct {
+	SourceStaleAfterSeconds                           int              `json:"sourceStaleAfterSeconds"`
+	WarmupExpiredSnapshots                            int              `json:"warmupExpiredSnapshots"`
+	WarmupSnapshotMeaning                             string           `json:"warmupSnapshotMeaning"`
+	Stage                                             string           `json:"stage"`
+	Requested                                         BenchmarkOptions `json:"requested"`
+	Warmup                                            Phase            `json:"warmup"`
 	RunID, StartedAt, Go, OS, Arch, CPU               string
 	LogicalCPUs, Entities, Sources, Partitions, Batch int
 	Scope, MemoryMeaning, ObservationMeaning          string
@@ -128,10 +139,12 @@ type loadJob struct {
 	observe bool
 }
 type loadDriver struct {
-	environment *Environment
-	versions    []int64
-	cursor      int64
-	targets     []loadTarget
+	generators    []*state.RawGenerator
+	environment   *Environment
+	versions      []int64
+	cursor        int64
+	targets       []loadTarget
+	warmupTimeout time.Duration
 }
 
 func (d *loadDriver) job(observe bool) (loadJob, error) {
@@ -141,7 +154,7 @@ func (d *loadDriver) job(observe bool) (loadJob, error) {
 	d.versions[index]++
 	now := time.Now().UTC()
 	source := d.environment.Sources[target.source]
-	raw, err := state.GenerateRaw(source, target.rawID, d.versions[index], now)
+	raw, err := d.generators[target.source].Generate(target.rawID, d.versions[index], now)
 	if err != nil {
 		return loadJob{}, err
 	}
@@ -150,10 +163,14 @@ func (d *loadDriver) job(observe bool) (loadJob, error) {
 }
 func (d *loadDriver) phase(ctx context.Context, rate, count int, warmup bool) (Phase, error) {
 	e := d.environment
-	ctx, cancel := context.WithTimeout(ctx, phaseBudget(rate, count, warmup))
+	budget := phaseBudget(rate, count, warmup)
+	if warmup && d.warmupTimeout > 0 {
+		budget = d.warmupTimeout
+	}
+	ctx, cancel := context.WithTimeout(ctx, budget)
 	defer cancel()
 	start := time.Now()
-	result := Phase{OfferedRate: rate, AcceptedByType: map[string]int{}}
+	result := Phase{Requested: count, OfferedRate: rate, AcceptedByType: map[string]int{}}
 	var mu sync.Mutex
 	var ack, visible, sizes []float64
 	var workers, observers sync.WaitGroup
@@ -258,8 +275,8 @@ func (d *loadDriver) phase(ctx context.Context, rate, count int, warmup bool) (P
 				mu.Lock()
 				result.Accepted++
 				result.AcceptedByType[source.Adapter]++
-				ack = append(ack, float64(time.Since(began).Microseconds())/1000)
-				sizes = append(sizes, float64(proto.Size(request)))
+				ack = boundedSample(ack, float64(time.Since(began).Microseconds())/1000, result.Accepted)
+				sizes = boundedSample(sizes, float64(proto.Size(request)), result.Accepted)
 				if job.observe {
 					result.ObservationCandidates++
 				}
@@ -279,19 +296,28 @@ func (d *loadDriver) phase(ctx context.Context, rate, count int, warmup bool) (P
 			}
 		}(index, source)
 	}
-	var tick *time.Ticker
-	if !warmup {
-		tick = time.NewTicker(time.Second / time.Duration(rate))
-		defer tick.Stop()
-	}
+	// 以绝对时间安排总事件数量，避免高频 ticker 合并通知。
+	generationStart := time.Now()
+	nextProgress := time.Now().Add(5 * time.Second)
 	var generationErr error
 	for i := 0; i < count && ctx.Err() == nil; i++ {
-		if tick != nil {
-			select {
-			case <-ctx.Done():
-				break
-			case <-tick.C:
+		if !warmup {
+			due := generationStart.Add(time.Duration(i+1) * time.Second / time.Duration(rate))
+			if delay := time.Until(due); delay > 0 {
+				timer := time.NewTimer(delay)
+				select {
+				case <-ctx.Done():
+					timer.Stop()
+				case <-timer.C:
+				}
 			}
+			if ctx.Err() != nil {
+				break
+			}
+		}
+		if time.Now().After(nextProgress) {
+			progress("generate", i, count)
+			nextProgress = time.Now().Add(5 * time.Second)
 		}
 		job, err := d.job(!warmup && observeScheduled(i, len(e.Sources)))
 		if err != nil {
@@ -312,30 +338,44 @@ func (d *loadDriver) phase(ctx context.Context, rate, count int, warmup bool) (P
 			}
 		}
 	}
+	result.GenerationElapsed = time.Since(generationStart).Seconds()
+	if result.GenerationElapsed > 0 {
+		result.GeneratedRate = float64(result.Scheduled) / result.GenerationElapsed
+	}
 	for _, q := range queues {
 		close(q)
 	}
 	workers.Wait()
-	result.Elapsed = time.Since(start).Seconds()
 	close(observations)
 	observers.Wait()
+	updateElapsed := func() {
+		result.Elapsed = time.Since(start).Seconds()
+		result.Throughput = float64(result.Accepted) / result.Elapsed
+	}
+	updateElapsed()
+	result.ACK = distribution(ack)
+	result.Visible = distribution(visible)
+	result.MessageBytes = ByteDistribution(distribution(sizes))
 	if generationErr != nil {
 		return result, generationErr
 	}
 	if ctx.Err() != nil {
 		return result, ctx.Err()
 	}
-	result.Throughput = float64(result.Accepted) / result.Elapsed
-	result.ACK = distribution(ack)
-	result.Visible = distribution(visible)
-	byteStats := distribution(sizes)
-	result.MessageBytes = ByteDistribution(byteStats)
 	var probeErr error
-	result.ProjectorLag, probeErr = e.Bus.Lag(ctx, e.projectorGroup, e.Prefix+"entity-state-events.v1")
-	if probeErr != nil {
-		return result, probeErr
-	}
-	result.HistoryLag, probeErr = e.Bus.Lag(ctx, e.Prefix+"entity-history-v1", e.Prefix+"entity-state-events.v1")
+	progress("consumer_drain", result.Accepted, count)
+	drainStart := time.Now()
+	result.ProjectorLag, result.HistoryLag, probeErr = drainConsumers(ctx, 30*time.Second, func(probeCtx context.Context) (int64, int64, error) {
+		projector, err := e.Bus.Lag(probeCtx, e.projectorGroup, e.Prefix+"entity-state-events.v1")
+		if err != nil {
+			return 0, 0, err
+		}
+		history, err := e.Bus.Lag(probeCtx, e.Prefix+"entity-history-v1", e.Prefix+"entity-state-events.v1")
+		return projector, history, err
+	})
+	result.ConsumerDrainElapsed = time.Since(drainStart).Seconds()
+	// 有限排空仍是本档处理成本，不能从吞吐分母中剔除。
+	updateElapsed()
 	if probeErr != nil {
 		return result, probeErr
 	}
@@ -360,23 +400,20 @@ func phaseBudget(rate, count int, warmup bool) time.Duration {
 func Benchmark(ctx context.Context, root string, seconds int) (BenchmarkReport, error) {
 	return BenchmarkWithProfile(ctx, root, seconds, "mixed")
 }
-func BenchmarkWithProfile(ctx context.Context, root string, seconds int, profile string) (report BenchmarkReport, err error) {
-	if seconds < 5 || seconds > 300 {
-		return report, errors.New("duration must be 5..300 seconds")
-	}
-	env, err := newEnvironment(ctx, root, 10000, 10, profile)
-	if err != nil {
+func BenchmarkWithProfile(ctx context.Context, root string, seconds int, profile string) (BenchmarkReport, error) {
+	o := DefaultBenchmarkOptions()
+	o.Seconds = seconds
+	o.Profile = profile
+	return BenchmarkWithOptions(ctx, root, o)
+}
+
+// 报告先于初始化创建；依赖和进程启动失败仍留下请求与失败阶段。
+func BenchmarkWithOptions(ctx context.Context, root string, o BenchmarkOptions) (report BenchmarkReport, err error) {
+	id := strings.ReplaceAll(platform.NewID(), "-", "")
+	report = BenchmarkReport{RunID: id, StartedAt: time.Now().UTC().Format(time.RFC3339), Go: runtime.Version(), OS: runtime.GOOS, Arch: runtime.GOARCH, CPU: os.Getenv("PROCESSOR_IDENTIFIER"), LogicalCPUs: runtime.NumCPU(), Entities: o.Entities, Sources: 10, Partitions: 3, Batch: 1, Profile: o.Profile, Requested: o, Stage: "validate", EvidenceDirectory: filepath.Join(root, ".local", "verification", id), Scope: "real authenticated Ingest -> Kafka -> Entity -> Redis/MySQL; excludes gateway bbolt, tasks and subscription fanout", MemoryMeaning: "Go live heap; container RSS and limits are recorded by scale runner", ObservationMeaning: "rotating sample across ten sources; polling same or higher version; ACK/message reservoirs at most 100000; every warmup identity verified", EntityCountsByType: map[string]int{}, SourceCountsByType: map[string]int{}, WarmupSnapshotsByType: map[string]int{}}
+	if err = os.MkdirAll(report.EvidenceDirectory, 0700); err != nil {
+		report.Failure = err.Error()
 		return report, err
-	}
-	defer env.Close()
-	report = BenchmarkReport{RunID: env.ID, StartedAt: time.Now().UTC().Format(time.RFC3339), Go: runtime.Version(), OS: runtime.GOOS, Arch: runtime.GOARCH, CPU: os.Getenv("PROCESSOR_IDENTIFIER"), LogicalCPUs: runtime.NumCPU(), Entities: 10000, Sources: 10, Partitions: 3, Batch: 1, Scope: "real standalone Ingest -> Kafka -> Entity -> Redis/MySQL; excludes gateway bbolt, task execution and subscription fanout", MemoryMeaning: "Go live heap per standalone service; not RSS or total machine RAM", ObservationMeaning: "one event per 50 scheduled, rotating observation across all sources; independent polling observes same or higher entity version; latency includes polling delay", EvidenceDirectory: env.Dir, Database: env.DBName, TopicPrefix: env.Prefix}
-	report.Profile = profile
-	report.EntityCountsByType = map[string]int{}
-	report.SourceCountsByType = map[string]int{}
-	report.WarmupSnapshotsByType = map[string]int{}
-	for _, source := range env.Sources {
-		report.EntityCountsByType[source.Adapter] += len(source.Entities)
-		report.SourceCountsByType[source.Adapter]++
 	}
 	defer func() {
 		if err != nil {
@@ -384,13 +421,41 @@ func BenchmarkWithProfile(ctx context.Context, root string, seconds int, profile
 		}
 		out, writeErr := json.MarshalIndent(report, "", "  ")
 		if writeErr == nil {
-			writeErr = os.WriteFile(filepath.Join(env.Dir, "benchmark.json"), out, 0600)
+			writeErr = os.WriteFile(filepath.Join(report.EvidenceDirectory, "benchmark.json"), out, 0600)
 		}
-		if err == nil {
-			err = writeErr
+		if writeErr != nil {
+			err = errors.Join(err, writeErr)
+			report.Failure = err.Error()
 		}
 	}()
+	if err = o.Validate(); err != nil {
+		return report, err
+	}
+	report.Stage = "initialize"
+	report.SourceStaleAfterSeconds = 30
+	report.WarmupSnapshotMeaning = "full retained snapshot identity, source, type, generation and version; expired snapshots remain readable and are counted separately; not a freshness guarantee"
+	initial, writeErr := json.MarshalIndent(report, "", "  ")
+	if writeErr != nil {
+		return report, writeErr
+	}
+	if err = os.WriteFile(filepath.Join(report.EvidenceDirectory, "benchmark.json"), initial, 0600); err != nil {
+		return report, err
+	}
+	progress(report.Stage, 0, o.Entities)
+	env, err := newEnvironmentAt(ctx, root, o.Entities, 10, o.Profile, id)
+	if err != nil {
+		return report, err
+	}
+	defer env.Close()
+	report.Database = env.DBName
+	report.TopicPrefix = env.Prefix
+	for _, source := range env.Sources {
+		report.EntityCountsByType[source.Adapter] += len(source.Entities)
+		report.SourceCountsByType[source.Adapter]++
+	}
 	for _, role := range []string{"entity", "ingest"} {
+		report.Stage = "start_" + role
+		progress(report.Stage, 0, o.Entities)
 		if err = env.Start(ctx, role); err != nil {
 			return report, err
 		}
@@ -398,6 +463,15 @@ func BenchmarkWithProfile(ctx context.Context, root string, seconds int, profile
 	if err = env.Connect(); err != nil {
 		return report, err
 	}
+	stopDiagnostics, err := startDiagnostics(ctx, env)
+	if err != nil {
+		return report, err
+	}
+	defer func() {
+		if diagnosticErr := stopDiagnostics(); diagnosticErr != nil {
+			err = errors.Join(err, diagnosticErr)
+		}
+	}()
 	report.InitialIngest, err = metrics(env.Processes["ingest"].Metrics)
 	if err != nil {
 		return report, err
@@ -410,60 +484,57 @@ func BenchmarkWithProfile(ctx context.Context, root string, seconds int, profile
 	if err != nil {
 		return report, err
 	}
-	warmup, err := driver.phase(ctx, 0, 10000, true)
+	driver.warmupTimeout = o.WarmupTimeout
+	report.Stage = "warmup_publish"
+	progress(report.Stage, 0, o.Entities)
+	warmCtx, stop := context.WithTimeout(ctx, o.WarmupTimeout)
+	defer stop()
+	report.Warmup, err = driver.phase(warmCtx, 0, o.Entities, true)
+	report.WarmupAccepted = report.Warmup.Accepted
+	report.WarmupAcceptedByType = report.Warmup.AcceptedByType
 	if err != nil {
 		return report, err
 	}
-	report.WarmupAccepted = warmup.Accepted
-	report.WarmupAcceptedByType = warmup.AcceptedByType
-	if warmup.Accepted != 10000 {
-		return report, fmt.Errorf("warmup accepted %d/10000; %v", warmup.Accepted, warmup.ErrorExamples)
+	if report.WarmupAccepted != o.Entities || report.Warmup.Errors != 0 {
+		return report, fmt.Errorf("warmup accepted %d/%d; %v", report.WarmupAccepted, o.Entities, report.Warmup.ErrorExamples)
 	}
-	// 等待所有预热事件应用完成后，再测量稳定负载。
-	limit := time.Now().Add(60 * time.Second)
-	for {
-		lag, x := env.Bus.Lag(ctx, env.projectorGroup, env.Prefix+"entity-state-events.v1")
-		if x != nil {
-			return report, x
-		}
-		if lag == 0 {
-			break
-		}
-		if time.Now().After(limit) {
-			return report, fmt.Errorf("warmup projection lag remains %d", lag)
-		}
-		time.Sleep(100 * time.Millisecond)
+	// phase 已在剩余预热预算内排空投影与历史消费组，再逐一检查快照。
+	report.Stage = "warmup_snapshots"
+	err = verifyWarmup(warmCtx, driver, &report, func(c context.Context, ids []string) (*entityv1.BatchGetSnapshotsResponse, error) {
+		return env.Entity.BatchGetSnapshots(c, &entityv1.BatchGetSnapshotsRequest{EntityIds: ids})
+	})
+	if err != nil {
+		return report, err
 	}
-	// 仅凭 broker ACK 和零积压，无法证明每个不同实体都已投影，
-	// 因为格式错误的记录可能已被隔离。
-	for start := 0; start < 10000; start += 100 {
-		ids := make([]string, 100)
-		for i := range ids {
-			ids[i] = driver.targets[start+i].entityID
-		}
-		c, stop := context.WithTimeout(platform.Outgoing(ctx, env.Operator), 5*time.Second)
-		response, x := env.Entity.BatchGetSnapshots(c, &entityv1.BatchGetSnapshotsRequest{EntityIds: ids})
-		stop()
-		if x != nil {
-			return report, x
-		}
-		if len(response.Snapshots) != len(ids) {
-			return report, errors.New("warmup batch omitted entities")
-		}
-		for i, snapshot := range response.Snapshots {
-			if !snapshot.Found || snapshot.EntityId != ids[i] || snapshot.SourceGeneration != 1 || snapshot.Version != 1 || snapshot.GetSnapshot().GetEntityType() != env.Sources[driver.targets[start+i].source].Adapter {
-				return report, fmt.Errorf("warmup snapshot mismatch %s", ids[i])
-			}
-			report.WarmupSnapshots++
-			report.WarmupSnapshotsByType[snapshot.Snapshot.EntityType]++
-		}
-	}
-	for _, rate := range []int{100, 500} {
-		phase, x := driver.phase(ctx, rate, rate*seconds, false)
+	for _, rate := range o.Rates {
+		report.Stage = fmt.Sprintf("load_%d", rate)
+		progress(report.Stage, 0, rate*o.Seconds)
+		phase, x := driver.phase(ctx, rate, rate*o.Seconds, false)
 		report.Phases = append(report.Phases, phase)
 		if x != nil {
 			return report, x
 		}
+		if err = phaseFailure(phase); err != nil {
+			return report, err
+		}
 	}
+	report.Stage = "complete"
+	progress(report.Stage, o.Entities, o.Entities)
 	return report, nil
+}
+
+func progress(stage string, done, total int) {
+	fmt.Fprintf(os.Stderr, "%s stage=%s completed=%d total=%d\n", time.Now().UTC().Format(time.RFC3339), stage, done, total)
+}
+
+// 大流量运行只保留有界且无偏的 ACK/消息大小样本。
+func boundedSample(values []float64, value float64, seen int) []float64 {
+	const limit = 100000
+	if len(values) < limit {
+		return append(values, value)
+	}
+	if index := rand.Intn(seen); index < limit {
+		values[index] = value
+	}
+	return values
 }

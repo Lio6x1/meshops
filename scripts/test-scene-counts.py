@@ -1,7 +1,7 @@
 """Bounded six-type demo acceptance; preserves original count/mode settings.
 
 Uses only the loopback HTTP API. It creates four inspect tasks and keeps their
-history as evidence. Access codes and cookies are never written to the report.
+history as evidence. Passwords and cookies are never written to the report.
 """
 import datetime as dt
 import importlib.util
@@ -34,8 +34,7 @@ def main():
     output = Path(sys.argv[1])
     if output.exists():
         raise ValueError('Evidence output already exists')
-    session = sim.api('/api/session', 'POST', {'role': 'operator', 'accessCode': os.environ['MESHOPS_WEB_OPERATOR_CODE']})
-    sim.csrf = session['csrfToken']
+    sim.login()
     original = sources()
     report = {'passed': False, 'checks': sim.checks, 'scope': '30 real mixed entity projections, four new executor bindings, count bounds/shrink/zero and retained history. This is not a load benchmark.'}
     try:

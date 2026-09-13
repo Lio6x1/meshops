@@ -522,6 +522,15 @@ footer {
 .login-card p {
   font-size: 12px;
 }
+.password-panel {
+  max-width: 600px;
+}
+.account-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
 @media (max-width: 1100px) {
   main {
     padding: 26px 22px;

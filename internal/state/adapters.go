@@ -12,7 +12,6 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"io"
 	"math"
-	"os"
 	"regexp"
 	"sort"
 	"time"
@@ -382,28 +381,9 @@ func GenerateRaw(source platform.Source, rawID string, version int64, now time.T
 	if _, ok := source.Entities[rawID]; !ok || version < 1 || version > MaxVersion {
 		return nil, fmt.Errorf("unregistered ID or invalid version")
 	}
-	raw, err := os.ReadFile(source.Fixture)
+	generator, err := NewRawGenerator(source)
 	if err != nil {
 		return nil, err
 	}
-	var m map[string]json.RawMessage
-	if err = json.Unmarshal(raw, &m); err != nil {
-		return nil, err
-	}
-	fields := map[string][4]string{"person": {"employee_id", "version", "observed_at", "observation_id"}, "drone": {"aircraft_id", "revision", "timestamp_ms", "sample_id"}, "vehicle": {"vehicle_id", "sequence", "recorded_at", "event_id"}, "robot": {"robot_id", "revision", "timestamp", "event_id"}, "sensor": {"sensor_id", "version", "measured_at", "event_id"}, "facility": {"facility_id", "revision", "observed_at", "event_id"}}
-	f, ok := fields[source.Adapter]
-	if !ok {
-		return nil, fmt.Errorf("unknown adapter")
-	}
-	var ts any = now.UTC().Format(time.RFC3339Nano)
-	if source.Adapter == "drone" {
-		ts = now.UnixMilli()
-	}
-	for k, v := range map[string]any{f[0]: rawID, f[1]: version, f[2]: ts, f[3]: newID()} {
-		m[k], err = json.Marshal(v)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return json.Marshal(m)
+	return generator.Generate(rawID, version, now)
 }

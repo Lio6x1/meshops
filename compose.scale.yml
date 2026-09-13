@@ -1,0 +1,109 @@
+# 固定项目独占依赖、卷和内部网络；不发布任何主机端口。
+name: meshops-scale
+
+services:
+  mysql:
+    image: mysql:8.0
+    mem_limit: 1g
+    cpus: "2"
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql-root-password
+      TZ: UTC
+    # 百万注册写入曾耗尽默认 100 MiB redo 的可回收空间；增大磁盘日志容量，
+    # 保持 CPU、内存及事务/刷盘语义不变，避免 checkpoint 频繁阻塞批量写入。
+    command: ["--default-time-zone=+00:00", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci", "--innodb-buffer-pool-size=268435456", "--innodb-redo-log-capacity=1073741824"]
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ${SCALE_SECRET_FILE:?required}:/run/secrets/mysql-root-password:ro
+    networks: [private]
+    restart: "no"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost --silent"]
+      interval: 5s
+      timeout: 4s
+      retries: 60
+
+  redis:
+    image: redis:7.2-alpine
+    mem_limit: 1536m
+    cpus: "2"
+    command: ["redis-server", "--maxmemory", "1gb", "--maxmemory-policy", "noeviction", "--appendonly", "yes"]
+    volumes: ["redis-data:/data"]
+    networks: [private]
+    restart: "no"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 4s
+      retries: 60
+
+  kafka-init:
+    image: apache/kafka:3.7.0
+    user: "0:0"
+    mem_limit: 64m
+    cpus: "0.5"
+    entrypoint: ["/bin/sh", "-c", "chown 1000:1000 /tmp/kraft-combined-logs"]
+    volumes: ["kafka-data:/tmp/kraft-combined-logs"]
+    networks: [private]
+    restart: "no"
+
+  kafka:
+    image: apache/kafka:3.7.0
+    hostname: kafka
+    mem_limit: 1536m
+    cpus: "2"
+    depends_on: {kafka-init: {condition: service_completed_successfully}}
+    environment:
+      KAFKA_HEAP_OPTS: -Xms512m -Xmx768m
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: INTERNAL://:29092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_LOG_RETENTION_HOURS: 24
+      KAFKA_LOG_RETENTION_BYTES: 1073741824
+    volumes: ["kafka-data:/tmp/kraft-combined-logs"]
+    networks: [private]
+    restart: "no"
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:29092 >/dev/null 2>&1"]
+      interval: 5s
+      timeout: 4s
+      retries: 60
+
+  runner:
+    image: ${SCALE_IMAGE:-meshops-demo-backend:local}
+    user: "0:0"
+    mem_limit: 3g
+    cpus: "4"
+    pids_limit: 512
+    init: true
+    working_dir: /work
+    entrypoint: ["/bin/sh", "/opt/scale/run.sh"]
+    command: ["--entities", "${SCALE_ENTITIES:-10000}", "--rates", "${SCALE_RATES:-100,500}", "--seconds", "${SCALE_SECONDS:-30}", "--timeout", "${SCALE_TIMEOUT:-900}s", "--warmup-timeout", "${SCALE_WARMUP:-600}s"]
+    environment:
+      MESHOPS_KAFKA_BROKERS: kafka:29092
+      MESHOPS_REDIS_ADDR: redis:6379
+      GOMAXPROCS: "4"
+    volumes:
+      - ${SCALE_OUTPUT_DIR:?required}:/work
+      - ${SCALE_SECRET_FILE:?required}:/run/secrets/mysql-root-password:ro
+      - ./deploy/scale/run.sh:/opt/scale/run.sh:ro
+    networks: [private]
+    restart: "no"
+    security_opt: ["no-new-privileges:true"]
+
+networks:
+  private: {internal: true}
+volumes:
+  mysql-data:
+  redis-data:
+  kafka-data:

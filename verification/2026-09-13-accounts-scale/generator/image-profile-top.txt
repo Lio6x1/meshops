@@ -1,0 +1,29 @@
+File: verification.test
+Build ID: 3e9751ea771f7cbf677927b509898f147bdcfb6a
+Type: cpu
+Time: 2026-09-13 13:53:27 CST
+Duration: 10.77s, Total samples = 12630ms (117.29%)
+Showing nodes accounting for 5800ms, 45.92% of 12630ms total
+Dropped 304 nodes (cum <= 63.15ms)
+Showing top 20 nodes out of 227
+      flat  flat%   sum%        cum   cum%
+    1190ms  9.42%  9.42%     1190ms  9.42%  internal/runtime/syscall.Syscall6
+     520ms  4.12% 13.54%     1600ms 12.67%  runtime.scanobject
+     340ms  2.69% 16.23%      340ms  2.69%  runtime.nextFreeFast (inline)
+     330ms  2.61% 18.84%      330ms  2.61%  regexp/syntax.(*Inst).MatchRunePos
+     310ms  2.45% 21.30%      860ms  6.81%  regexp.(*Regexp).doOnePass
+     260ms  2.06% 23.36%      420ms  3.33%  runtime.findObject
+     250ms  1.98% 25.34%      480ms  3.80%  encoding/json.appendCompact
+     240ms  1.90% 27.24%      600ms  4.75%  runtime.concatstrings
+     230ms  1.82% 29.06%     1450ms 11.48%  encoding/json.(*Decoder).readValue
+     220ms  1.74% 30.80%      230ms  1.82%  encoding/json.(*decodeState).rescanLiteral
+     220ms  1.74% 32.54%      220ms  1.74%  runtime.memmove
+     210ms  1.66% 34.20%      210ms  1.66%  runtime.(*mspan).base (inline)
+     210ms  1.66% 35.87%     2440ms 19.32%  runtime.mallocgc
+     200ms  1.58% 37.45%     1330ms 10.53%  runtime.mallocgcSmallScanNoHeader
+     200ms  1.58% 39.03%      200ms  1.58%  runtime.memclrNoHeapPointers
+     190ms  1.50% 40.54%      190ms  1.50%  runtime.acquirem (inline)
+     170ms  1.35% 41.88%      180ms  1.43%  encoding/json.stateInString
+     170ms  1.35% 43.23%      180ms  1.43%  runtime.(*mspan).writeHeapBitsSmall
+     170ms  1.35% 44.58%      170ms  1.35%  runtime.futex
+     170ms  1.35% 45.92%      370ms  2.93%  runtime.mallocgcTiny

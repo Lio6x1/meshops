@@ -1,0 +1,456 @@
+{
+  "schemaVersion": 1,
+  "createdAtUTC": "2026-09-13T05:47:04.876428+00:00",
+  "scope": "Completed account, full-stack, scene, Go tests and bounded registry initialization evidence; excludes running scale artifacts, browser visual QA and CI claims.",
+  "goEventFieldAllowlist": [
+    "Action",
+    "Test",
+    "Package",
+    "Elapsed",
+    "Time"
+  ],
+  "rawOutputIncluded": false,
+  "sourceFiles": [
+    {
+      "path": ".cache/account-scale/integration-windows-final.jsonl",
+      "sha256": "65a73d3ea2cd1aa9ee785a6eae85b88c6f751f854c420506ce0ebbf866ca8c24",
+      "bytes": 330068,
+      "archivedAs": [
+        "integration-windows-final.events.jsonl",
+        "integration-windows-final.summary.json"
+      ],
+      "transformation": "all events; preserve only Action/Test/Package/Elapsed/Time; drop Output and any other fields"
+    },
+    {
+      "path": ".cache/account-scale/linux-race.jsonl",
+      "sha256": "71121a6ef6c4e88cb15e5e4888489f4d726c424c1dae4709b949aaeb6325a8e8",
+      "bytes": 263526,
+      "archivedAs": [
+        "linux-race.events.jsonl",
+        "linux-race.summary.json"
+      ],
+      "transformation": "all events; preserve only Action/Test/Package/Elapsed/Time; drop Output and any other fields"
+    },
+    {
+      "path": ".cache/account-scale/integration-windows.jsonl",
+      "sha256": "bc85772b2ac57a29579ce26463b91965a0b7928a8f55286e7776890a43056b3d",
+      "bytes": 327028,
+      "archivedAs": [
+        "early-failures.json"
+      ],
+      "transformation": "terminal metadata, counts and approved diagnostic marker line numbers only; raw Output omitted"
+    },
+    {
+      "path": ".cache/account-scale/linux-race-missing-fixture.jsonl",
+      "sha256": "1167e8da5b883baae397df3ea7e296b4953d0149fe27d7230e380e97279736fa",
+      "bytes": 263807,
+      "archivedAs": [
+        "early-failures.json"
+      ],
+      "transformation": "terminal metadata, counts and approved diagnostic marker line numbers only; raw Output omitted"
+    },
+    {
+      "path": ".cache/account-scale/accounts-http-final.json",
+      "sha256": "8a4ee2e5de3045409485d879dfe672a0afdb12d2f33c239b19dbfc92f09d00fb",
+      "bytes": 2487,
+      "archivedAs": [
+        "accounts-http-final.json"
+      ],
+      "transformation": "reviewed JSON; secret-bearing keys/assignment values rejected; preserve non-secret test facts",
+      "removedFieldPaths": [],
+      "byteIdentical": true,
+      "reviewedJSONFieldPaths": [
+        ".checks",
+        ".checks[].stage",
+        ".checks[].status",
+        ".cleanup",
+        ".elapsedSeconds",
+        ".failure",
+        ".passed"
+      ]
+    },
+    {
+      "path": ".cache/account-scale/fullstack-final.json",
+      "sha256": "abd1c0caf4054a7be1f76c22ade9882aca173ef2e6d0462e5944eb868ad9363e",
+      "bytes": 13482,
+      "archivedAs": [
+        "fullstack-final.json"
+      ],
+      "transformation": "reviewed JSON; secret-bearing keys/assignment values rejected; preserve non-secret test facts",
+      "removedFieldPaths": [],
+      "byteIdentical": true,
+      "reviewedJSONFieldPaths": [
+        ".baseURL",
+        ".cancellation",
+        ".cancellation.attempt",
+        ".cancellation.commandKind",
+        ".cancellation.deliveryStatus",
+        ".cancellation.dispatchId",
+        ".cancellation.entityId",
+        ".cancellation.executionKey",
+        ".cancellation.executorId",
+        ".cancellation.history",
+        ".cancellation.historyCount",
+        ".cancellation.history[].at",
+        ".cancellation.history[].from",
+        ".cancellation.history[].to",
+        ".cancellation.history[].version",
+        ".cancellation.intentAccepted",
+        ".cancellation.observedExecutingVersion",
+        ".cancellation.status",
+        ".cancellation.statusVersion",
+        ".cancellation.taskId",
+        ".checks",
+        ".checks[].checkedAt",
+        ".checks[].detail",
+        ".checks[].detail.activeTasks",
+        ".checks[].detail.adminHTTP",
+        ".checks[].detail.asOf",
+        ".checks[].detail.consumerLag",
+        ".checks[].detail.count",
+        ".checks[].detail.dlqCount",
+        ".checks[].detail.effectCount",
+        ".checks[].detail.operatorHTTP",
+        ".checks[].detail.roles",
+        ".checks[].detail.status",
+        ".checks[].detail.taskId",
+        ".checks[].name",
+        ".checks[].passed",
+        ".elapsedSeconds",
+        ".finishedAt",
+        ".passed",
+        ".runId",
+        ".schemaVersion",
+        ".scope",
+        ".snapshots",
+        ".snapshots[].entityId",
+        ".snapshots[].entityType",
+        ".snapshots[].expiresAt",
+        ".snapshots[].sourceGeneration",
+        ".snapshots[].sourceId",
+        ".snapshots[].version",
+        ".snapshots[].viewGeneration",
+        ".startedAt",
+        ".tasks",
+        ".tasks[].attempt",
+        ".tasks[].commandKind",
+        ".tasks[].deliveryStatus",
+        ".tasks[].dispatchId",
+        ".tasks[].effectCount",
+        ".tasks[].entityId",
+        ".tasks[].executionKey",
+        ".tasks[].executorId",
+        ".tasks[].history",
+        ".tasks[].historyCount",
+        ".tasks[].history[].at",
+        ".tasks[].history[].from",
+        ".tasks[].history[].to",
+        ".tasks[].history[].version",
+        ".tasks[].keyword",
+        ".tasks[].searchStatus",
+        ".tasks[].searchVersion",
+        ".tasks[].status",
+        ".tasks[].statusVersion",
+        ".tasks[].taskId"
+      ]
+    },
+    {
+      "path": ".cache/account-scale/test-motion-final.json",
+      "sha256": "0f8a7b6958b30a77a8459d0bf3e4fe336136596e2bc0569cd6855198ca4d7cae",
+      "bytes": 5370,
+      "archivedAs": [
+        "test-motion-final.json"
+      ],
+      "transformation": "reviewed JSON; secret-bearing keys/assignment values rejected; preserve non-secret test facts",
+      "removedFieldPaths": [],
+      "byteIdentical": true,
+      "reviewedJSONFieldPaths": [
+        ".entities",
+        ".entities[].displacementMetres",
+        ".entities[].entityId",
+        ".entities[].entityType",
+        ".entities[].fromVersion",
+        ".entities[].toVersion",
+        ".passed",
+        ".restoredSources",
+        ".scope"
+      ]
+    },
+    {
+      "path": ".cache/account-scale/test-scene-counts-final.json",
+      "sha256": "81ec8c17d27fc86d0337f2154628e11b96219d1140b4883a37b5ade657cf5021",
+      "bytes": 5807,
+      "archivedAs": [
+        "test-scene-counts-final.json"
+      ],
+      "transformation": "reviewed JSON; secret-bearing keys/assignment values rejected; preserve non-secret test facts",
+      "removedFieldPaths": [],
+      "byteIdentical": true,
+      "reviewedJSONFieldPaths": [
+        ".checks",
+        ".checks[].details",
+        ".checks[].details.afterTwo",
+        ".checks[].details.afterZero",
+        ".checks[].details.entities",
+        ".checks[].details.entityId",
+        ".checks[].details.executing",
+        ".checks[].details.httpStatus",
+        ".checks[].details.observationOnly",
+        ".checks[].details.status",
+        ".checks[].details.taskId",
+        ".checks[].details[].entityId",
+        ".checks[].details[].entityType",
+        ".checks[].details[].version",
+        ".checks[].name",
+        ".checks[].passed",
+        ".passed",
+        ".restoredSources",
+        ".scope"
+      ]
+    },
+    {
+      "path": ".cache/account-scale/test-simulation-final.json",
+      "sha256": "0e1b38a83cf6dd01613d53d0b2ce8b168cd06f5a61049eeb758519065758f9a3",
+      "bytes": 1388,
+      "archivedAs": [
+        "test-simulation-final.json"
+      ],
+      "transformation": "reviewed JSON; secret-bearing keys/assignment values rejected; preserve non-secret test facts",
+      "removedFieldPaths": [],
+      "byteIdentical": true,
+      "reviewedJSONFieldPaths": [
+        ".checks",
+        ".checks[].details",
+        ".checks[].details.expiresAt",
+        ".checks[].details.from",
+        ".checks[].details.generated",
+        ".checks[].details.pending",
+        ".checks[].details.sent",
+        ".checks[].details.to",
+        ".checks[].details.version",
+        ".checks[].name",
+        ".checks[].passed",
+        ".passed",
+        ".restoredCount",
+        ".restoredMode",
+        ".scope"
+      ]
+    },
+    {
+      "path": ".cache/binding-baseline.txt",
+      "sha256": "c78eea745bb22179d67a897ab04ed671dcc510b4e93a8dcbf7ed91bd9e3f5fc3",
+      "bytes": 1545,
+      "archivedAs": [
+        "initialization/binding-baseline.txt"
+      ],
+      "transformation": "manually reviewed diagnostic/benchmark text; no credentials; byte-identical copy",
+      "byteIdentical": true,
+      "removedFieldPaths": []
+    },
+    {
+      "path": ".cache/binding-after.txt",
+      "sha256": "fb871d91f8a3c7bc3082ab91a9570bbd6f44327615f044a08c249086fa357f5b",
+      "bytes": 2705,
+      "archivedAs": [
+        "initialization/binding-after.txt"
+      ],
+      "transformation": "manually reviewed diagnostic/benchmark text; no credentials; byte-identical copy",
+      "byteIdentical": true,
+      "removedFieldPaths": []
+    },
+    {
+      "path": ".cache/binding-final.txt",
+      "sha256": "5aa4748511238a87bd1a08cbebf6f8b646e4249053ff7fa4260b86d11b1ba1ff",
+      "bytes": 1973,
+      "archivedAs": [
+        "initialization/binding-final.txt"
+      ],
+      "transformation": "manually reviewed diagnostic/benchmark text; no credentials; byte-identical copy",
+      "byteIdentical": true,
+      "removedFieldPaths": []
+    },
+    {
+      "path": ".cache/binding-results.txt",
+      "sha256": "8de955491c5a6d5b667f0c39891ae89401836c566f4168ce50039cd3088708db",
+      "bytes": 1783,
+      "archivedAs": [
+        "initialization/binding-results.txt"
+      ],
+      "transformation": "manually reviewed diagnostic/benchmark text; no credentials; byte-identical copy",
+      "byteIdentical": true,
+      "removedFieldPaths": []
+    },
+    {
+      "path": ".cache/profiles/manifest-after.txt",
+      "sha256": "226c7d397fe0d42e98ccb14eaa469779b2f7a70ae51c2b69651133cdbb034e8b",
+      "bytes": 927,
+      "archivedAs": [
+        "initialization/manifest-after.txt"
+      ],
+      "transformation": "reviewed profiler/benchmark text; remove local Build ID path where present",
+      "byteIdentical": true,
+      "removedFieldPaths": []
+    },
+    {
+      "path": ".cache/profiles/manifest-before-top.txt",
+      "sha256": "aa1989a01b949e131496be85d66374c37bd6d2d1c9d2e78e6b371c543f168af9",
+      "bytes": 1129,
+      "archivedAs": [
+        "initialization/manifest-before-top.txt"
+      ],
+      "transformation": "reviewed profiler/benchmark text; remove local Build ID path where present",
+      "byteIdentical": false,
+      "removedFieldPaths": [
+        "line 2: local Windows username and temporary Build ID path"
+      ]
+    },
+    {
+      "path": ".cache/profiles/before.cpu",
+      "sha256": "6d25d56e9048e1664d19d29b878011a1b545f76a07922973f63b3592b2746626",
+      "bytes": 9758,
+      "archivedAs": [],
+      "transformation": "not copied",
+      "exclusionReason": "CPU profile string table contains local Windows username and temporary build paths; approved text top report archived with these paths redacted."
+    },
+    {
+      "path": ".cache/account-scale/unit-final.jsonl",
+      "sha256": "17dc9ab3e89b41b52898c70ca9541ee207914275b90994804d3d71f10ce79f39",
+      "bytes": 276707,
+      "archivedAs": [
+        "unit-final.events.jsonl",
+        "unit-final.summary.json",
+        "review-p2-closed.json"
+      ],
+      "transformation": "all events; preserve only Action/Test/Package/Elapsed/Time; drop Output and any other fields"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "integration-windows-final.events.jsonl",
+      "sha256": "ae1ded5fd11efa0efa40b440074afdec040d855acaa2860703a49b1c243cc14a",
+      "bytes": 265845
+    },
+    {
+      "path": "integration-windows-final.summary.json",
+      "sha256": "b95378a51e778bc64f159e06e30d7fbbe9b71f3529b7481baa64bf33b2936b89",
+      "bytes": 13305
+    },
+    {
+      "path": "linux-race.events.jsonl",
+      "sha256": "fe04aead9bd3825a665811aa695237451dff325321ad4f7957bf7e89e0cbeccd",
+      "bytes": 214956
+    },
+    {
+      "path": "linux-race.summary.json",
+      "sha256": "b8d4e3aac2a12d52cb090a52583175d8f9e1e707d6e300ef16b30fe93735ccc4",
+      "bytes": 11849
+    },
+    {
+      "path": "early-failures.json",
+      "sha256": "f1acf73741160d71f08fca54a838f76bf41a2b044b4402b0a4e4cf92234f9729",
+      "bytes": 23433
+    },
+    {
+      "path": "accounts-http-final.json",
+      "sha256": "8a4ee2e5de3045409485d879dfe672a0afdb12d2f33c239b19dbfc92f09d00fb",
+      "bytes": 2487
+    },
+    {
+      "path": "fullstack-final.json",
+      "sha256": "abd1c0caf4054a7be1f76c22ade9882aca173ef2e6d0462e5944eb868ad9363e",
+      "bytes": 13482
+    },
+    {
+      "path": "test-motion-final.json",
+      "sha256": "0f8a7b6958b30a77a8459d0bf3e4fe336136596e2bc0569cd6855198ca4d7cae",
+      "bytes": 5370
+    },
+    {
+      "path": "test-scene-counts-final.json",
+      "sha256": "81ec8c17d27fc86d0337f2154628e11b96219d1140b4883a37b5ade657cf5021",
+      "bytes": 5807
+    },
+    {
+      "path": "test-simulation-final.json",
+      "sha256": "0e1b38a83cf6dd01613d53d0b2ce8b168cd06f5a61049eeb758519065758f9a3",
+      "bytes": 1388
+    },
+    {
+      "path": "initialization/binding-baseline.txt",
+      "sha256": "c78eea745bb22179d67a897ab04ed671dcc510b4e93a8dcbf7ed91bd9e3f5fc3",
+      "bytes": 1545
+    },
+    {
+      "path": "initialization/binding-after.txt",
+      "sha256": "fb871d91f8a3c7bc3082ab91a9570bbd6f44327615f044a08c249086fa357f5b",
+      "bytes": 2705
+    },
+    {
+      "path": "initialization/binding-final.txt",
+      "sha256": "5aa4748511238a87bd1a08cbebf6f8b646e4249053ff7fa4260b86d11b1ba1ff",
+      "bytes": 1973
+    },
+    {
+      "path": "initialization/binding-results.txt",
+      "sha256": "8de955491c5a6d5b667f0c39891ae89401836c566f4168ce50039cd3088708db",
+      "bytes": 1783
+    },
+    {
+      "path": "initialization/manifest-after.txt",
+      "sha256": "226c7d397fe0d42e98ccb14eaa469779b2f7a70ae51c2b69651133cdbb034e8b",
+      "bytes": 927
+    },
+    {
+      "path": "initialization/manifest-before-top.txt",
+      "sha256": "8b8ac7d56b9f1abc2269a3aa2d2ef4484255cfb9aa9075d70e7536cc09994c0e",
+      "bytes": 1038
+    },
+    {
+      "path": "initialization/summary.json",
+      "sha256": "47466021f328213c14891f0d4ace9f983ee06c14177bcdf0a914a8806b3efafb",
+      "bytes": 5217
+    },
+    {
+      "path": "README.md",
+      "sha256": "d147d94146f5952bb88d3ad85b0d852f848487f5eea197f86267cd98385471ab",
+      "bytes": 10112
+    },
+    {
+      "path": "unit-final.events.jsonl",
+      "sha256": "47b54e2d082c758bbed10ddf01e546c4dc6f476f74082f5b8e3e8161d639764e",
+      "bytes": 226463
+    },
+    {
+      "path": "unit-final.summary.json",
+      "sha256": "1b8626f05019f2b0fdc42c7861ef686ca817e79c5d14a93a277278d08fc3784d",
+      "bytes": 13758
+    },
+    {
+      "path": "review-p2-closed.json",
+      "sha256": "141d18562113c5ebd369ad34c1eadac91df7da9086b3c947d455b09fc3f5efbb",
+      "bytes": 2860
+    }
+  ],
+  "excludedInputs": [
+    ".cache/account-scale/run*.py",
+    "raw JSONL Output",
+    "compose environment files",
+    "running scale artifacts",
+    ".cache/profiles/verification.test.exe",
+    ".cache/profiles/before.cpu (local build paths embedded)"
+  ],
+  "reviewPolicy": {
+    "secretKeyPattern": "password|passwd|cookie|csrf|token|authorization|access.?code|secret|credential|^pass$",
+    "secretAssignmentValuePattern": "Bearer\\s+|(?:password|cookie|csrf|token|credential)\\s*[:=]",
+    "passedBooleanRetained": true,
+    "stageLabelsMentioningPasswordCookieOrCSRF": "retained as public test names, not credential values",
+    "nonSecretIdentifiers": "Retain test task UUIDs, fixture entity IDs, versions and timestamps for traceability; never account passwords/session credentials."
+  },
+  "updates": [
+    {
+      "recordedAtUTC": "2026-09-13T06:26:59.881659+00:00",
+      "previousManifestSHA256": "22945638246bd4d4891c97a1fb1331e65139300cb8def8b9ad9dce6460a0e0af",
+      "description": "Append final ordinary Go tests and P2 review. Recompute ordinary-run skip classification as 2 helpers + 20 external checks in unpublished derived summary and README; preserve all original source hashes and historical event bytes/times/totals."
+    }
+  ]
+}

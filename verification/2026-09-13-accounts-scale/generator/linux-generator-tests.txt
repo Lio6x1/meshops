@@ -1,0 +1,19 @@
+=== RUN   TestRawGeneratorSixFormatsAndFreshIdentity
+=== RUN   TestRawGeneratorSixFormatsAndFreshIdentity/person
+=== RUN   TestRawGeneratorSixFormatsAndFreshIdentity/drone
+=== RUN   TestRawGeneratorSixFormatsAndFreshIdentity/vehicle
+=== RUN   TestRawGeneratorSixFormatsAndFreshIdentity/robot
+=== RUN   TestRawGeneratorSixFormatsAndFreshIdentity/sensor
+=== RUN   TestRawGeneratorSixFormatsAndFreshIdentity/facility
+--- PASS: TestRawGeneratorSixFormatsAndFreshIdentity (0.01s)
+    --- PASS: TestRawGeneratorSixFormatsAndFreshIdentity/person (0.00s)
+    --- PASS: TestRawGeneratorSixFormatsAndFreshIdentity/drone (0.00s)
+    --- PASS: TestRawGeneratorSixFormatsAndFreshIdentity/vehicle (0.00s)
+    --- PASS: TestRawGeneratorSixFormatsAndFreshIdentity/robot (0.00s)
+    --- PASS: TestRawGeneratorSixFormatsAndFreshIdentity/sensor (0.00s)
+    --- PASS: TestRawGeneratorSixFormatsAndFreshIdentity/facility (0.00s)
+=== RUN   TestRawGeneratorReadsOnceAndDoesNotMutateTemplate
+--- PASS: TestRawGeneratorReadsOnceAndDoesNotMutateTemplate (0.01s)
+=== RUN   TestRawGeneratorPreservesFormatRejection
+--- PASS: TestRawGeneratorPreservesFormatRejection (0.00s)
+PASS

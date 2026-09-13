@@ -8,6 +8,9 @@
 | 从创建目录开始学习 | [Z00—Z13 课程](learning/from-zero/lessons/README.md) |
 | 了解功能与链路 | [根工程说明](../README.md)、[实体范围](entity-catalog.md) |
 | 查看模拟器与地图 | [场景说明](simulation-map.md) |
+| 设置管理员和管理操作员 | [个人账号操作手册](operations/accounts.md) |
+| 分开验证实体基数与写入速率 | [容量测试操作手册](operations/scale-benchmark.md) |
+| 了解初始化瓶颈及修复 | [注册表与数据库往返复盘](postmortems/2026-09-13-registry-initialization.md) |
 | 准备面试 | [项目介绍与追问](interview/interview-prep.md)、[速查](interview/cheatsheet.md) |
 | 查技术规则与错误 | [契约入口](implementation/README.md)、[排错手册](troubleshooting/README.md) |
 | 判断已证明到什么程度 | [工程验证边界](production-readiness-checklist.md) |

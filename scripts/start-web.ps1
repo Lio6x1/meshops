@@ -28,5 +28,5 @@ try {
     } while ([DateTime]::UtcNow -lt $deadline)
     if (-not $ready) { throw 'Gateway startup failed; inspect .local/logs/web.err.log.' }
     'HTTP gateway ready. Start Vue with ./scripts/frontend.ps1 -Action Dev, then open http://localhost:5173.'
-    'Browser access codes are in .local/web-secrets.json (never the backend RPC tokens).'
+    '首次使用请运行 ./scripts/account-admin.ps1 -Mode Local -Action Setup，自行设置管理员密码。'
 } catch { Stop-CourseOwnedProcess $record; throw }

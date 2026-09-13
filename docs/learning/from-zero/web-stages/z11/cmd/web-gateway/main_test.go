@@ -62,3 +62,10 @@ func TestSlowRequestBodyIsBounded(t *testing.T) {
 		t.Fatal("request body handler remained blocked")
 	}
 }
+
+func TestFinalGatewayRequiresAccountMode(t *testing.T) {
+	t.Setenv("MESHOPS_ACCOUNT_AUTH", "")
+	if e := run(); e == nil || e.Error() != "MESHOPS_ACCOUNT_AUTH=1 is required for the final web gateway" {
+		t.Fatal(e)
+	}
+}

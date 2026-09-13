@@ -7,6 +7,7 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -73,11 +74,20 @@ func NewEnvironment(ctx context.Context, root string, entities, sourceCount int)
 	return newEnvironment(ctx, root, entities, sourceCount, "person")
 }
 func newEnvironment(ctx context.Context, root string, entities, sourceCount int, profile string) (env *Environment, err error) {
+	return newEnvironmentAt(ctx, root, entities, sourceCount, profile, strings.ReplaceAll(platform.NewID(), "-", ""))
+}
+func newEnvironmentAt(ctx context.Context, root string, entities, sourceCount int, profile, id string) (env *Environment, err error) {
+	stage := "manifest_plan"
+	progress(stage, 0, entities)
+	defer func() {
+		if err != nil {
+			err = fmt.Errorf("%s: %w", stage, err)
+		}
+	}()
 	plan, err := benchmarkSources(profile, entities, sourceCount)
 	if err != nil {
 		return nil, err
 	}
-	id := strings.ReplaceAll(platform.NewID(), "-", "")
 	env = &Environment{Root: root, ID: id, Tenant: "verify_" + id, Prefix: "verify_" + id + "_", DBName: "verify_" + id, Processes: map[string]*Process{}, env: map[string]string{}}
 	env.Dir = filepath.Join(root, ".local", "verification", id)
 	if err = os.MkdirAll(env.Dir, 0700); err != nil {
@@ -120,11 +130,13 @@ func newEnvironment(ctx context.Context, root string, entities, sourceCount int,
 		actors = append(actors, map[string]any{"id": role, "role": role, "credential_env": key})
 	}
 	env.Operator = env.env["VERIFY_OPERATOR"]
-	raw, e := yaml.Marshal(map[string]any{"tenant_id": env.Tenant, "sources": sources, "executors": executors, "actors": actors, "task_catalog": []any{map[string]any{"task_type": "inspect", "description": "Verification fixture", "parameter_schema_json": "{}"}}})
+	stage = "manifest_write"
+	progress(stage, 0, entities)
+	raw, e := json.Marshal(map[string]any{"tenant_id": env.Tenant, "sources": sources, "executors": executors, "actors": actors, "task_catalog": []any{map[string]any{"task_type": "inspect", "description": "Verification fixture", "parameter_schema_json": "{}"}}})
 	if e != nil {
 		return env, e
 	}
-	env.Manifest = filepath.Join(env.Dir, "manifest.yaml")
+	env.Manifest = filepath.Join(env.Dir, "manifest.json")
 	if e = os.WriteFile(env.Manifest, raw, 0600); e != nil {
 		return env, e
 	}
@@ -134,6 +146,8 @@ func newEnvironment(ctx context.Context, root string, entities, sourceCount int,
 			return env, e
 		}
 	}
+	stage = "registry_load"
+	progress(stage, 0, entities)
 	env.Registry, e = platform.LoadRegistry(env.Manifest)
 	if e != nil {
 		return env, e
@@ -142,6 +156,8 @@ func newEnvironment(ctx context.Context, root string, entities, sourceCount int,
 		source, _ := env.Registry.GetSource(env.Tenant, fmt.Sprintf("src_%s_%d", id, s))
 		env.Sources = append(env.Sources, source)
 	}
+	stage = "database_create"
+	progress(stage, 0, entities)
 	cfg, e := mysql.ParseDSN(os.Getenv("MESHOPS_MYSQL_DSN"))
 	if e != nil {
 		return env, errors.New("invalid MESHOPS_MYSQL_DSN")
@@ -160,12 +176,18 @@ func newEnvironment(ctx context.Context, root string, entities, sourceCount int,
 	if e != nil {
 		return env, e
 	}
+	stage = "database_migrate"
+	progress(stage, 0, entities)
 	if e = tasks.Migrate(ctx, env.DB, filepath.Join(root, "migrations")); e != nil {
 		return env, e
 	}
+	stage = "database_seed"
+	progress(stage, 0, entities)
 	if e = tasks.Seed(ctx, env.DB, env.Registry); e != nil {
 		return env, e
 	}
+	stage = "topics_create"
+	progress(stage, 0, entities)
 	env.Bus = bus.New(strings.Split(env.env["MESHOPS_KAFKA_BROKERS"], ","))
 	if e = env.Bus.EnsureTopics(ctx, env.Prefix); e != nil {
 		return env, e

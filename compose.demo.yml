@@ -1,6 +1,7 @@
 name: meshops-demo
 
 x-env: &demo-env
+  MESHOPS_ACCOUNT_AUTH: "1"
   MESHOPS_SIMULATION_CONTROL: "1"
   MESHOPS_NETWORK_MODE: compose-demo
   MESHOPS_DEMO_STATE: /state

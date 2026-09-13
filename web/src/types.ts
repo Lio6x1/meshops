@@ -1,10 +1,23 @@
 export interface Session {
   role: 'operator' | 'admin'
+  username: string
+  displayName: string
+  mustChangePassword: boolean
   tenantId: string
   actorId: string
   csrfToken: string
   expiresAt: string
   serverTime?: string
+}
+export interface Account {
+  id: string
+  username: string
+  displayName: string
+  role: 'operator' | 'admin'
+  enabled: boolean
+  mustChangePassword: boolean
+  createdAt: string
+  updatedAt: string
 }
 export interface Inventory {
   entityId: string

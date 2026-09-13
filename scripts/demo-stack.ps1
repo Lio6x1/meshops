@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('Up','Status','Logs','Codes','Stop','Down','Reset','RebuildSearch')]
+    [ValidateSet('Up','Status','Logs','Stop','Down','Reset','RebuildSearch')]
     [string]$Action = 'Up',
     [ValidateSet('web','gateway','ingest','entity','task','dispatcher','search','canal','mysql','redis','kafka','elasticsearch','source-person','source-drone','source-vehicle','source-robot','source-sensor','source-facility','executor-person','executor-drone','executor-vehicle','executor-robot')]
     [string]$Service,
@@ -20,7 +20,7 @@ function Invoke-DemoCompose([string[]]$Arguments) {
 }
 
 if ($Action -eq 'Reset' -and -not $ConfirmReset) {
-    throw 'Reset deletes only meshops-demo databases, queues and access codes. Explicitly pass -ConfirmReset to proceed.'
+    throw 'Reset deletes only meshops-demo databases, queues and accounts. Explicitly pass -ConfirmReset to proceed.'
 }
 if ($Service -and $Action -ne 'Logs') { throw '-Service is only supported with -Action Logs.' }
 if ($Follow -and $Action -ne 'Logs') { throw '-Follow is only supported with -Action Logs.' }
@@ -68,11 +68,10 @@ try {
                 }
             }
             Write-Host 'Demo is running: http://localhost:18090'
-            Write-Host 'Use ./scripts/demo-stack.ps1 -Action Codes to read the two browser access codes.'
+            Write-Host '首次使用：./scripts/account-admin.ps1 -Action Setup，自行设置管理员密码；已有账号不会重置。'
             Write-Host 'Container health and host HTTP checks passed; follow the end-to-end walkthrough to verify task execution and CDC search.'
         }
         'Status' { Invoke-DemoCompose @('ps','-a') }
-        'Codes' { Invoke-DemoCompose @('run','--rm','--no-deps','init','codes') }
         'Logs' {
             $logArgs = @('logs','--tail','150')
             if ($Follow) { $logArgs += '--follow' }

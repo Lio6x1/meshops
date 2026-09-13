@@ -1,0 +1,16 @@
+Binding SQL batching verification, 2026-09-13
+Scope: internal/tasks/migrations.go and migrations_batch_integration_test.go only.
+Server: isolated MySQL 8 at 127.0.0.1:13306; random course_test_* databases created/migrated/dropped per test. GOMAXPROCS=2, GOFLAGS=-p=2, Go 1.25.10.
+Counts: server session Com_select + Com_insert + Com_update deltas on an exclusive DB connection. Transaction control, migration/setup, SHOW STATUS and driver protocol prepare/close are excluded from SQL counts. Measured elapsed includes the whole Seed / CheckBindings call (including commit), excludes migration and registry construction.
+
+Entities | operation | before elapsed | before SQL | final after elapsed | after SQL
+1000 | Seed | 7.8605848s | 4004 | 479.5905ms | 12
+1000 | CheckBindings | 3.7290554s | 2002 | 39.5606ms | 6
+10000 | Seed | 65.1939145s | 40004 | 1.926309s | 84
+10000 | CheckBindings | 31.1899673s | 20002 | 465.1184ms | 42
+
+RED: TestBindingScaleRoundTrips failed exactly because existing code exceeded SQL budget at both sizes.
+GREEN: final TestBindingScaleRoundTrips, TestBindingBatchesRejectConflictsAndRollback, TestDemoEntityExpansionIsAdditiveAndAtomic passed, package 48.956s.
+Also passed: ordinary go test ./internal/tasks (2.388s), TestA03MigrationsAndNonDestructiveSeed including legacy=false, legacy=true, duplicate audit rejection (earlier after run, 35.10s).
+No million-entity heavy load was run. Batch size is 500 rows with a single atomic transaction; total registry/source JSON, transaction lock/undo footprint and source JSON document size remain proportional to dataset size. SQL request counts improve; full-scale capacity still requires the parent verification workflow.
+Raw logs: binding-baseline.txt, binding-after.txt, binding-final.txt in this directory.

@@ -1,0 +1,11 @@
+goos: linux
+goarch: amd64
+pkg: example.com/meshops-course/internal/verification
+cpu: Intel(R) Core(TM) i7-14650HX
+BenchmarkLoadDriverFixture/disk-2         	    1634	    723662 ns/op	   12270 B/op	     244 allocs/op
+BenchmarkLoadDriverFixture/disk-2         	    1584	    743360 ns/op	   12268 B/op	     244 allocs/op
+BenchmarkLoadDriverFixture/disk-2         	    1754	    967133 ns/op	   12278 B/op	     244 allocs/op
+BenchmarkLoadDriverFixture/cached-2       	   82124	     14464 ns/op	    9459 B/op	     201 allocs/op
+BenchmarkLoadDriverFixture/cached-2       	   81951	     15055 ns/op	    9459 B/op	     201 allocs/op
+BenchmarkLoadDriverFixture/cached-2       	   77223	     14466 ns/op	    9459 B/op	     201 allocs/op
+PASS

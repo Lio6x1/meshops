@@ -1,0 +1,41 @@
+2026-09-13 百万实体初始化失败诊断
+
+证据来源说明
+本文件及 redo-diagnosis.json 是 agent 工具现场输出的事后忠实归档。
+配置查询和微复现没有在执行时保存成独立原始日志文件，因此不提供或虚构原始文件 SHA-256。
+JSON 内的 chunk ID 仅用于关联本次会话工具输出，不是文件哈希。
+原压测记录来自 20260913T140130-13ad51c7 下的 summary.json、containers.log、resources.jsonl。
+
+现场配置查询输出（工具 chunk e1c0e6）
+innodb_buffer_pool_size  268435456
+innodb_log_buffer_size   16777216
+innodb_redo_log_capacity 104857600
+max_allowed_packet      67108864
+失败压测库 course_bindings COUNT(*) = 0
+重启后状态计数：Innodb_data_written=308409856，Innodb_log_waits=0，Innodb_os_log_written=20784128。
+以上状态计数是在诊断重启后查询，不能当作原失败时段的增量。
+
+微复现输出转录（工具 chunk f2e6c7）
+manifest_bytes 44303804
+source_counts [100000,100000,100000,100000,100000,100000,100000,100000,100000,100000]
+source_json_bytes [3000197,3200197,3000196,3000196,3400198,3400198,3000196,3000196,3200197,3600199]
+combined_bytes 31801970
+建库建表：elapsed 0.302，exit 0，无 stderr。
+单来源：服务器输出 1 / 0.4375 秒；端到端 elapsed 0.756，exit 0，无 stderr。
+10 来源合批：服务器输出 10 / 0.8741 秒；端到端 elapsed 2.296，exit 0，无 stderr。
+删除诊断库：elapsed 0.398，exit 0，无 stderr。
+
+方法与清理
+仅启动 meshops-scale-mysql-1，保持 MySQL 1 GiB / 2 CPU 限制，未启动其他服务。
+使用随机 binding_diag_<UUID> 数据库，表结构为 binding_key 主键及 binding_json JSON。
+每组执行 START TRANSACTION、INSERT、服务器计时查询、ROLLBACK；最后 DROP 该诊断库成功。
+服务器计时不含 rollback，端到端计时包含 docker exec、SQL 传输和 rollback；两者都不含 Python 构造 JSON/SQL 的耗时。
+没有重放百万实体此前的持续写入压力；未改变业务代码、配置、资源限制或数据库超时。
+结束时已停止本 agent 启动的 MySQL（chunk f5c40b，exit 0）。这是当时的恢复状态，不代表后续复测的容器状态。
+
+结论与边界
+原百万初始化期间，从 06:02:19Z 至 06:03:26Z 持续出现 MY-014084 redo 空间无法回收、log_checkpointer 落后的警告。
+100 MiB redo 容量及这些警告，比“来源 JSON 单批太大”提供了更直接的瓶颈证据。
+31.8 MB 来源合批独立插入成功且小于 64 MiB 包上限；但不能由此断言其在原持续写入压力下没有成本。
+建议由 parent 在独立压测环境调整 redo 容量后按原参数复测，保留事务原子性、完整校验、RAM/CPU 和超时边界。
+本诊断未验证百万实体持续运行能力，也未证明调整后百万初始化会通过。

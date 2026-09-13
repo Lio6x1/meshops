@@ -1,10 +1,13 @@
 package verification
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"example.com/meshops-course/internal/platform"
+	"example.com/meshops-course/internal/state"
 )
 
 func TestBenchmarkProfilesAndDriver(t *testing.T) {
@@ -63,6 +66,65 @@ func TestBenchmarkProfilesAndDriver(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestLoadDriverCachesEachSourceFixture(t *testing.T) {
+	source := platform.Source{TenantID: "test", ID: "source", Adapter: "person", Generation: 1, Fixture: filepath.Join("..", "..", "testdata", "sources", "person.json"), Entities: map[string]string{"raw": "entity"}}
+	raw, err := os.ReadFile(source.Fixture)
+	if err != nil {
+		t.Fatal(err)
+	}
+	source.Fixture = filepath.Join(t.TempDir(), "person.json")
+	if err = os.WriteFile(source.Fixture, raw, 0600); err != nil {
+		t.Fatal(err)
+	}
+	driver, err := newLoadDriver(&Environment{Sources: []platform.Source{source}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = os.Remove(source.Fixture); err != nil {
+		t.Fatal(err)
+	}
+	for version := int64(1); version <= 2; version++ {
+		job, err := driver.job(false)
+		if err != nil || job.event.EntityVersion != version {
+			t.Fatal("fixture was reread or version lost", err)
+		}
+	}
+}
+
+func BenchmarkLoadDriverFixture(b *testing.B) {
+	root := os.Getenv("MESHOPS_BENCH_FIXTURE_ROOT")
+	if root == "" {
+		root = filepath.Join("..", "..", "testdata", "sources")
+	}
+	source := platform.Source{TenantID: "test", ID: "source", Adapter: "person", Generation: 1, Fixture: filepath.Join(root, "person.json"), Entities: map[string]string{"raw": "entity"}}
+	b.Run("disk", func(b *testing.B) {
+		b.ReportAllocs()
+		for i := 0; i < b.N; i++ {
+			now := time.Now().UTC()
+			raw, err := state.GenerateRaw(source, "raw", int64(i+1), now)
+			if err != nil {
+				b.Fatal(err)
+			}
+			if _, err = state.Normalize(raw, source, now); err != nil {
+				b.Fatal(err)
+			}
+		}
+	})
+	b.Run("cached", func(b *testing.B) {
+		driver, err := newLoadDriver(&Environment{Sources: []platform.Source{source}})
+		if err != nil {
+			b.Fatal(err)
+		}
+		b.ReportAllocs()
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			if _, err = driver.job(false); err != nil {
+				b.Fatal(err)
+			}
+		}
+	})
 }
 
 func TestInvalidBenchmarkProfileAndDimensions(t *testing.T) {

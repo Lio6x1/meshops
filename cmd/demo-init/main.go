@@ -73,7 +73,7 @@ func run(args []string) error {
 			}
 		}
 		if err == nil {
-			fmt.Println("Demo credentials ready; use demo-stack.ps1 -Action Codes for browser access.")
+			fmt.Println("Demo service credentials ready; use scripts/account-admin.ps1 -Action Setup to set the administrator password.")
 		}
 		return err
 	}
@@ -81,7 +81,7 @@ func run(args []string) error {
 	var err error
 	if args[0] == "exec" {
 		secrets, err = readCredentialFile(filepath.Join(dir, "runtime-secrets.json"), runtimeSecretNames())
-		if err == nil && len(args) > 1 && filepath.Base(args[1]) == "web-gateway" {
+		if err == nil && len(args) > 1 && filepath.Base(args[1]) == "web-gateway" && os.Getenv("MESHOPS_ACCOUNT_AUTH") != "1" {
 			var browser map[string]string
 			browser, err = readCredentialFile(filepath.Join(dir, "web-codes.json"), browserSecretNames())
 			for k, v := range browser {
@@ -95,6 +95,9 @@ func run(args []string) error {
 		return err
 	}
 	if args[0] == "codes" {
+		if os.Getenv("MESHOPS_ACCOUNT_AUTH") == "1" {
+			return errors.New("account mode uses personal passwords; run scripts/account-admin.ps1 -Action Setup")
+		}
 		fmt.Print(accessCodes(secrets))
 		return nil
 	}

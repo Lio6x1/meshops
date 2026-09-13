@@ -17,6 +17,9 @@ import (
 const cookieName = "meshops_session"
 
 type session struct {
+	authVersion                          int64
+	username, displayName                string
+	mustChange                           bool
 	id, csrf, role, actor, tenant, token string
 	expires                              time.Time
 	streams                              atomic.Int32
@@ -45,6 +48,8 @@ func webError(w http.ResponseWriter, httpCode int, message string) {
 		code = 7
 	case 404:
 		code = 5
+	case 409:
+		code = 6
 	case 429:
 		code = 8
 	case 503:
@@ -76,7 +81,7 @@ func (s *Server) authenticate(r *http.Request) *session {
 	return s.sessions[c.Value]
 }
 func (s *Server) sessionResponse(p *session) map[string]any {
-	return map[string]any{"role": p.role, "tenantId": p.tenant, "actorId": p.actor, "csrfToken": p.csrf, "expiresAt": p.expires.UTC().Format(time.RFC3339), "serverTime": s.cfg.Now().UTC().Format(time.RFC3339Nano)}
+	return map[string]any{"role": p.role, "tenantId": p.tenant, "actorId": p.actor, "csrfToken": p.csrf, "expiresAt": p.expires.UTC().Format(time.RFC3339), "serverTime": s.cfg.Now().UTC().Format(time.RFC3339Nano), "username": p.username, "displayName": p.displayName, "mustChangePassword": p.mustChange}
 }
 
 func (s *Server) sessionHTTP(w http.ResponseWriter, r *http.Request) {
@@ -93,6 +98,10 @@ func (s *Server) sessionHTTP(w http.ResponseWriter, r *http.Request) {
 		if limited {
 			w.Header().Set("Retry-After", "60")
 			webError(w, 429, "too many login attempts")
+			return
+		}
+		if s.cfg.Accounts != nil {
+			s.accountLoginHTTP(w, r)
 			return
 		}
 		var body struct {
@@ -159,6 +168,17 @@ func (s *Server) sessionHTTP(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		writeJSON(w, 200, s.sessionResponse(p))
 	case "DELETE":
+		if s.cfg.Accounts != nil {
+			err := s.cfg.Accounts.Logout(r.Context(), p.token)
+			s.removeSession(p.id)
+			clearCookie(w, r)
+			if err != nil {
+				accountError(w, err)
+				return
+			}
+			w.WriteHeader(204)
+			return
+		}
 		s.mu.Lock()
 		if old := s.sessions[p.id]; old != nil {
 			delete(s.sessions, p.id)

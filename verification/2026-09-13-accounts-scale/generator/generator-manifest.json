@@ -1,0 +1,29 @@
+{
+  "scope": "generator evidence only; separate from account evidence manifest",
+  "files": [
+    {
+      "path": "linux-image-fixture.txt",
+      "sha256": "02be0ca27f433a553d0fcbb0f3b90aae7f93b82e4d6f4ed0253e95af83fd6e99"
+    },
+    {
+      "path": "linux-work-symlink-fixture.txt",
+      "sha256": "0d9c943479e32beb499acc3a2afc5507d19ba4da1925b164966c97643dfde5ea"
+    },
+    {
+      "path": "linux-generator-tests.txt",
+      "sha256": "00a25de6ef4c390697f5b74ffcf9267a0e1ec3046fbfae7682cd81a636f28cc6"
+    },
+    {
+      "path": "image-profile-top.txt",
+      "sha256": "6fe8796a6f6577ea1bd400ef584fe82d2e971426016ee5fe7aef132d3d09f76f"
+    },
+    {
+      "path": "work-symlink-profile-top.txt",
+      "sha256": "4141e28ac8721db72ce624230d72a36fd59efda48053f2b630cf0f24b83b1295"
+    },
+    {
+      "path": "summary.json",
+      "sha256": "a7c1633a6e4daffbc895196d09a6ab1885b8f2258b3b57a22d751c635e00a220"
+    }
+  ]
+}

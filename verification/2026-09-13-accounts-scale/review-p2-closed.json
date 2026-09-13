@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "findingId": "P2-http-account-session-precheck-deadline",
+  "priority": "P2",
+  "status": "closed",
+  "recordedAtUTC": "2026-09-13T06:26:59.875272+00:00",
+  "finding": "Initial AccountService.CheckSession could wait for a database connection without a request deadline, including before SSE setup.",
+  "resolution": {
+    "precheckTimeoutSeconds": 3,
+    "separateChildContext": true,
+    "childCancelledAfterCheck": true,
+    "downstreamUsesOriginalRequestContext": true,
+    "sseLifetimeLimitedByPrecheckTimeout": false
+  },
+  "validation": {
+    "targetedRedGreen": {
+      "provenance": "Root task handoff reports both blocking-mock route cases RED then GREEN; standalone raw targeted-run log was not supplied for this archive.",
+      "command": "go test ./internal/web",
+      "reportedGreenPackageElapsedSeconds": 9.385,
+      "routes": [
+        "/api/v1/tasks",
+        "/api/v1/entities/stream"
+      ],
+      "rawStandaloneLogArchived": false
+    },
+    "finalOrdinaryRun": {
+      "source": ".cache/account-scale/unit-final.jsonl",
+      "sourceSHA256": "17dc9ab3e89b41b52898c70ca9541ee207914275b90994804d3d71f10ce79f39",
+      "testResults": [
+        {
+          "Action": "pass",
+          "Test": "TestAccountSessionPrecheckHasBoundedDeadline//api/v1/tasks",
+          "Package": "example.com/meshops-course/internal/web",
+          "Elapsed": 3,
+          "Time": "2026-09-13T14:12:43.6586773+08:00"
+        },
+        {
+          "Action": "pass",
+          "Test": "TestAccountSessionPrecheckHasBoundedDeadline//api/v1/entities/stream",
+          "Package": "example.com/meshops-course/internal/web",
+          "Elapsed": 3,
+          "Time": "2026-09-13T14:12:46.6593878+08:00"
+        },
+        {
+          "Action": "pass",
+          "Test": "TestAccountSessionPrecheckHasBoundedDeadline",
+          "Package": "example.com/meshops-course/internal/web",
+          "Elapsed": 6,
+          "Time": "2026-09-13T14:12:46.6593878+08:00"
+        }
+      ],
+      "webPackageResult": {
+        "Action": "pass",
+        "Package": "example.com/meshops-course/internal/web",
+        "Elapsed": 8.721,
+        "Time": "2026-09-13T14:12:46.8533958+08:00"
+      }
+    },
+    "independentFinalReadOnlyReview": {
+      "status": "confirmed",
+      "provenance": "Root task handoff reports final review agent read-only confirmation; this is review provenance, not a separate test run."
+    }
+  },
+  "codeSnapshots": [
+    {
+      "path": "internal/web/server.go",
+      "sha256": "d80748b0bd2a68529df7c9393c7c3eb486c8828d5f9656cf8af89eb200fa9cc4"
+    },
+    {
+      "path": "internal/web/accounts_test.go",
+      "sha256": "2e4f996baf4f974fa7fc7a1b2241652fc2a584aae70e2981fb8cc04ec3570843"
+    }
+  ],
+  "notClaimed": [
+    "real-dependency race after this change",
+    "CI passed",
+    "million-entity capacity passed"
+  ]
+}

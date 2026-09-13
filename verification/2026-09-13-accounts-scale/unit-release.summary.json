@@ -1,0 +1,106 @@
+{
+  "command": "go test ./... -json -count=1 -timeout=10m",
+  "environment": {
+    "os": "Windows",
+    "GOMAXPROCS": 2,
+    "GOFLAGS": "-p=2"
+  },
+  "topLevel": {
+    "pass": 168,
+    "skip": 22,
+    "fail": 0
+  },
+  "skips": [
+    {
+      "package": "example.com/meshops-course/internal/bus",
+      "test": "TestPartitionFailureDoesNotBlockHealthyPartition"
+    },
+    {
+      "package": "example.com/meshops-course/internal/bus",
+      "test": "TestLagAndReplayAfterCanceledHandler"
+    },
+    {
+      "package": "example.com/meshops-course/internal/bus",
+      "test": "TestRetentionGapIsNotReportedAsHealthyLag"
+    },
+    {
+      "package": "example.com/meshops-course/internal/bus",
+      "test": "TestStrictPerPartitionReplayBoundaries"
+    },
+    {
+      "package": "example.com/meshops-course/internal/edge",
+      "test": "TestDurableCrashChild"
+    },
+    {
+      "package": "example.com/meshops-course/internal/simulation",
+      "test": "TestRedisDesiredAndObservedLifecycle"
+    },
+    {
+      "package": "example.com/meshops-course/internal/state",
+      "test": "TestDurableCrashChild"
+    },
+    {
+      "package": "example.com/meshops-course/internal/state",
+      "test": "TestRedisForceKillBeforeOffsetReplaysWithoutRegressing"
+    },
+    {
+      "package": "example.com/meshops-course/internal/state",
+      "test": "TestMySQLSampleIdempotencePagingAgeAndBudget"
+    },
+    {
+      "package": "example.com/meshops-course/internal/state",
+      "test": "TestRedisOOMDoesNotCommitKafkaOffset"
+    },
+    {
+      "package": "example.com/meshops-course/internal/state",
+      "test": "TestKafkaShadowMissingManifestDoesNotSwitch"
+    },
+    {
+      "package": "example.com/meshops-course/internal/state",
+      "test": "TestHistoryRetentionCatchesUpMoreThanOneBatch"
+    },
+    {
+      "package": "example.com/meshops-course/internal/state",
+      "test": "TestHistoryRetentionBothClocksAndCutoff"
+    },
+    {
+      "package": "example.com/meshops-course/internal/state",
+      "test": "TestSharedReconcileReadsUniqueEntityMetadata"
+    },
+    {
+      "package": "example.com/meshops-course/internal/state",
+      "test": "TestNewEntityAndRunStrictRecoveryLifecycle"
+    },
+    {
+      "package": "example.com/meshops-course/internal/state",
+      "test": "TestVerifiedReplayFloorsRequireActivationEvidence"
+    },
+    {
+      "package": "example.com/meshops-course/internal/state",
+      "test": "TestNewRedisNamespaceReplaysCommittedLatestFacts"
+    },
+    {
+      "package": "example.com/meshops-course/internal/state",
+      "test": "TestGenerationWatcherRecoversDependencyFailure"
+    },
+    {
+      "package": "example.com/meshops-course/internal/state",
+      "test": "TestSixFixturesThroughAuthenticatedRPCAndKafka"
+    },
+    {
+      "package": "example.com/meshops-course/internal/state",
+      "test": "TestRedisOrderingTombstoneAndManifest"
+    },
+    {
+      "package": "example.com/meshops-course/internal/state",
+      "test": "TestRedisSubscriptionInitialRaceDeleteAndGap"
+    },
+    {
+      "package": "example.com/meshops-course/internal/state",
+      "test": "TestGRPCBlockedSubscriberReleasesSenderAndDoesNotBlockPeer"
+    }
+  ],
+  "start": "2026-09-13T14:42:53.2159353+08:00",
+  "end": "2026-09-13T14:43:52.1204973+08:00",
+  "note": "Final frozen runtime; includes byte-budget INSERT rollback tests. Ordinary run excludes integration-tagged tests; 20 dependency skips and 2 helper skips are not passes. Separate go vet completed with exit 0."
+}

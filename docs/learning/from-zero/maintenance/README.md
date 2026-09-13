@@ -13,6 +13,8 @@
 | 交付要求 | [完整代码标准](../../reference-code-standard.md) |
 | 当前状态与剩余工作 | [工作记录](../BUILD-LEDGER.md)；已注明历史的段落不作当前待办 |
 | 成品实际启动和双模式切换 | [完整前后端启动手册](../../../run-fullstack.md)，学生代码位于兄弟 meshops-course-lab，参考教材不整体复制过去 |
+| 账号生命周期与恢复 | [个人账号手册](../../../operations/accounts.md)，区分 Local/Docker 数据库及 Setup/Reset |
+| 大规模试验与失败判据 | [规模压测手册](../../../operations/scale-benchmark.md)，独立实体基数、事件速率、资源、时限和完整预热 |
 
 修改最终代码前先判断影响哪些教学阶段，再同步对应阶段、生成讲义并验证。不要直接编辑生成的文件答案或 Proto 生成代码。阶段代码的重复是教学快照；是否存在业务内部不必要的重复，需要代码审查，不能通过删除快照解决。
 
@@ -29,7 +31,7 @@
 | [publish-lesson-code.ps1](../publish-lesson-code.ps1) | 同步 Z01—Z03 正文代码；`-Check` 只检查 |
 | [publish-file-guides.ps1](../publish-file-guides.ps1) | 生成阶段完整文件答案；`-Check` 只检查 |
 | [publish-search-checkpoint.ps1](../publish-search-checkpoint.ps1) | 检查冻结 Z10 的来源和指纹；不再把根工程写成 Z10 |
-| [publish-fullstack.py](../publish-fullstack.py) | 从固定 Z10 累积发布 Z11 网关、Z12 Vue 和根工程 Z13；排除凭证、缓存、node_modules、dist，随后再生成文件答案/分步清单 |
+| [publish-fullstack.py](../publish-fullstack.py) | 从固定 Z10 累积发布 Z11 账号与网关、Z12 Vue 和根工程 Z13；排除凭证、缓存、node_modules、dist，随后再生成文件答案/分步清单 |
 | [publish-substeps.ps1](../publish-substeps.ps1) | 生成分步清单、说明和过渡文件；会写文件 |
 | [test-checkpoints.ps1](../test-checkpoints.ps1) | 检查受管理复制的边界和保护 |
 | [verify-git-checkpoints.py](../verify-git-checkpoints.py) | Python 3 标准库检查当前 Git 下载目录的阶段文件指纹；提交前加 `--staged` 检查暂存内容，防止换行转换使教材失效 |
@@ -57,11 +59,15 @@ Git 文本统一使用 LF。阶段清单校验原始字节，因此提交前执�
 
 结构整理、根目录迁移、搜索链路、维护重建、Z10 复制与独立学习环境验证已完成，本次整体复核见 [复核记录](../verification/2026-09-12-integrated-review.md)。搜索是新增范围，其证据单独记录，不把原有 A01—A28 验收自动算作搜索已验收。
 
-维护最终根源码后，先检查变化归属，再按顺序运行 `publish-search-checkpoint.ps1`（验证固定 Z10）、`python publish-fullstack.py`、`publish-file-guides.ps1`、`publish-substeps.ps1`；命令位置是 `docs/learning/from-zero`，也可从根目录使用完整相对路径。不要把根源码倒灌到 Z09/Z10。Z11 只引入网关，Z12 引入前端，Z13 才收录完整部署和最终运行代码。
+维护最终根源码后，先检查变化归属，再按顺序运行 `publish-search-checkpoint.ps1`（验证固定 Z10）、`python publish-fullstack.py`、`publish-file-guides.ps1`、`publish-substeps.ps1`；命令位置是 `docs/learning/from-zero`，也可从根目录使用完整相对路径。不要把根源码倒灌到 Z09/Z10。Z11 引入账号与网关，必须配套发布 `internal/accounts`、`internal/platform`、`internal/app`、迁移 005、管理员 CLI 和启用账号的环境/构建脚本；Z12 引入前端与账号页，Z13 收录完整部署、持久化账号初始化和最终运行代码。
 
 Z04—Z09 的 20 步、Z10 的 3 步、Z11 的 2 步、Z12 的 2 步和 Z13 的 1 步，合计 28 步；它们不是 28 个完全独立业务场景。`verify-substeps.ps1 -SearchOnly` 从固定 Z09 验证搜索三步，`-WebOnly` 从固定 Z10 验证新增五步。默认模式按全部阶段运行；`verify-checkpoint-chain.ps1` 当前仍是原 Z01—Z09 的真实环境验证，不能据此宣称后续阶段已运行通过。
 
-新增阶段的完整代码、生成文件链接和锁文件必须都能恢复到学员目录；Z12-01 的领域测试依赖 `types.ts`、`domain.ts`、`transport.ts`、`requests.ts` 以及对应测试，不能漏掉辅助文件。Z12-02 和 Z13-01 才执行完整 Vue 构建。文件复制、Node 测试、Go 测试、真实 Compose 运行和浏览器多尺寸/键盘验收分别记录，前一项通过不自动证明后一项通过。
+新增阶段的完整代码、生成文件链接和锁文件必须都能恢复到学员目录；Z12-01 的测试依赖 `types.ts`、`domain.ts`、`transport.ts`、`requests.ts`、`api.ts`、`accounts.ts` 以及对应测试。账号请求测试导入 Vue，因此同一步也要发布 `package.json`、锁文件和 `frontend.ps1`，先 Install 再 Test；不能把必需依赖推迟到下一步。Z12-02 和 Z13-01 才执行完整 Vue 构建。文件复制、Node 测试、Go 测试、真实 Compose 运行和浏览器多尺寸/键盘验收分别记录，前一项通过不自动证明后一项通过。
+
+2026-09-13 本次发布已有 13 个阶段、28 个分步、1790 条文件指纹（Z13 为 356 个文件）与 428 个完整代码块。指纹数量来自当前 `checkpoint-index.json` 的各阶段 files 总数；后续修改以重新生成的索引为准。加入账号后的完整讲义复制/构建仍在运行，不将生成成功、早期复制成功或根项目构建成功写成新一轮全部通过。
+
+当前根工程已完成普通测试、23 项必需真实依赖门禁、30 阶段真实 HTTP 账号流程、个人任务审计/取消/CDC、30 实体场景回归，以及 29 项前端测试与构建。最新 Windows 普通测试为 [168 PASS（unit-release）](../../../../verification/2026-09-13-accounts-scale/unit-release.summary.json)，先前 Linux 普通 race 为 162 PASS；两次普通运行各有 22 项 SKIP（20 项外部依赖门控、2 项 edge/state 崩溃子进程辅助入口）；完整真实依赖 race 待最终 CI 验收，百万容量与教程最终复制验收仍待完成。规模工具和教程命令已经交付，但吞吐/容量结论必须引用实际完成报告；不修改旧日期报告的数字，也不让旧“暂停”记录覆盖用户后来恢复执行的授权。
 
 本轮正确性修复已按适用能力同步回早期阶段：例如 Z05 引入严格投影，Z08 引入历史数据库后同时更新构造器及其测试，Z09 才引入经过验证的重建恢复起点。这里的“不要倒灌”指不要把最终搜索能力整体提前复制到旧阶段，不是禁止修复阶段答案中的共同缺陷。
 

@@ -1,6 +1,6 @@
 # 模拟器控制与实体地图
 
-在完整参考工程中运行 `./scripts/demo-stack.ps1 -Action Up`，打开 `http://localhost:18090`，使用操作员或管理员访问码登录。实体总览和实体资源都有二维地图；左侧“模拟演示”控制后台数据源。无需地图密钥，也不调用外部瓦片服务。
+在完整参考工程中运行 `./scripts/demo-stack.ps1 -Action Up`，按[账号手册](operations/accounts.md)通过 Setup 设置管理员，再用个人用户名和密码登录 `http://localhost:18090`。管理员可创建操作员，操作员须先完成首次改密并重新登录。两种角色都可使用模拟演示。实体总览和实体资源都有二维地图；左侧“模拟演示”控制后台数据源。无需地图密钥，也不调用外部瓦片服务。
 
 ## 先体验
 
@@ -72,17 +72,28 @@ SVG 底图为绘制的园区示意，建筑位置并非真实测绘。以模拟�
 
 普通测试：`go test ./internal/web ./internal/edge ./internal/simulation ./cmd/web-gateway`；前端：`./scripts/frontend.ps1 -Action Test` 和 `-Action Build`。Redis 生命周期测试需要 `MESHOPS_TEST_REDIS_ADDR`，只操作唯一的测试键。
 
-真实演示验收脚本 `scripts/test-simulation.py` 使用 Python 标准库。先在当前终端设置环境变量 `MESHOPS_WEB_OPERATOR_CODE` 为本机演示操作员访问码，再执行：
+真实演示验收脚本 `scripts/test-simulation.py` 使用 Python 3 标准库，连接 `http://127.0.0.1:18090`。先在网页创建操作员并完成首次改密；脚本要求操作员角色，不能使用管理员或尚待改密的账号。在项目根目录的 PowerShell 7 中交互输入该操作员的用户名和密码，凭证只临时传给 Python 子进程：
 
 ```powershell
-python scripts/test-simulation.py results/simulation-my-run.json
+$simulationCredential = Get-Credential -Message '输入已完成首次改密的操作员用户名和密码'
+$simulationEvidence = Join-Path 'results' ('simulation-' + [Guid]::NewGuid().ToString('N') + '.json')
+try {
+    $env:MESHOPS_WEB_OPERATOR_USERNAME = $simulationCredential.UserName
+    $env:MESHOPS_WEB_OPERATOR_PASSWORD = $simulationCredential.GetNetworkCredential().Password
+    python -B scripts/test-simulation.py $simulationEvidence
+    if ($LASTEXITCODE -ne 0) { throw '模拟演示验收未通过，请查看本次结果文件。' }
+} finally {
+    Remove-Item Env:MESHOPS_WEB_OPERATOR_USERNAME, Env:MESHOPS_WEB_OPERATOR_PASSWORD -ErrorAction SilentlyContinue
+    if ($null -ne $simulationCredential) { $simulationCredential.Password.Dispose() }
+    Remove-Variable simulationCredential -ErrorAction SilentlyContinue
+}
 ```
 
-输出路径必须不存在。脚本会临时控制无人机来源，验证上报、暂停、离线缓存、过期和恢复，最后恢复运行前的期望模式；不删除数据。不要在另一人正在做同一来源演示时同时运行。访问码不写入结果文件。
+输出路径必须不存在。脚本会临时控制无人机来源，验证上报、暂停、离线缓存、过期和恢复，最后恢复运行前的期望模式；不删除数据。不要在另一人正在做同一来源演示时同时运行。密码不写入结果文件，也不应硬编码进命令或打印环境变量；运行期间它存在于当前进程及子进程内存中，结束后上面的 `finally` 清除临时环境变量。
 
-脚本会临时把无人机数量设为 1，并恢复原数量。新增 `python scripts/test-scene-counts.py results/scene-my-run.json` 验证 30 个新鲜快照、四类 `-005` 实体任务成功、数量越界拒绝、缩减后历史保留以及全零空场景；最后逐来源恢复原数量和模式。四条测试任务保留在历史中。
+脚本会临时把无人机数量设为 1，并恢复原数量。要验证完整数量场景，重新执行上面的安全输入代码，将 `try` 中的 Python 命令改为 `python -B scripts/test-scene-counts.py $simulationEvidence`，并将结果文件前缀从 `simulation-` 改为 `scene-`。该脚本验证 30 个新鲜快照、四类 `-005` 实体任务成功、数量越界拒绝、缩减后历史保留以及全零空场景；最后逐来源恢复原数量和模式。四条测试任务保留在历史中。
 
-`python scripts/test-motion.py results/motion-my-run.json` 临时启用六类各 5 个，比较真实 HTTP 快照：20 个移动实体几秒后应有明显位移，10 个固定实体位置应相同；结束恢复原数量与模式。地图轨迹开关、短轨迹和重新同步仍需通过浏览器检查。
+运动验收复用相同安全输入步骤，将 Python 命令改为 `python -B scripts/test-motion.py $simulationEvidence`，结果文件前缀改为 `motion-`。它临时启用六类各 5 个，比较真实 HTTP 快照：20 个移动实体几秒后应有明显位移，10 个固定实体位置应相同；结束恢复原数量与模式。地图轨迹开关、短轨迹和重新同步仍需通过浏览器检查。
 
 已有单实体演示环境重新 Up 时需要增量扩充注册清单，不能通过删除数据库解决。初始化在服务停止的维护阶段进行；只允许增加来源映射中的新 ID，旧实体归属、执行器、凭证和代次必须保持一致。
 

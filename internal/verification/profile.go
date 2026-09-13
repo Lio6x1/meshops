@@ -6,6 +6,7 @@ import (
 	"sort"
 
 	"example.com/meshops-course/internal/platform"
+	"example.com/meshops-course/internal/state"
 )
 
 // 配置方案仅改变输入构成，被测服务和输入速率保持不变。
@@ -70,8 +71,19 @@ func newLoadDriver(env *Environment) (*loadDriver, error) {
 			max = len(lists[i])
 		}
 	}
-	d := &loadDriver{environment: env}
-	seen := map[string]bool{}
+	total := 0
+	for _, ids := range lists {
+		total += len(ids)
+	}
+	d := &loadDriver{environment: env, targets: make([]loadTarget, 0, total), generators: make([]*state.RawGenerator, len(env.Sources))}
+	for i, source := range env.Sources {
+		generator, err := state.NewRawGenerator(source)
+		if err != nil {
+			return nil, err
+		}
+		d.generators[i] = generator
+	}
+	seen := make(map[string]bool, total)
 	for row := 0; row < max; row++ {
 		for s, ids := range lists {
 			if row >= len(ids) {

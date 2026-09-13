@@ -7,10 +7,8 @@ import (
 	"fmt"
 	"github.com/go-sql-driver/mysql"
 	"github.com/zeromicro/go-zero/core/conf"
-	"net"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -107,18 +105,6 @@ func LoadConfig(path string) (Config, error) {
 		}
 	}
 	return c, nil
-}
-
-// 明文 RPC 有意限制在本机，不解析主机名；要求直接使用 IP 地址，
-// 使访问边界明确，避免通过替换解析器或地址协议绕过限制。
-func localRPCAddress(address string, allowZeroPort bool) error {
-	host, port, err := net.SplitHostPort(address)
-	ip := net.ParseIP(host)
-	n, portErr := strconv.Atoi(port)
-	if err != nil || ip == nil || !ip.IsLoopback() || portErr != nil || n < 0 || n > 65535 || (!allowZeroPort && n == 0) {
-		return errors.New("plaintext RPC requires a loopback IP and valid port")
-	}
-	return nil
 }
 
 func OpenDB(env string) (*sql.DB, error) {

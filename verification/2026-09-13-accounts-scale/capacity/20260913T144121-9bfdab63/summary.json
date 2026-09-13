@@ -1,0 +1,276 @@
+{
+  "project": "meshops-scale",
+  "requested": {
+    "entities": 1000000,
+    "rates": [
+      500
+    ],
+    "seconds": 30,
+    "deadline_seconds": 1800,
+    "warmup_seconds": 1200,
+    "sample_seconds": 5,
+    "image": "meshops-account-backend:review"
+  },
+  "stage": "benchmark",
+  "outcome": "failed",
+  "startedAt": "2026-09-13T06:41:21Z",
+  "evidenceDirectory": ".local/scale/runs/20260913T144121-9bfdab63",
+  "resources": {
+    "runner": {
+      "cpus": 4,
+      "bytes": 3221225472
+    },
+    "mysql": {
+      "cpus": 2,
+      "bytes": 1073741824
+    },
+    "kafka": {
+      "cpus": 2,
+      "bytes": 1610612736
+    },
+    "redis": {
+      "cpus": 2,
+      "bytes": 1610612736,
+      "maxmemory": 1073741824
+    }
+  },
+  "docker": {
+    "Platform": {
+      "Name": "Docker Desktop 4.89.0 (238018)"
+    },
+    "Version": "29.7.2",
+    "ApiVersion": "1.55",
+    "MinAPIVersion": "1.40",
+    "Os": "linux",
+    "Arch": "amd64",
+    "Components": [
+      {
+        "Name": "Engine",
+        "Version": "29.7.2",
+        "Details": {
+          "ApiVersion": "1.55",
+          "Arch": "amd64",
+          "BuildTime": "Wed Aug  5 18:28:36 2026",
+          "Experimental": "false",
+          "GitCommit": "6a43e3d",
+          "GoVersion": "go1.26.5",
+          "KernelVersion": "6.6.114.1-microsoft-standard-WSL2",
+          "MinAPIVersion": "1.40",
+          "Module": "github.com/moby/moby/v2",
+          "ModuleVersion": "v2.0.0+unknown",
+          "Os": "linux"
+        }
+      },
+      {
+        "Name": "containerd",
+        "Version": "v2.3.3",
+        "Details": {
+          "GitCommit": "aad11006b869517fcd3009450b6f82da282e1a9b"
+        }
+      },
+      {
+        "Name": "runc",
+        "Version": "1.4.3",
+        "Details": {
+          "GitCommit": "v1.4.3-0-gbb14dabe"
+        }
+      },
+      {
+        "Name": "docker-init",
+        "Version": "0.19.0",
+        "Details": {
+          "GitCommit": "de40ad0"
+        }
+      }
+    ],
+    "GitCommit": "6a43e3d",
+    "GoVersion": "go1.26.5",
+    "KernelVersion": "6.6.114.1-microsoft-standard-WSL2",
+    "BuildTime": "2026-08-05T18:28:36.000000000+00:00"
+  },
+  "configuredMySQLTuning": {
+    "bufferPoolBytes": 268435456,
+    "redoCapacityBytes": 1073741824
+  },
+  "cgroupOomKillCount": 0,
+  "stopExitCode": 0,
+  "benchmark": {
+    "sourceStaleAfterSeconds": 30,
+    "warmupExpiredSnapshots": 0,
+    "warmupSnapshotMeaning": "full retained snapshot identity, source, type, generation and version; expired snapshots remain readable and are counted separately; not a freshness guarantee",
+    "stage": "warmup_publish",
+    "requested": {
+      "entities": 1000000,
+      "rates": [
+        500
+      ],
+      "seconds": 30,
+      "profile": "mixed",
+      "warmupTimeoutNanoseconds": 1200000000000
+    },
+    "warmup": {
+      "consumerDrainSeconds": 30.000602362,
+      "requested": 1000000,
+      "generationSeconds": 292.746643673,
+      "generatedEventsPerSecond": 3415.9230229023797,
+      "offeredEventsPerSecond": 0,
+      "scheduled": 1000000,
+      "generatorQueueDrops": 0,
+      "accepted": 1000000,
+      "acceptedByType": {
+        "drone": 200000,
+        "facility": 100000,
+        "person": 200000,
+        "robot": 200000,
+        "sensor": 100000,
+        "vehicle": 200000
+      },
+      "errors": 0,
+      "errorExamples": null,
+      "elapsedIncludingDrainSeconds": 322.945176969,
+      "acceptedEventsPerSecond": 3096.500803589928,
+      "clientToKafkaAck": {
+        "samples": 100000,
+        "p50Ms": 1.426,
+        "p99Ms": 53.466,
+        "maxMs": 80.918
+      },
+      "generatedToObserved": {
+        "samples": 0,
+        "p50Ms": 0,
+        "p99Ms": 0,
+        "maxMs": 0
+      },
+      "observationCandidates": 0,
+      "observationMisses": 0,
+      "projectorLag": 472332,
+      "historyLag": 326211,
+      "ingest": {
+        "series": 0,
+        "goHeapBytes": 0,
+        "goroutines": 0
+      },
+      "entity": {
+        "series": 0,
+        "goHeapBytes": 0,
+        "goroutines": 0
+      },
+      "messageBytesDistribution": {
+        "samples": 100000,
+        "p50Bytes": 290,
+        "p99Bytes": 312,
+        "maxBytes": 312
+      }
+    },
+    "RunID": "636c984438da4352af3c02776a8ff060",
+    "StartedAt": "2026-09-13T06:41:42Z",
+    "Go": "go1.25.10",
+    "OS": "linux",
+    "Arch": "amd64",
+    "CPU": "",
+    "LogicalCPUs": 24,
+    "Entities": 1000000,
+    "Sources": 10,
+    "Partitions": 3,
+    "Batch": 1,
+    "Scope": "real authenticated Ingest -> Kafka -> Entity -> Redis/MySQL; excludes gateway bbolt, tasks and subscription fanout",
+    "MemoryMeaning": "Go live heap; container RSS and limits are recorded by scale runner",
+    "ObservationMeaning": "rotating sample across ten sources; polling same or higher version; ACK/message reservoirs at most 100000; every warmup identity verified",
+    "InitialIngest": {
+      "series": 65,
+      "goHeapBytes": 675427336,
+      "goroutines": 15
+    },
+    "InitialEntity": {
+      "series": 65,
+      "goHeapBytes": 657551760,
+      "goroutines": 57
+    },
+    "WarmupAccepted": 1000000,
+    "WarmupSnapshots": 0,
+    "profile": "mixed",
+    "entityCountsByType": {
+      "drone": 200000,
+      "facility": 100000,
+      "person": 200000,
+      "robot": 200000,
+      "sensor": 100000,
+      "vehicle": 200000
+    },
+    "sourceCountsByType": {
+      "drone": 2,
+      "facility": 1,
+      "person": 2,
+      "robot": 2,
+      "sensor": 1,
+      "vehicle": 2
+    },
+    "warmupAcceptedByType": {
+      "drone": 200000,
+      "facility": 100000,
+      "person": 200000,
+      "robot": 200000,
+      "sensor": 100000,
+      "vehicle": 200000
+    },
+    "warmupSnapshotsByType": {},
+    "failure": "consumer drain: projector=472332 history=326211: context deadline exceeded",
+    "Phases": null,
+    "EvidenceDirectory": "/work/.local/verification/636c984438da4352af3c02776a8ff060",
+    "Database": "verify_636c984438da4352af3c02776a8ff060",
+    "TopicPrefix": "verify_636c984438da4352af3c02776a8ff060_"
+  },
+  "states": [
+    {
+      "id": "b16e0a2ffd7b38628acd901ee5080bd9737ae75538e99842ca378a31372efae4",
+      "name": "/meshops-scale-mysql-1",
+      "status": "running",
+      "running": true,
+      "oomKilled": false,
+      "exitCode": 0,
+      "error": "",
+      "memoryLimit": 1073741824,
+      "nanoCpus": 2000000000,
+      "health": "healthy"
+    },
+    {
+      "id": "e2851d85468efc012bc2e2be7f29f1d1002d4d7f138a9519cdcc9084a4541cec",
+      "name": "/meshops-scale-redis-1",
+      "status": "running",
+      "running": true,
+      "oomKilled": false,
+      "exitCode": 0,
+      "error": "",
+      "memoryLimit": 1610612736,
+      "nanoCpus": 2000000000,
+      "health": "healthy"
+    },
+    {
+      "id": "1a42a9d151882656e91a393d8dcab65d48409e07d881a62131c61efaa37c8238",
+      "name": "/meshops-scale-kafka-1",
+      "status": "running",
+      "running": true,
+      "oomKilled": false,
+      "exitCode": 0,
+      "error": "",
+      "memoryLimit": 1610612736,
+      "nanoCpus": 2000000000,
+      "health": "healthy"
+    },
+    {
+      "id": "dd5db4fedf6afdf382aada5b5195ff95de6a6ac8a6f22b2cb051556c818a8f5d",
+      "name": "/meshops-scale-runner-1",
+      "status": "exited",
+      "running": false,
+      "oomKilled": false,
+      "exitCode": 1,
+      "error": "",
+      "memoryLimit": 3221225472,
+      "nanoCpus": 4000000000,
+      "health": "none"
+    }
+  ],
+  "exitCode": 1,
+  "timedOut": false,
+  "finishedAt": "2026-09-13T06:52:21Z"
+}

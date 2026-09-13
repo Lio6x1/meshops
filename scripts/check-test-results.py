@@ -10,6 +10,7 @@ from pathlib import Path
 
 
 REQUIRED = {
+    "internal/accounts": {"TestAccountsMySQLLifecycleAndPersonalRPC", "TestConcurrentBootstrapCreatesExactlyOneAdmin", "TestLoggedOutPrincipalCannotMutate", "TestAccountHTTPSSERevocation"},
     "internal/bus": {"TestPartitionFailureDoesNotBlockHealthyPartition", "TestRetentionGapIsNotReportedAsHealthyLag"},
     "internal/state": {"TestSixFixturesThroughAuthenticatedRPCAndKafka", "TestRedisSubscriptionInitialRaceDeleteAndGap", "TestGRPCBlockedSubscriberReleasesSenderAndDoesNotBlockPeer", "TestRedisOOMDoesNotCommitKafkaOffset", "TestRedisForceKillBeforeOffsetReplaysWithoutRegressing", "TestMySQLSampleIdempotencePagingAgeAndBudget", "TestNewEntityAndRunStrictRecoveryLifecycle"},
     "internal/edge": {"TestGatewayForceKillAfterRemoteACKBeforeLocalCommit", "TestExecutorForceKillRetainsSingleEffectAndExactReport"},

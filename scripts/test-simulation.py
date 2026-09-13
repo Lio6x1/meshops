@@ -17,6 +17,18 @@ checks = []
 opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
 csrf = ''
 
+def login():
+    """使用个人账号；先完成首次改密，再执行会改变演示状态的验收。"""
+    global csrf
+    session = api('/api/session', 'POST', {
+        'username': os.environ['MESHOPS_WEB_OPERATOR_USERNAME'],
+        'password': os.environ['MESHOPS_WEB_OPERATOR_PASSWORD'],
+    })
+    if session.get('mustChangePassword') or session.get('role') != 'operator':
+        raise ValueError('A provisioned operator with completed password change is required')
+    csrf = session['csrfToken']
+    return session
+
 def api(path, method='GET', body=None):
     headers = {'Origin': BASE, 'Content-Type': 'application/json', 'X-CSRF-Token': csrf}
     request = urllib.request.Request(BASE + path, data=None if body is None else json.dumps(body).encode(), headers=headers, method=method)
@@ -55,9 +67,7 @@ def main():
     output = Path(sys.argv[1])
     if output.exists():
         raise ValueError('Evidence output already exists')
-    code = os.environ['MESHOPS_WEB_OPERATOR_CODE']
-    session = api('/api/session', 'POST', {'role': 'operator', 'accessCode': code})
-    csrf = session['csrfToken']
+    login()
     previous = source()
     original = previous['desired']
     report = {'passed': False, 'checks': checks, 'scope': 'Real demo source control, durable pending queue and HTTP entity projection. Restores previous desired mode.'}

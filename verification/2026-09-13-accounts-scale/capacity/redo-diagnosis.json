@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-09-13",
+  "purpose": "Diagnose the million-entity initialization failure without claiming sustained million-entity capacity.",
+  "provenance": {
+    "kind": "agent_tool_observation_transcription",
+    "description": "Configuration queries and micro-reproduction stdout were returned by agent tools during this session. They were not saved as independent raw output files at execution time. This archive faithfully transcribes those observations and distinguishes them from the existing benchmark logs.",
+    "rawDiagnosticOutputFile": null,
+    "rawDiagnosticOutputSHA256": null,
+    "toolOutputChunkIds": {
+      "benchmarkLogExcerpt": "11d37b",
+      "configurationAndRollbackQueries": "e1c0e6",
+      "sourceJSONMicroReproduction": "f2e6c7",
+      "mysqlStop": "f5c40b"
+    },
+    "sourceRun": "20260913T140130-13ad51c7",
+    "sourceBenchmarkId": "d5124aa2605b41f8ae16a338860c713f",
+    "existingEvidence": [
+      "20260913T140130-13ad51c7/summary.json",
+      "20260913T140130-13ad51c7/containers.log",
+      "20260913T140130-13ad51c7/resources.jsonl"
+    ]
+  },
+  "isolation": {
+    "container": "meshops-scale-mysql-1",
+    "mysqlMemoryLimitBytes": 1073741824,
+    "mysqlCPUs": 2,
+    "mysqlVersionFromExistingLog": "8.0.46",
+    "startedServices": ["mysql"],
+    "otherServicesStarted": false,
+    "databasePattern": "binding_diag_<random UUID hex>",
+    "exactDiagnosticDatabaseNameRetained": false,
+    "diagnosticTable": "course_bindings(binding_key VARCHAR(256) PRIMARY KEY, binding_json JSON NOT NULL) ENGINE=InnoDB",
+    "resourceLimitsChanged": false,
+    "productionCodeChanged": false,
+    "configurationChangedByDiagnosingAgent": false
+  },
+  "observedMySQLConfiguration": {
+    "innodb_buffer_pool_size": 268435456,
+    "innodb_log_buffer_size": 16777216,
+    "innodb_redo_log_capacity": 104857600,
+    "max_allowed_packet": 67108864
+  },
+  "postRestartStatusObservation": {
+    "note": "These counters were queried after starting the previously stopped MySQL. They are not measurements of the original failed run.",
+    "Innodb_data_written": 308409856,
+    "Innodb_log_waits": 0,
+    "Innodb_os_log_written": 20784128,
+    "failedBenchmarkCourseBindingsCount": 0
+  },
+  "originalFailureEvidence": {
+    "failure": "database_seed: binding batch unavailable: invalid connection",
+    "warmupAccepted": 0,
+    "reportedOOMKillCount": 0,
+    "redoWarning": "MY-014084: Threads are unable to reserve space in redo log which cannot be reclaimed because the log_checkpointer consumer is still lagging behind.",
+    "redoWarningTimesUTC": [
+      "2026-09-13T06:02:19.185888Z",
+      "2026-09-13T06:02:31.258097Z",
+      "2026-09-13T06:02:42.162610Z",
+      "2026-09-13T06:02:53.378929Z",
+      "2026-09-13T06:03:04.327995Z",
+      "2026-09-13T06:03:15.788983Z",
+      "2026-09-13T06:03:26.156445Z"
+    ]
+  },
+  "payload": {
+    "source": "Existing failed-run manifest.json, decoded on the host; each source was rebuilt with the persisted Go Source field names, Fixture empty, StaleAfter 30000000000, compact sorted JSON.",
+    "manifestBytes": 44303804,
+    "entitiesPerSource": [100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000],
+    "sourceJSONBytes": [3000197, 3200197, 3000196, 3000196, 3400198, 3400198, 3000196, 3000196, 3200197, 3600199],
+    "combinedSourceJSONBytes": 31801970,
+    "sqlProtocolAndStatementOverheadIncludedInPayloadBytes": false
+  },
+  "microReproduction": {
+    "method": "Host Python subprocess sent SQL to docker exec -i mysql over stdin. Each case used START TRANSACTION, SET @started=NOW(6), INSERT, SELECT COUNT(*),TIMESTAMPDIFF(MICROSECOND,@started,NOW(6))/1000000, and ROLLBACK. The diagnostic database was created once and dropped in finally.",
+    "timeoutPerInsertSubprocessSeconds": 45,
+    "serverTimeMeaning": "Server wall-clock interval from SET @started to the SELECT statement following INSERT; it does not include rollback or client transport time.",
+    "endToEndTimeMeaning": "Python subprocess wall-clock interval including docker exec, client startup, SQL transfer, INSERT, measurement SELECT, and ROLLBACK; excludes host JSON and SQL-string construction.",
+    "cases": [
+      {"sourceRows": 1, "jsonBytes": 3000197, "insertedRowsBeforeRollback": 1, "serverSeconds": 0.4375, "endToEndSeconds": 0.756, "exitCode": 0, "stderr": ""},
+      {"sourceRows": 10, "jsonBytes": 31801970, "insertedRowsBeforeRollback": 10, "serverSeconds": 0.8741, "endToEndSeconds": 2.296, "exitCode": 0, "stderr": ""}
+    ],
+    "setupEndToEndSeconds": 0.302,
+    "dropEndToEndSeconds": 0.398,
+    "rollbackStatementsSucceeded": true,
+    "diagnosticDatabaseDropSucceeded": true,
+    "mysqlStoppedAfterDiagnosis": true,
+    "stopCommandExitCode": 0,
+    "stopStateMeaning": "The diagnosing agent restored its started MySQL to stopped state. This is a historical observation, not a claim about its state during a later parent-agent rerun."
+  },
+  "conclusion": {
+    "observed": "The 10-source JSON batch succeeded by itself under the same MySQL CPU and memory limits, and its JSON payload was below max_allowed_packet. The original million-entity transaction repeatedly encountered redo-space/checkpointer warnings with only 100 MiB configured redo capacity.",
+    "inference": "Redo/checkpoint throughput is the better-supported bottleneck for the full initialization transaction. The micro-reproduction does not prove that source JSON cost is irrelevant while the server is under the original transaction's sustained write pressure.",
+    "recommendedNextExperiment": "Parent agent may adjust only isolated MySQL redo capacity and rerun the original million-entity parameters with unchanged RAM, CPU, timeout, transaction atomicity and integrity checks.",
+    "sustainedMillionEntityCapacityVerified": false,
+    "fullMillionSeedRerunPerformedByThisDiagnosis": false
+  }
+}

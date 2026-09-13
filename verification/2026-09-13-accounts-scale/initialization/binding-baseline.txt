@@ -1,0 +1,19 @@
+=== RUN   TestBindingScaleRoundTrips
+=== RUN   TestBindingScaleRoundTrips/1000
+    migrations_batch_integration_test.go:58: entities=1000 operation=seed elapsed=7.8605848s SQL=4004
+    migrations_batch_integration_test.go:59: per-entity round trips remain: 4004 SQL for 1000 entities
+    migrations_batch_integration_test.go:58: entities=1000 operation=check elapsed=3.7290554s SQL=2002
+    migrations_batch_integration_test.go:59: per-entity round trips remain: 2002 SQL for 1000 entities
+=== RUN   TestBindingScaleRoundTrips/10000
+{"@timestamp":"2026-09-13T12:45:59.889+08:00","caller":"stat/usage.go:82","content":"CPU: 0m, MEMORY: Alloc=13.5Mi, TotalAlloc=42.6Mi, Sys=29.5Mi, NumGC=10","level":"stat"}
+    migrations_batch_integration_test.go:58: entities=10000 operation=seed elapsed=1m5.1939145s SQL=40004
+    migrations_batch_integration_test.go:59: per-entity round trips remain: 40004 SQL for 10000 entities
+{"@timestamp":"2026-09-13T12:46:59.889+08:00","caller":"stat/usage.go:82","content":"CPU: 0m, MEMORY: Alloc=7.9Mi, TotalAlloc=135.5Mi, Sys=33.7Mi, NumGC=24","level":"stat"}
+    migrations_batch_integration_test.go:58: entities=10000 operation=check elapsed=31.1899673s SQL=20002
+    migrations_batch_integration_test.go:59: per-entity round trips remain: 20002 SQL for 10000 entities
+--- FAIL: TestBindingScaleRoundTrips (132.68s)
+    --- FAIL: TestBindingScaleRoundTrips/1000 (24.75s)
+    --- FAIL: TestBindingScaleRoundTrips/10000 (107.93s)
+FAIL
+FAIL	example.com/meshops-course/internal/tasks	135.143s
+FAIL

@@ -17,6 +17,7 @@ import (
 	entityv1 "example.com/meshops-course/gen/entity/v1"
 	searchv1 "example.com/meshops-course/gen/search/v1"
 	taskv1 "example.com/meshops-course/gen/task/v1"
+	"example.com/meshops-course/internal/accounts"
 	"example.com/meshops-course/internal/platform"
 	"example.com/meshops-course/internal/simulation"
 	"example.com/meshops-course/internal/web"
@@ -43,8 +44,17 @@ func newHTTPServer(ctx context.Context, handler http.Handler) *http.Server {
 	return &http.Server{Handler: handler, ReadTimeout: 10 * time.Second, ReadHeaderTimeout: 5 * time.Second, IdleTimeout: 60 * time.Second, MaxHeaderBytes: 16 << 10, BaseContext: func(net.Listener) context.Context { return ctx }}
 }
 func run() error {
+	if os.Getenv("MESHOPS_ACCOUNT_AUTH") != "1" {
+		return errors.New("MESHOPS_ACCOUNT_AUTH=1 is required for the final web gateway")
+	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
+	db, err := platform.OpenDB("MESHOPS_MYSQL_DSN")
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+	accountStore := accounts.NewStore(db)
 	reg, err := platform.LoadRegistry(env("MESHOPS_MANIFEST", "configs/simulation.yaml"))
 	if err != nil {
 		return err
@@ -68,7 +78,7 @@ func run() error {
 		defer client.Close()
 		control = simulation.NewStore(client)
 	}
-	app, err := web.New(web.Config{Simulation: control, Registry: reg, TenantID: env("MESHOPS_WEB_TENANT", "demo_tenant"), Entity: entityv1.NewEntityServiceClient(conns[0]), Task: taskv1.NewTaskServiceClient(conns[1]), Dispatcher: dispatcherv1.NewDispatcherServiceClient(conns[2]), Search: searchv1.NewSearchServiceClient(conns[3]), AccessCodes: map[string]string{"operator": os.Getenv("MESHOPS_WEB_OPERATOR_CODE"), "admin": os.Getenv("MESHOPS_WEB_ADMIN_CODE")}, AllowedOrigins: strings.Split(env("MESHOPS_WEB_ORIGINS", "http://localhost:18090,http://127.0.0.1:18090,http://localhost:5173,http://127.0.0.1:5173"), ",")})
+	app, err := web.New(web.Config{Accounts: accountStore, Simulation: control, Registry: reg, TenantID: env("MESHOPS_WEB_TENANT", "demo_tenant"), Entity: entityv1.NewEntityServiceClient(conns[0]), Task: taskv1.NewTaskServiceClient(conns[1]), Dispatcher: dispatcherv1.NewDispatcherServiceClient(conns[2]), Search: searchv1.NewSearchServiceClient(conns[3]), AllowedOrigins: strings.Split(env("MESHOPS_WEB_ORIGINS", "http://localhost:18090,http://127.0.0.1:18090,http://localhost:5173,http://127.0.0.1:5173"), ",")})
 	if err != nil {
 		return err
 	}

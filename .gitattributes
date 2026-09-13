@@ -12,3 +12,6 @@
 *.md text eol=lf
 .gitignore text eol=lf
 Makefile text eol=lf
+
+# 验收文件同时记录原始与归档 SHA-256；Git 不再改写已审查的证据字节。
+verification/2026-09-13-accounts-scale/** -text

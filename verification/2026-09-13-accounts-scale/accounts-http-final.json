@@ -1,0 +1,128 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "stage": "admin_login",
+      "status": "passed"
+    },
+    {
+      "stage": "login_role_spoof",
+      "status": "passed"
+    },
+    {
+      "stage": "create_operator",
+      "status": "passed"
+    },
+    {
+      "stage": "duplicate_username",
+      "status": "passed"
+    },
+    {
+      "stage": "initial_operator_login",
+      "status": "passed"
+    },
+    {
+      "stage": "must_change_blocks_business",
+      "status": "passed"
+    },
+    {
+      "stage": "password_csrf",
+      "status": "passed"
+    },
+    {
+      "stage": "change_initial_password",
+      "status": "passed"
+    },
+    {
+      "stage": "initial_cookie_revoked",
+      "status": "passed"
+    },
+    {
+      "stage": "old_password_rejected",
+      "status": "passed"
+    },
+    {
+      "stage": "personal_login",
+      "status": "passed"
+    },
+    {
+      "stage": "personal_session",
+      "status": "passed"
+    },
+    {
+      "stage": "business_allowed",
+      "status": "passed"
+    },
+    {
+      "stage": "operator_management_denied",
+      "status": "passed"
+    },
+    {
+      "stage": "disable_operator",
+      "status": "passed"
+    },
+    {
+      "stage": "disabled_cookie_revoked",
+      "status": "passed"
+    },
+    {
+      "stage": "enable_operator",
+      "status": "passed"
+    },
+    {
+      "stage": "enable_preserves_revocation",
+      "status": "passed"
+    },
+    {
+      "stage": "enabled_login",
+      "status": "passed"
+    },
+    {
+      "stage": "reset_password",
+      "status": "passed"
+    },
+    {
+      "stage": "reset_cookie_revoked",
+      "status": "passed"
+    },
+    {
+      "stage": "reset_old_password_rejected",
+      "status": "passed"
+    },
+    {
+      "stage": "reset_login",
+      "status": "passed"
+    },
+    {
+      "stage": "reset_blocks_business",
+      "status": "passed"
+    },
+    {
+      "stage": "change_reset_password",
+      "status": "passed"
+    },
+    {
+      "stage": "final_login",
+      "status": "passed"
+    },
+    {
+      "stage": "logout_operator",
+      "status": "passed"
+    },
+    {
+      "stage": "logout_cookie_revoked",
+      "status": "passed"
+    },
+    {
+      "stage": "cleanup_operator",
+      "status": "passed"
+    },
+    {
+      "stage": "admin_logout",
+      "status": "passed"
+    }
+  ],
+  "cleanup": "passed",
+  "failure": "",
+  "elapsedSeconds": 3.401
+}

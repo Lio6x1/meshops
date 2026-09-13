@@ -1,0 +1,17 @@
+{
+  "source": {
+    "path": ".cache/account-scale/unit-release.jsonl",
+    "sha256": "e9931bebb59e83fc0ee31947689f1b3a82436179c0f8dc57bb3387ba5aff9ccd"
+  },
+  "artifacts": [
+    {
+      "path": "unit-release.events.jsonl",
+      "sha256": "b40b154124a04399b15a5749b11cc82387d04a6a099ac5bbd85cae014cc9561b"
+    },
+    {
+      "path": "unit-release.summary.json",
+      "sha256": "2129d252799b0e42c8f9c1e4196047043ddae1c5ea27dbc90f452692cd11c96d"
+    }
+  ],
+  "policy": "Only Go event metadata retained; Output removed."
+}

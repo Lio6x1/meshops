@@ -60,11 +60,11 @@ foreach ($stageID in @('z04','z05','z06','z07','z08','z09','z10','z11','z12','z1
     } elseif ($stageID -eq 'z11') {
         $definitions = @(
             @{id='z11-01'; title='HTTP 映射与可复现生成'; paths=@($pending | Where-Object {$_ -match '^(proto/|gen/|go\.(mod|sum)$|scripts/(generate-http|verify-proto)\.ps1$)'}); remove=@(); packages=@('./gen/...'); tests=@()},
-            @{id='z11-02'; title='可信会话、HTTP 查询与实时订阅'; paths=@('*'); remove=@($stage.changes.removed); packages=@('./internal/web'); tests=@('TestSessionBoundary','TestSessionExpiresAndDoesNotReturnMachineToken','TestGeneratedGatewayAndStreamCancellation')}
+            @{id='z11-02'; title='个人账号、HTTP 查询与实时订阅'; paths=@('*'); remove=@($stage.changes.removed); packages=@('./internal/web','./internal/accounts','./internal/platform','./cmd/account-admin'); tests=@('TestSessionBoundary','TestSessionExpiresAndDoesNotReturnMachineToken','TestGeneratedGatewayAndStreamCancellation','TestPasswordPolicyAndArgonBounds','TestAccountMustChangeAndRevocation','TestAccountRejectsRoleSpoofAndUsesPersonalToken','TestPersonalResolverIdentityAndFailClosed','TestPasswordInputIsBoundedStrictAndPreservesSpaces')}
         )
     } elseif ($stageID -eq 'z12') {
         $definitions = @(
-            @{id='z12-01'; title='前端领域类型、状态规则与依赖'; paths=@($pending | Where-Object {$_ -match '^web/(package.*\.json|tsconfig.*\.json|vite.config.ts|tests/|src/(domain|types|transport|requests|map|scene|trails)\.ts$)'}); remove=@(); packages=@(); tests=@()},
+            @{id='z12-01'; title='前端领域类型、状态规则与依赖'; paths=@($pending | Where-Object {$_ -match '^web/(package.*\.json|tsconfig.*\.json|vite.config.ts|tests/|src/(api|accounts|domain|types|transport|requests|map|scene|trails)\.ts$)' -or $_ -eq 'scripts/frontend.ps1'}); remove=@(); packages=@(); tests=@()},
             @{id='z12-02'; title='会话、实体地图与模拟控制页面'; paths=@('*'); remove=@($stage.changes.removed); packages=@(); tests=@()}
         )
     } elseif ($stageID -eq 'z13') {
@@ -121,8 +121,8 @@ foreach ($stageID in @('z04','z05','z06','z07','z08','z09','z10','z11','z12','z1
             $lines.Add('go test '+($step.packages -join ' ')+' -run '''+$pattern+''' -count=1 -v')
             $lines.Add("if (`$LASTEXITCODE -ne 0) { throw 'test failed' }")
         } elseif ($step.id -eq 'z12-01') {
-            $lines.Add('node --experimental-strip-types --test web/tests/*.test.ts')
-            $lines.Add("if (`$LASTEXITCODE -ne 0) { throw 'browser domain tests failed' }")
+            $lines.Add('./scripts/frontend.ps1 -Action Install')
+            $lines.Add('./scripts/frontend.ps1 -Action Test')
         } elseif ($step.id -eq 'z12-02') {
             $lines.Add('./scripts/frontend.ps1 -Action Install')
             $lines.Add('./scripts/frontend.ps1 -Action Test')

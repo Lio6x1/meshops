@@ -13,7 +13,7 @@ INDEX = MATERIAL / 'checkpoint-index.json'
 EXCLUDED = {'node_modules', 'dist', '.cache', '.npm-cache', '.local', 'test-results', 'playwright-report', '__pycache__'}
 
 def runtime_paths():
-    paths = {'.gitattributes', '.gitignore', 'go.mod', 'go.sum', 'README.md', 'docker-compose.yml', 'compose.search.yml', 'compose.demo.yml', 'Dockerfile', '.dockerignore'}
+    paths = {'.gitattributes', '.gitignore', 'go.mod', 'go.sum', 'README.md', 'docker-compose.yml', 'compose.search.yml', 'compose.demo.yml', 'compose.scale.yml', 'Dockerfile', '.dockerignore'}
     for directory in ('.github', 'cmd', 'configs', 'gen', 'internal', 'migrations', 'proto', 'scripts', 'testdata', 'deploy', 'web'):
         for p in (ROOT / directory).rglob('*'):
             rel = p.relative_to(ROOT)
@@ -42,6 +42,10 @@ def main():
     browser = {p for p in runtime if p.startswith('web/')} | {'scripts/frontend.ps1'}
     gateway = {p for p in runtime if p.startswith(('internal/web/', 'cmd/web-gateway/', 'internal/simulation/')) or p.endswith('.pb.gw.go')}
     gateway |= {'go.mod', 'go.sum', '.gitignore', 'proto/http.yaml', 'scripts/build.ps1', 'scripts/generate-http.ps1', 'scripts/verify-proto.ps1', 'scripts/web-env.ps1', 'scripts/start-web.ps1', 'scripts/stop-web.ps1'}
+    # Z11 的 HTTP 登录已依赖个人账号；必须同步装配身份解析、迁移与初始化工具，
+    # 不能只复制页面/网关而让上一阶段 RPC 服务拒绝新会话。
+    gateway |= {p for p in runtime if p.startswith(('internal/accounts/', 'internal/platform/', 'cmd/account-admin/'))}
+    gateway |= {'internal/app/run.go', 'migrations/005_accounts.sql', 'scripts/env.ps1', 'scripts/account-admin.ps1', 'scripts/account-admin.test.ps1'}
     previous = {f['path']: f['sha256'] for f in baseline['files']}
     for stage_id, additions in (('z11', gateway), ('z12', browser), ('z13', runtime)):
         if stage_id == 'z13':

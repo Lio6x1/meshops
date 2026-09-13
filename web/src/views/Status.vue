@@ -42,7 +42,7 @@ onUnmounted(() => clearInterval(timer))
     v-if="session?.role !== 'admin'"
     icon="info"
     title="此页面需要管理员身份"
-    sub-title="操作员可查看实体、任务和单条分发记录。请退出后使用管理员访问码登录。"
+    sub-title="操作员可查看实体、任务和单条分发记录。运行状态需要使用管理员账号登录。"
   />
   <template v-else>
     <el-alert
