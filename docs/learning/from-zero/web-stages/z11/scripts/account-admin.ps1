@@ -76,7 +76,7 @@ function Invoke-AccountAdministration {
     $payload = $null
     try {
     if (-not $Credential) {
-        $first = Read-Host '设置管理员密码（12—128 个字符）' -AsSecureString
+        $first = Read-Host '设置管理员密码（8—128 个字符）' -AsSecureString
         $second = Read-Host '再次输入管理员密码' -AsSecureString
         $Credential = [PSCredential]::new($Username,$first)
         $confirmation = [PSCredential]::new($Username,$second)

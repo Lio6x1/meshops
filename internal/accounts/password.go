@@ -27,7 +27,7 @@ type Hasher struct{ slots chan struct{} }
 
 func NewHasher() *Hasher { return &Hasher{slots: make(chan struct{}, 2)} }
 func validatePassword(p string) error {
-	if !utf8.ValidString(p) || len(p) > 512 || utf8.RuneCountInString(p) < 12 || utf8.RuneCountInString(p) > 128 {
+	if !utf8.ValidString(p) || len(p) > 512 || utf8.RuneCountInString(p) < 8 || utf8.RuneCountInString(p) > 128 {
 		return ErrInvalid
 	}
 	return nil

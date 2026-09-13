@@ -46,7 +46,7 @@ async function submit() {
         <el-input id="current-password" v-model="currentPassword" type="password" show-password autocomplete="off" :disabled="busy" />
       </el-form-item>
       <el-form-item label="新密码" label-for="new-password">
-        <el-input id="new-password" v-model="newPassword" type="password" show-password autocomplete="off" :disabled="busy" placeholder="12–128 个字符" />
+        <el-input id="new-password" v-model="newPassword" type="password" show-password autocomplete="off" :disabled="busy" placeholder="8–128 个字符" />
       </el-form-item>
       <el-form-item label="确认新密码" label-for="confirm-password">
         <el-input id="confirm-password" v-model="confirmation" type="password" show-password autocomplete="off" :disabled="busy" />

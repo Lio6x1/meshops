@@ -146,7 +146,7 @@ async function save() {
         </template>
         <template v-if="mode !== 'toggle'">
           <p class="muted small">请为操作员设置初始密码，并通过可信渠道告知本人。操作员登录后必须修改密码。{{ mode === 'reset' ? '重置会使该账号的已有会话失效。' : '' }}</p>
-          <el-form-item label="初始密码" label-for="account-initial-password"><el-input id="account-initial-password" v-model="form.password" type="password" show-password autocomplete="off" :disabled="saving" placeholder="12–128 个字符" /></el-form-item>
+          <el-form-item label="初始密码" label-for="account-initial-password"><el-input id="account-initial-password" v-model="form.password" type="password" show-password autocomplete="off" :disabled="saving" placeholder="8–128 个字符" /></el-form-item>
           <el-form-item label="确认初始密码" label-for="account-confirm-password"><el-input id="account-confirm-password" v-model="form.confirmation" type="password" show-password autocomplete="off" :disabled="saving" /></el-form-item>
         </template>
         <p v-else>{{ target?.enabled ? '禁用后，该操作员将立即退出且无法再次登录；可随时重新启用。' : '启用后，该操作员可以使用现有密码登录；仍需完成待办的首次改密。' }}</p>

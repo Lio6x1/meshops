@@ -55,3 +55,17 @@ func BenchmarkArgon2idHash(b *testing.B) {
 		}
 	}
 }
+
+// 校验字符边界，允许演示使用八位或九位密码，保持 Unicode 和字节上限。
+func TestPasswordLengthBoundary(t *testing.T) {
+	for _, p := range []string{"demo1234", "demo12345", strings.Repeat("锁", 8)} {
+		if err := validatePassword(p); err != nil {
+			t.Errorf("valid length rejected: %v", err)
+		}
+	}
+	for _, p := range []string{"demo123", strings.Repeat("锁", 7)} {
+		if !errors.Is(validatePassword(p), ErrInvalid) {
+			t.Error("short password accepted")
+		}
+	}
+}

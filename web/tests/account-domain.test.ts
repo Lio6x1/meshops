@@ -13,10 +13,10 @@ test('forced password change blocks business even for admin; only admin manages 
 })
 
 test('password policy counts Unicode characters and never silently trims or replaces invalid UTF-16', () => {
-  assert.equal(passwordError('a'.repeat(12)), '')
+  assert.equal(passwordError('a'.repeat(8)), '')
   assert.equal(passwordError('🔐'.repeat(128)), '')
   assert.equal(passwordError(' 1234567890 '), '')
-  assert.notEqual(passwordError('🔐'.repeat(11)), '')
+  assert.notEqual(passwordError('🔐'.repeat(7)), '')
   assert.notEqual(passwordError('a'.repeat(129)), '')
   assert.notEqual(passwordError('a'.repeat(12) + '\uD800'), '')
 })
