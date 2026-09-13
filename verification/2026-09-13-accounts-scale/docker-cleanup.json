@@ -1,0 +1,40 @@
+{
+  "policy": "Only stopped containers and volumes belonging to three explicit disposable projects. Main meshops-demo and unrelated services preserved.",
+  "entries": [
+    {
+      "networks": 1,
+      "project": "meshops-scale",
+      "volumes": [
+        "meshops-scale_kafka-data",
+        "meshops-scale_mysql-data",
+        "meshops-scale_redis-data"
+      ],
+      "containers": 5
+    },
+    {
+      "networks": 2,
+      "project": "meshops-account-demo",
+      "volumes": [
+        "meshops-account-demo_bootstrap-state",
+        "meshops-account-demo_canal-position",
+        "meshops-account-demo_kafka-data",
+        "meshops-account-demo_mysql-data",
+        "meshops-account-demo_redis-data",
+        "meshops-account-demo_search-data",
+        "meshops-account-demo_simulator-data"
+      ],
+      "containers": 23
+    },
+    {
+      "networks": 1,
+      "project": "meshops-account-check",
+      "volumes": [
+        "meshops-account-check_kafka-data",
+        "meshops-account-check_mysql-data",
+        "meshops-account-check_redis-data",
+        "meshops-account-check_search-data"
+      ],
+      "containers": 6
+    }
+  ]
+}

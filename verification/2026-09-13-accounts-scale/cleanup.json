@@ -1,0 +1,138 @@
+{
+  "scope": "Regenerable main checkout build/dependency caches only; checked paths and refused reparse points. Source, tools, raw evidence, local archives, simulator data and database volumes retained.",
+  "entries": [
+    {
+      "files": 11,
+      "bytes": 1028606976,
+      "path": "bin",
+      "removed": true
+    },
+    {
+      "files": 13048,
+      "bytes": 131404064,
+      "path": "web/node_modules",
+      "removed": true
+    },
+    {
+      "files": 4,
+      "bytes": 2105961,
+      "path": "web/.npm-cache",
+      "removed": true
+    },
+    {
+      "files": 17,
+      "bytes": 1430079,
+      "path": "web/dist",
+      "removed": true
+    },
+    {
+      "files": 11,
+      "bytes": 38994,
+      "path": ".cache/go-mod",
+      "removed": true
+    },
+    {
+      "files": 37133,
+      "bytes": 683753296,
+      "path": ".cache/gopath",
+      "removed": true
+    },
+    {
+      "files": 443,
+      "bytes": 154151472,
+      "path": ".cache/fullstack/npm",
+      "removed": true
+    },
+    {
+      "files": 62,
+      "bytes": 9957280,
+      "path": ".cache/fullstack/formatter",
+      "removed": true
+    },
+    {
+      "files": 4565,
+      "bytes": 107330197,
+      "path": ".cache/fullstack/staticcheck",
+      "removed": true
+    },
+    {
+      "files": 2,
+      "bytes": 228,
+      "path": ".cache/go-build",
+      "removed": true
+    },
+    {
+      "files": 2,
+      "bytes": 228,
+      "path": ".cache/go-build-handouts",
+      "removed": true
+    },
+    {
+      "files": 2,
+      "bytes": 228,
+      "path": ".cache/go-build-linux-race",
+      "removed": true
+    },
+    {
+      "files": 51268,
+      "bytes": 7613355347,
+      "path": ".cache/go-build-reference",
+      "removed": true
+    },
+    {
+      "files": 2,
+      "bytes": 228,
+      "path": ".cache/go-build-z01",
+      "removed": true
+    },
+    {
+      "files": 2,
+      "bytes": 228,
+      "path": ".cache/go-build-z02",
+      "removed": true
+    },
+    {
+      "files": 2,
+      "bytes": 228,
+      "path": ".cache/go-build-z03",
+      "removed": true
+    },
+    {
+      "files": 2,
+      "bytes": 228,
+      "path": ".cache/go-build-z04",
+      "removed": true
+    },
+    {
+      "files": 2,
+      "bytes": 228,
+      "path": ".cache/go-build-z05",
+      "removed": true
+    },
+    {
+      "files": 2,
+      "bytes": 228,
+      "path": ".cache/go-build-z06",
+      "removed": true
+    },
+    {
+      "files": 2265,
+      "bytes": 51853584,
+      "path": ".cache/staticcheck",
+      "removed": true
+    },
+    {
+      "files": 4820,
+      "bytes": 116914042,
+      "path": ".cache/staticcheck-reference",
+      "removed": true
+    },
+    {
+      "files": 2410,
+      "bytes": 58221452,
+      "path": ".cache/staticcheck-review",
+      "removed": true
+    }
+  ],
+  "bytes": 9959124796.0
+}

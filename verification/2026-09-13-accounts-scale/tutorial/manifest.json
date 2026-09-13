@@ -1,0 +1,46 @@
+{
+  "policy": "Results remove absolute learner directory; preserve pass/build/test fields. Source SHA256 identifies unmodified local result. Build and final copy differ only in README document pointers; no implementation changes.",
+  "buildToFinalChanges": [
+    {
+      "stage": "z12",
+      "path": "web/README.md"
+    },
+    {
+      "stage": "z13",
+      "path": "web/README.md"
+    }
+  ],
+  "context": {
+    "fullBuild": "13 Go stages; Z12/Z13 npm test and production build; GOMAXPROCS=2 GOFLAGS=-p=2, agent reported affinity mask3; concurrent isolated 4CPU scale run",
+    "finalWebSubsteps": "5 web substeps, GOMAXPROCS=2 GOFLAGS=-p=2; scale already stopped",
+    "boundary": "Builds and required lesson tests, not independent repeat of every Docker business scenario."
+  },
+  "records": [
+    {
+      "source": ".cache/lesson-copy-62de92c674954c9e94417d94bd784f73/result.json",
+      "sourceSHA256": "647d1fe971ff8acbb90d448a0d0391b8e30d17f578968adaf9cf6481e56be5f7",
+      "artifact": "full-build.json",
+      "sha256": "ef99a7ef7e20bcb4e4be0a0dcaf05848c6737334fecd3f06b122d281c0969a24"
+    },
+    {
+      "source": ".cache/lesson-copy-a417ef92757f44de945b5671ac695c41/result.json",
+      "sourceSHA256": "ec8c0a5ae74d9bc028257a2cdb8e7f596f9e06d11f6bb399618b1272ad493896",
+      "artifact": "final-copy.json",
+      "sha256": "3ba017cb6867dc662a526e8e4c32920121ca79b900a910bd4d7a69ae4dc65747"
+    },
+    {
+      "source": ".cache/substeps-227c57335638441ebad72e4682183ae1/result.json",
+      "sourceSHA256": "8dde4734ecb446c544c0f61cffa996c68ecf25bf95e20bff74c753f51480afae",
+      "artifact": "web-substeps.json",
+      "sha256": "0d643b3f12d0f7eaed6ed897c1d4afaad05049345cc367c2e18571a72caf08b1"
+    },
+    {
+      "artifact": "checkpoint-index.json",
+      "sha256": "8cacff9b8447dcf61ac2f12dd1a3d883337943142e1a7c83e6dacdf514ef65a0"
+    },
+    {
+      "artifact": "substep-index.json",
+      "sha256": "ebf0d8d600dcb8528af4d1ad7e6476323cf1f66a75e383f4d9f75b6b4db85784"
+    }
+  ]
+}

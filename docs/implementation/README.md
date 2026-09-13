@@ -17,7 +17,7 @@
 
 当前已实现六类模拟来源、统一状态查询/订阅、抽样历史、四类实体的一种 inspect、可靠分发与恢复、任务搜索、HTTP/SSE 网关、个人账号、Vue 控制台和 Docker 演示。个人账号包括 Argon2id 密码、管理员本机初始化/恢复、操作员管理、首次及本人改密，以及 HTTP/RPC/SSE 撤销；任务记录真实个人身份。实体仍采用单权威来源，不包含真实设备协议或最优资源分配。
 
-本次普通测试、23 项必需集成门禁、30 阶段真实 HTTP 账号验收、个人任务审计/取消/CDC、30 实体场景回归和 29 项前端测试及构建已完成。最新 Windows 普通测试为 [168 PASS（unit-release）](../../verification/2026-09-13-accounts-scale/unit-release.summary.json)，先前 Linux 普通 race 为 162 PASS；两次普通运行各有 22 项 SKIP（20 项外部依赖门控、2 项 edge/state 崩溃子进程辅助入口）；完整真实依赖 race 待最终 CI 验收，不能把跳过算作通过。百万实体试验已恢复推进，独立 Compose 工具分别控制实体基数、总事件速率、资源与时限；百万容量与教程最终复制验收仍待完成，已有报告与本次未完成检查分开说明。
+本次普通测试、23 项必需集成门禁、30 阶段真实 HTTP 账号验收、个人任务审计/取消/CDC、30 实体场景回归和 29 项前端测试及构建已完成。最新 Windows 普通测试为 [168 PASS（unit-release）](../../verification/2026-09-13-accounts-scale/unit-release.summary.json)，先前 Linux 普通 race 为 162 PASS；两次普通运行各有 22 项 SKIP（20 项外部依赖门控、2 项 edge/state 崩溃子进程辅助入口）；完整真实依赖 race 已由 [CI 34744143433](https://github.com/Lio6x1/meshops/actions/runs/34744143433) 验收通过，不能把跳过算作通过。百万实体试验已完成并保留失败边界，独立 Compose 工具分别控制实体基数、总事件速率、资源与时限；百万突发预热因消费积压未通过；教程最终复制、13 阶段构建和 5 个 Web 分步验收已完成，各项结果及其测量范围分别记录。
 
 当前教程发布为 13 个阶段、28 个分步、1790 条文件指纹（Z13 为 356 个文件）和 428 个完整代码块；以[阶段索引](../learning/from-zero/checkpoint-index.json)和[完整答案页](../learning/from-zero/lessons/files/z13.md)为准。数量核对不代替教程最终复制、百万第 8 次试验或最终 CI 的验收。
 

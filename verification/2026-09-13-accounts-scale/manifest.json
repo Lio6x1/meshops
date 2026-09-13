@@ -412,8 +412,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "d147d94146f5952bb88d3ad85b0d852f848487f5eea197f86267cd98385471ab",
-      "bytes": 10112
+      "sha256": "c742c9d7e1609b32af5c77d950bd097e64c437b9b2be9ce2415524e627ee209e",
+      "bytes": 11751
     },
     {
       "path": "unit-final.events.jsonl",
@@ -451,6 +451,9 @@
       "recordedAtUTC": "2026-09-13T06:26:59.881659+00:00",
       "previousManifestSHA256": "22945638246bd4d4891c97a1fb1331e65139300cb8def8b9ad9dce6460a0e0af",
       "description": "Append final ordinary Go tests and P2 review. Recompute ordinary-run skip classification as 2 helpers + 20 external checks in unpublished derived summary and README; preserve all original source hashes and historical event bytes/times/totals."
+    },
+    {
+      "reason": "README is a live navigation document, updated to link final capacity and tutorial evidence; original measurement artifacts unchanged."
     }
   ]
 }
